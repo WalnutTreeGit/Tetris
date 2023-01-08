@@ -14,8 +14,6 @@
 #include <avr/pgmspace.h>
 #define pgm_read_byte_far(address_long) __ELPM((\fBuint32_t\fP)(address_long))
 
-// CHANGE TIME 
-
 cRGB led_off = {.r = 0, .g = 0, .b = 0};
 	
 volatile unsigned char button;
@@ -79,16 +77,33 @@ typedef struct USARTRX
 volatile USARTRX_st rxUSART = {0, 0, 0, 0};
 char transmit_buffer[10];
 
-
+/*
+void fall()
+{
+	
+	
+		colors[5].r=000; colors[5].g=150; colors[5].b=255;//light blue (türkis)
+	int k;
+	for ( k = 0; k < height; k++)
+	{
+		int i = 209 - 12 * k;
+		led[i] = colors[5];
+		ws2812_setleds(led,MAXPIX);
+		led[i].r = 0;
+		led[i].b = 0;
+		led[i].g = 0;
+		_delay_ms(1000);
+	}
+} */
 
 void init()
 {
 	DDRB|=_BV(ws2812_pin);  // (1 << ws2812_pin)
 	clearTable();
 
-	newActiveBrick();
-	menu();
-	sliding_menu();
+	//newActiveBrick();
+	//menu();
+	//sliding_menu();
 	_delay_ms(ws2812_resettime);
 	
 	
@@ -117,9 +132,11 @@ void init()
 	UCSR0A = (1<<U2X0);								//Asynchronous Double speed
 	UCSR0B |= (1<<RXCIE0)|(1<<RXEN0)|(1<<TXEN0);	// Interrupt enable, Enable receive and transmit
 	UCSR0C |= (1<<UCSZ01)|(1<<UCSZ00);				//8-bit configuration
+	//DDRB |=
 	
 	sei();	
 }
+
 
 ISR(USART_RX_vect)
 {
@@ -134,6 +151,16 @@ ISR(USART_RX_vect)
 	button = rxUSART.receiver_buffer;
 }
 
+void send_message(char *buffer)
+{
+	unsigned char i=0;
+	while(buffer[i] != '\0')
+	{
+		while((UCSR0A & (1<<UDRE0)) == 0);
+		UDR0 = buffer[i];
+		i++;
+	}
+}
 
 ISR(TIMER0_COMPA_vect) {	// Timer 0
 	count_1000++;
@@ -156,20 +183,27 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 }
 
 int main(void)
-{	
+{
+	init();
+	
 	while(1)
 	{
 		init();
+	
+		// BLUETOOTH
 		//Awaits for a button to be pressed
 		while (button != 'a' && button != 's' && button != 'd' && button != 'j'  && button != 'k'  && button != 'l' );
-		button = ' ';
-			
+		//while (button != ('a' || 's' || 'd' || 'j' || 'k' || 'l'));
+		
 		clearTable();
+		//button = 'a';
 		newActiveBrick();
-		showNextPiece();
+		//showNextPiece();
 		while(1)
 		{
-			fallActiveBrick();
+			// BLUETOOTH
+			//shiftActiveBrick('d');
+			//fallActiveBrick();
 			switch (button)
 			{
 				// Left
@@ -199,14 +233,76 @@ int main(void)
 				// Pause
 				case 5:
 				pause = 0;
-				Pause();
+				//Pause();
 				break;
+				
+				//default:
+				// default statements
 			}
 			checkFullLines();
 			button = ' ';
 			_delay_ms(50);
-			if (tetrisGameOver) break;
+			//if (tetrisGameOver) break;
 		}
 		tetrisGameOver = 0;
 	}
+	
+	
+	
+	//Bluetooth
+	/*
+	while (1)
+	{
+		if (rxUSART.receive == 1)
+		{
+			if (rxUSART.error == 1)
+			{
+				rxUSART.error = 0;
+			}
+			else
+			{
+				sprintf(transmit_buffer, "Tecla: %c\r\n", rxUSART.receiver_buffer);
+				send_message(transmit_buffer);
+			}
+			rxUSART.receive = 0;
+		}
+	}
+	*/
+	
+	/*
+	while(1)
+    {
+	    led[0].r = 10;
+	    ws2812_setleds(led, MAXPIX);
+		_delay_us(ws2812_resettime);
+		
+		//newActiveBrick();
+		//_delay_ms(1000);
+		
+		//shiftActiveBrick('d');
+		_delay_ms(1000);
+		
+		newActiveBrick();
+		temp();
+		temp();
+		
+		_delay_ms(1000);
+		addActiveBrickToField();
+		_delay_ms(1000);
+		
+	    led[0].r = 0;
+	    ws2812_setleds(led, MAXPIX);
+	    _delay_us(ws2812_resettime);
+    }
+	*/
+	
+	/*
+	for (int i = 0 ; i <256; i++)
+	{
+		led[0].r = i;
+		led[0].b = i;
+		ws2812_setleds(led, MAXPIX);
+		_delay_ms(200);
+	}
+	*/
 }
