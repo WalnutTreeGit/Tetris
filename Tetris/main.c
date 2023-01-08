@@ -14,6 +14,8 @@
 #include <avr/pgmspace.h>
 #define pgm_read_byte_far(address_long) __ELPM((\fBuint32_t\fP)(address_long))
 
+// CHANGE TIME 
+
 cRGB led_off = {.r = 0, .g = 0, .b = 0};
 	
 volatile unsigned char button;
