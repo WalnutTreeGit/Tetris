@@ -410,7 +410,7 @@ void newActiveBrick()
 	{
 		for (byte x = 0; x < 4; x++) 
 		{
-			activeBrick.pix[x][y] = (brickLib[selectedBrick]).pix[x][y];
+			activeBrick.pix[y][x] = (brickLib[selectedBrick]).pix[y][x];
 		}
 	}
 	
@@ -668,7 +668,7 @@ void checkFullLines()
 			{
 				field.pix[y][x] = 0;
 				printField();
-				_delay_us(3 * ws2812_resettime);
+				_delay_us(10 * ws2812_resettime);
 			}
 			//Move all upper rows down by one
 			moveFieldDownOne(y);
@@ -800,19 +800,30 @@ void fallActiveBrick()
 //Piece goes all the way down until it reached the bottom or another piece
 void forcedown()
 {
-	while (!(activeBrick.ypos == 0))
+	while (!(activeBrick.ypos == 0) || !checkFieldCollision(&activeBrick))
 	{
 		activeBrick.ypos--;
-		printField();
 		
-		if (activeBrick.ypos == 0 || checkFieldCollision(&activeBrick))
+		if (checkFieldCollision(&activeBrick))
+		{
+			activeBrick.ypos++;		//Go back up one
+			addActiveBrickToField();
+			activeBrick.enabled = 0;//Disable brick, it is no longer moving
+			//clearNext();
+		}
+		
+		
+		if (activeBrick.ypos == 0)
 		{
 			addActiveBrickToField();
 			activeBrick.enabled = 0;
 			printField();
 			newActiveBrick();
+			//clearNext();
 			break;
 		}
+		printField();
+		
 	}
 }
 

@@ -196,7 +196,7 @@ int main(void)
 		//while (button != ('a' || 's' || 'd' || 'j' || 'k' || 'l'));
 		
 		clearTable();
-		//button = 'a';
+		button = '0';
 		newActiveBrick();
 		//showNextPiece();
 		while(1)
