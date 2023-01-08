@@ -9,6 +9,8 @@
 #include <util/delay.h>
 #include "tetris.h"
 
+// TEST GIT
+
 #define MAXPIX 300
 #define COLORLENGTH (MAXPIX/2)
 #define FADE (256/COLORLENGTH)
