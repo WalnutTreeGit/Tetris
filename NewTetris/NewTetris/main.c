@@ -250,7 +250,8 @@ int main(void)
 				break;
 			
 				// Pause
-				case 'l':
+				//case 'l':
+				case 'b':
 				pause = 0;
 				button = ' ';
 				Pause();
@@ -264,12 +265,13 @@ int main(void)
 			_delay_ms(50);
 			if (tetrisGameOver) 
 			{
+				falltime = 200;
 				clearTable();
 				clearField();
+				tetrisGameOver = 0;
 				break;
 			}
 		}
-		tetrisGameOver = 0;
 	}
 	
 	

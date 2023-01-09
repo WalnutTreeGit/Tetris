@@ -63,7 +63,7 @@ typedef struct AbstractBrick {
 	int pix[4][4];				//For each Brick's design
 }AbstractBrick; 
 
-
+/*
 AbstractBrick pieceI[2] = {
 	{
 		1,
@@ -86,12 +86,12 @@ AbstractBrick pieceI[2] = {
 		}
 	}
 };
-
+*/
 
 AbstractBrick brickLib[9] = {
 	{
 		1,//yoffset when adding brick to field
-		4, // size
+		2, // size
 		{ 
 			{1, 1, 0, 0}, // brick design
 			{1, 1, 0, 0},
@@ -171,10 +171,10 @@ AbstractBrick brickLib[9] = {
 	},
 	{
 		1,
-		4,
+		3,
 		{
-			{1, 1, 1, 1},
-			{0, 0, 0, 0},
+			{0, 1, 0, 0},
+			{1, 1, 1, 0},
 			{0, 0, 0, 0},
 			{0, 0, 0, 0}
 		}
@@ -526,7 +526,6 @@ void printField()
 // CHECK ON TABLE
 void rotateActiveBrick() {
 	//Copy active brick pix array to temporary pix array
-	byte n;
 	
 	for (byte y = 0; y < 4; y++) 
 	{
@@ -561,12 +560,20 @@ void rotateActiveBrick() {
 		tmpBrick.pix[3][1] = 0;
 		tmpBrick.pix[3][0] = 0;
 		
+		
 		t_rot++;
 		
 		if (t_rot == 2)
 		{
+			for (byte y = 0; y < 4; y++)
+			{
+				for (byte x = 0; x < 4; x++)
+				{
+					tmpBrick.pix[y][x] = (brickLib[8]).pix[y][x];
+				}
+			}
 			//tmpBrick.ypos--;
-			tmpBrick.ypos = tmpBrick.ypos - 1;
+			//tmpBrick.ypos = tmpBrick.ypos - 1;	
 			//activeBrick.ypos = activeBrick.ypos - 1;
 			//activeBrick.siz = 2;
 			//printField();
@@ -578,7 +585,6 @@ void rotateActiveBrick() {
 		{
 			t_rot = 0;
 		}
-
 	} 
 	
 	else if (selectedBrick == 0)
@@ -586,8 +592,7 @@ void rotateActiveBrick() {
 		return;
 	}
 	
-	
-	if (activeBrick.siz == 4 && selectedBrick != 0)
+	else if (activeBrick.siz == 4)
 	{
 		if (I_rot == 0)
 		{
@@ -595,7 +600,7 @@ void rotateActiveBrick() {
 			{
 				for (byte x = 0; x < 4; x++)
 				{
-					tmpBrick.pix[y][x] = (brickLib[8]).pix[y][x];
+					tmpBrick.pix[y][x] = (brickLib[7]).pix[y][x];
 				}
 			}
 			I_rot = 1;
@@ -667,7 +672,7 @@ void rotateActiveBrick() {
 	//      -Brick now sticks inside fixed bricks of field
 	//In case of collision, we just discard the rotated temporary brick
 	
-	if ((!checkSidesCollision(&tmpBrick)) || (!checkFieldCollision(&tmpBrick)))
+	if ((!checkSidesCollision(&tmpBrick)) && (!checkFieldCollision(&tmpBrick)))
 	{
 		//Copy temporary brick pix array to active pix array
 		
@@ -777,7 +782,6 @@ void moveFieldDownOne(byte startRow)
 	}
 	
 	byte x, y;
-	//Necessário inverter a lógica, não y-- e sim y++
 	//Copy top row to bottom
 	for (y = startRow; y < row - 1; y++) // y = startRow - 1;
 	{
@@ -817,15 +821,11 @@ void checkFullLines()
 			_delay_ms(100);
 
 			nbRowsThisLevel++; nbRowsTotal++;
-			if (nbRowsThisLevel >= 2) 
-			{
-				nbRowsThisLevel = 0;
 				//Increase brick fall speed
 				if (falltime > 40)
 				{
-					falltime -= 10;
+					falltime -= 20;
 				}
-			}
 		}
 	}
 }

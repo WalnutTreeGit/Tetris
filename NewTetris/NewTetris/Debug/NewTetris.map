@@ -62,7 +62,6 @@ Discarded input sections
                 0x00000000       0x24 tetris.o
  .text.sliding_menu
                 0x00000000      0xad6 tetris.o
- .data.pieceI   0x00000000       0x44 tetris.o
  .rodata.brickSpeed
                 0x00000000        0xa tetris.o
  .progmem.data.test
@@ -244,7 +243,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xfc0
+.text           0x00000000      0xffa
  *(.vectors)
  .vectors       0x00000000       0x68 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -349,51 +348,51 @@ END GROUP
  .text.__vector_14
                 0x00000496       0xca main.o
                 0x00000496                __vector_14
- .text.main     0x00000560       0xca main.o
+ .text.main     0x00000560       0xd8 main.o
                 0x00000560                main
  .text.addActiveBrickToField
-                0x0000062a       0xb4 tetris.o
-                0x0000062a                addActiveBrickToField
+                0x00000638       0xb4 tetris.o
+                0x00000638                addActiveBrickToField
  .text.checkSidesCollision
-                0x000006de       0x48 tetris.o
-                0x000006de                checkSidesCollision
+                0x000006ec       0x48 tetris.o
+                0x000006ec                checkSidesCollision
  .text.checkFieldCollision
-                0x00000726       0x64 tetris.o
-                0x00000726                checkFieldCollision
+                0x00000734       0x64 tetris.o
+                0x00000734                checkFieldCollision
  .text.printField
-                0x0000078a      0x1d4 tetris.o
-                0x0000078a                printField
+                0x00000798      0x1d4 tetris.o
+                0x00000798                printField
  .text.newActiveBrick
-                0x0000095e      0x13e tetris.o
-                0x0000095e                newActiveBrick
+                0x0000096c      0x13e tetris.o
+                0x0000096c                newActiveBrick
  .text.rotateActiveBrick
-                0x00000a9c      0x1e6 tetris.o
-                0x00000a9c                rotateActiveBrick
+                0x00000aaa      0x21c tetris.o
+                0x00000aaa                rotateActiveBrick
  .text.shiftActiveBrick
-                0x00000c82       0xb8 tetris.o
-                0x00000c82                shiftActiveBrick
+                0x00000cc6       0xb8 tetris.o
+                0x00000cc6                shiftActiveBrick
  .text.moveFieldDownOne
-                0x00000d3a       0x96 tetris.o
-                0x00000d3a                moveFieldDownOne
+                0x00000d7e       0x96 tetris.o
+                0x00000d7e                moveFieldDownOne
  .text.checkFullLines
-                0x00000dd0       0xfe tetris.o
-                0x00000dd0                checkFullLines
+                0x00000e14       0xf4 tetris.o
+                0x00000e14                checkFullLines
  .text.clearField
-                0x00000ece       0x36 tetris.o
-                0x00000ece                clearField
+                0x00000f08       0x36 tetris.o
+                0x00000f08                clearField
  .text.clearTable
-                0x00000f04       0x38 tetris.o
-                0x00000f04                clearTable
- .text.Pause    0x00000f3c       0x1a tetris.o
-                0x00000f3c                Pause
+                0x00000f3e       0x38 tetris.o
+                0x00000f3e                clearTable
+ .text.Pause    0x00000f76       0x1a tetris.o
+                0x00000f76                Pause
  .text.forcedown
-                0x00000f56       0x66 tetris.o
-                0x00000f56                forcedown
-                0x00000fbc                . = ALIGN (0x2)
+                0x00000f90       0x66 tetris.o
+                0x00000f90                forcedown
+                0x00000ff6                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000fbc        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x00000fbc                _exit
-                0x00000fbc                exit
+ .fini9         0x00000ff6        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x00000ff6                _exit
+                0x00000ff6                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -412,11 +411,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000fbc        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000ff6        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000fc0                _etext = .
+                0x00000ffa                _etext = .
 
-.data           0x00800100      0x156 load address 0x00000fc0
+.data           0x00800100      0x156 load address 0x00000ffa
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -484,8 +483,8 @@ END GROUP
                 0x00800624                nbRowsTotal
                 0x00800626                field
                 0x0080081a                PROVIDE (__bss_end, .)
-                0x00000fc0                __data_load_start = LOADADDR (.data)
-                0x00001116                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000ffa                __data_load_start = LOADADDR (.data)
+                0x00001150                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0080081a        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
@@ -577,19 +576,19 @@ END GROUP
  .debug_info    0x00000b17      0x5ad main.o
  .debug_info    0x000010c4     0x1d9f tetris.o
 
-.debug_abbrev   0x00000000      0xced
+.debug_abbrev   0x00000000      0xce0
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x5a2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_abbrev  0x000005a2      0x15f light_ws2812.o
  .debug_abbrev  0x00000701      0x253 main.o
- .debug_abbrev  0x00000954      0x399 tetris.o
+ .debug_abbrev  0x00000954      0x38c tetris.o
 
-.debug_line     0x00000000     0x15b0
+.debug_line     0x00000000     0x15ce
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x134 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_line    0x00000134      0x2e2 light_ws2812.o
- .debug_line    0x00000416      0x3b0 main.o
- .debug_line    0x000007c6      0xdea tetris.o
+ .debug_line    0x00000416      0x3b6 main.o
+ .debug_line    0x000007cc      0xe02 tetris.o
 
 .debug_frame    0x00000000      0x334
  *(.debug_frame)
@@ -597,21 +596,21 @@ END GROUP
  .debug_frame   0x00000064       0xec main.o
  .debug_frame   0x00000150      0x1e4 tetris.o
 
-.debug_str      0x00000000      0x800
+.debug_str      0x00000000      0x7f9
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_str     0x00000208      0x23a light_ws2812.o
                                 0x273 (size before relaxing)
  .debug_str     0x00000442      0x1cb main.o
                                 0x346 (size before relaxing)
- .debug_str     0x0000060d      0x1f3 tetris.o
-                                0x4a9 (size before relaxing)
+ .debug_str     0x0000060d      0x1ec tetris.o
+                                0x4a2 (size before relaxing)
 
-.debug_loc      0x00000000     0x22eb
+.debug_loc      0x00000000     0x233d
  *(.debug_loc)
  .debug_loc     0x00000000      0x72c light_ws2812.o
  .debug_loc     0x0000072c      0x2ad main.o
- .debug_loc     0x000009d9     0x1912 tetris.o
+ .debug_loc     0x000009d9     0x1964 tetris.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -631,11 +630,11 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x270
+.debug_ranges   0x00000000      0x2a0
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x30 light_ws2812.o
  .debug_ranges  0x00000030       0x38 main.o
- .debug_ranges  0x00000068      0x208 tetris.o
+ .debug_ranges  0x00000068      0x238 tetris.o
 
 .debug_macro
  *(.debug_macro)
