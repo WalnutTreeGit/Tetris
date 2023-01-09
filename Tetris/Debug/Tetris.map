@@ -52,6 +52,8 @@ Discarded input sections
  .text          0x00000000        0x0 main.o
  .data          0x00000000        0x0 main.o
  .bss           0x00000000        0x0 main.o
+ .text.testleds
+                0x00000000       0x4c main.o
  .text.send_message
                 0x00000000       0x22 main.o
  .bss.aux1      0x00000000        0x4 main.o
@@ -68,8 +70,6 @@ Discarded input sections
                 0x00000000       0xc8 tetris.o
  .text.temp     0x00000000       0x10 tetris.o
  .text.temp2    0x00000000       0x24 tetris.o
- .text.clearField
-                0x00000000       0x36 tetris.o
  .text.Pause    0x00000000       0x12 tetris.o
  .text.menu     0x00000000      0x210 tetris.o
  .text.fallActiveBrick
@@ -78,10 +78,13 @@ Discarded input sections
                 0x00000000       0x24 tetris.o
  .text.sliding_menu
                 0x00000000      0xad6 tetris.o
+ .data.pieceI   0x00000000       0x44 tetris.o
  .rodata.brickSpeed
                 0x00000000        0xa tetris.o
  .progmem.data.test
                 0x00000000        0xe tetris.o
+ .progmem.data.randombrick
+                0x00000000       0x38 tetris.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
@@ -302,7 +305,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1420
+.text           0x00000000     0x145e
  *(.vectors)
  .vectors       0x00000000       0x68 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
                 0x00000000                __vector_default
@@ -324,38 +327,35 @@ END GROUP
  .progmem.data.randomcolor
                 0x000002c0       0x50 tetris.o
                 0x000002c0                randomcolor
- .progmem.data.randombrick
-                0x00000310       0x38 tetris.o
-                0x00000310                randombrick
-                0x00000348                . = ALIGN (0x2)
+                0x00000310                . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x00000348                __ctors_start = .
+                0x00000310                __ctors_start = .
  *(.ctors)
-                0x00000348                __ctors_end = .
-                0x00000348                __dtors_start = .
+                0x00000310                __ctors_end = .
+                0x00000310                __dtors_start = .
  *(.dtors)
-                0x00000348                __dtors_end = .
+                0x00000310                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x00000348        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
-                0x00000348                __init
+ .init0         0x00000310        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
+                0x00000310                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x00000348        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
+ .init2         0x00000310        0xc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  *(.init2)
  *(.init3)
  *(.init3)
  *(.init4)
- .init4         0x00000354       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_copy_data.o)
-                0x00000354                __do_copy_data
- .init4         0x0000036a       0x10 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_clear_bss.o)
-                0x0000036a                __do_clear_bss
+ .init4         0x0000031c       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_copy_data.o)
+                0x0000031c                __do_copy_data
+ .init4         0x00000332       0x10 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_clear_bss.o)
+                0x00000332                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
@@ -366,108 +366,111 @@ END GROUP
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x0000037a        0x8 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
+ .init9         0x00000342        0x8 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  *(.init9)
  *(.text)
- .text          0x00000382        0x4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
-                0x00000382                __vector_22
-                0x00000382                __vector_1
-                0x00000382                __vector_24
-                0x00000382                __vector_12
-                0x00000382                __bad_interrupt
-                0x00000382                __vector_6
-                0x00000382                __vector_3
-                0x00000382                __vector_23
-                0x00000382                __vector_25
-                0x00000382                __vector_11
-                0x00000382                __vector_13
-                0x00000382                __vector_17
-                0x00000382                __vector_19
-                0x00000382                __vector_7
-                0x00000382                __vector_5
-                0x00000382                __vector_4
-                0x00000382                __vector_9
-                0x00000382                __vector_2
-                0x00000382                __vector_21
-                0x00000382                __vector_15
-                0x00000382                __vector_8
-                0x00000382                __vector_10
-                0x00000382                __vector_16
-                0x00000382                __vector_20
-                0x00000386                . = ALIGN (0x2)
+ .text          0x0000034a        0x4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
+                0x0000034a                __vector_22
+                0x0000034a                __vector_1
+                0x0000034a                __vector_24
+                0x0000034a                __vector_12
+                0x0000034a                __bad_interrupt
+                0x0000034a                __vector_6
+                0x0000034a                __vector_3
+                0x0000034a                __vector_23
+                0x0000034a                __vector_25
+                0x0000034a                __vector_11
+                0x0000034a                __vector_13
+                0x0000034a                __vector_17
+                0x0000034a                __vector_19
+                0x0000034a                __vector_7
+                0x0000034a                __vector_5
+                0x0000034a                __vector_4
+                0x0000034a                __vector_9
+                0x0000034a                __vector_2
+                0x0000034a                __vector_21
+                0x0000034a                __vector_15
+                0x0000034a                __vector_8
+                0x0000034a                __vector_10
+                0x0000034a                __vector_16
+                0x0000034a                __vector_20
+                0x0000034e                . = ALIGN (0x2)
  *(.text.*)
  .text.ws2812_setleds
-                0x00000386       0x54 light_ws2812.o
-                0x00000386                ws2812_setleds
- .text.init     0x000003da       0x60 main.o
-                0x000003da                init
+                0x0000034e       0x54 light_ws2812.o
+                0x0000034e                ws2812_setleds
+ .text.init     0x000003a2       0x60 main.o
+                0x000003a2                init
  .text.__vector_18
-                0x0000043a       0x5c main.o
-                0x0000043a                __vector_18
+                0x00000402       0x5c main.o
+                0x00000402                __vector_18
  .text.__vector_14
-                0x00000496       0x6c main.o
-                0x00000496                __vector_14
- .text.main     0x00000502       0xae main.o
-                0x00000502                main
+                0x0000045e       0x6c main.o
+                0x0000045e                __vector_14
+ .text.main     0x000004ca       0xc2 main.o
+                0x000004ca                main
  .text.addActiveBrickToField
-                0x000005b0       0xb0 tetris.o
-                0x000005b0                addActiveBrickToField
+                0x0000058c       0xb4 tetris.o
+                0x0000058c                addActiveBrickToField
  .text.checkSidesCollision
-                0x00000660       0x48 tetris.o
-                0x00000660                checkSidesCollision
+                0x00000640       0x48 tetris.o
+                0x00000640                checkSidesCollision
  .text.checkFieldCollision
-                0x000006a8       0x64 tetris.o
-                0x000006a8                checkFieldCollision
+                0x00000688       0x64 tetris.o
+                0x00000688                checkFieldCollision
  .text.printField
-                0x0000070c      0x1d4 tetris.o
-                0x0000070c                printField
+                0x000006ec      0x1d4 tetris.o
+                0x000006ec                printField
  .text.newActiveBrick
-                0x000008e0      0x13e tetris.o
-                0x000008e0                newActiveBrick
+                0x000008c0      0x114 tetris.o
+                0x000008c0                newActiveBrick
  .text.rotateActiveBrick
-                0x00000a1e      0x1aa tetris.o
-                0x00000a1e                rotateActiveBrick
+                0x000009d4      0x1e6 tetris.o
+                0x000009d4                rotateActiveBrick
  .text.shiftActiveBrick
-                0x00000bc8       0xa2 tetris.o
-                0x00000bc8                shiftActiveBrick
+                0x00000bba       0xb8 tetris.o
+                0x00000bba                shiftActiveBrick
  .text.moveFieldDownOne
-                0x00000c6a       0x96 tetris.o
-                0x00000c6a                moveFieldDownOne
+                0x00000c72       0x96 tetris.o
+                0x00000c72                moveFieldDownOne
  .text.checkFullLines
-                0x00000d00       0xee tetris.o
-                0x00000d00                checkFullLines
+                0x00000d08       0xee tetris.o
+                0x00000d08                checkFullLines
+ .text.clearField
+                0x00000df6       0x36 tetris.o
+                0x00000df6                clearField
  .text.clearTable
-                0x00000dee       0x38 tetris.o
-                0x00000dee                clearTable
+                0x00000e2c       0x38 tetris.o
+                0x00000e2c                clearTable
  .text.forcedown
-                0x00000e26       0x66 tetris.o
-                0x00000e26                forcedown
+                0x00000e64       0x66 tetris.o
+                0x00000e64                forcedown
  .text.avr-libc
-                0x00000e8c      0x3c2 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
-                0x00000e8c                vfprintf
+                0x00000eca      0x3c2 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(vfprintf_std.o)
+                0x00000eca                vfprintf
  .text.avr-libc
-                0x0000124e       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
-                0x0000124e                strnlen_P
+                0x0000128c       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen_P.o)
+                0x0000128c                strnlen_P
  .text.avr-libc
-                0x00001264       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
-                0x00001264                strnlen
+                0x000012a2       0x16 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(strnlen.o)
+                0x000012a2                strnlen
  .text.avr-libc
-                0x0000127a       0x78 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(fputc.o)
-                0x0000127a                fputc
+                0x000012b8       0x78 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(fputc.o)
+                0x000012b8                fputc
  .text.avr-libc
-                0x000012f2       0xbc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
-                0x000012f2                __ultoa_invert
+                0x00001330       0xbc c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(ultoa_invert.o)
+                0x00001330                __ultoa_invert
  .text.libgcc.prologue
-                0x000013ae       0x38 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_prologue.o)
-                0x000013ae                __prologue_saves__
+                0x000013ec       0x38 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_prologue.o)
+                0x000013ec                __prologue_saves__
  .text.libgcc.prologue
-                0x000013e6       0x36 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_epilogue.o)
-                0x000013e6                __epilogue_restores__
-                0x0000141c                . = ALIGN (0x2)
+                0x00001424       0x36 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_epilogue.o)
+                0x00001424                __epilogue_restores__
+                0x0000145a                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000141c        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x0000141c                _exit
-                0x0000141c                exit
+ .fini9         0x0000145a        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x0000145a                _exit
+                0x0000145a                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -486,11 +489,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000141c        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x0000145a        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00001420                _etext = .
+                0x0000145e                _etext = .
 
-.data           0x00800100      0x110 load address 0x00001420
+.data           0x00800100      0x154 load address 0x0000145e
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -500,66 +503,70 @@ END GROUP
  .data.colors   0x00800102       0x1e main.o
                 0x00800102                colors
  .data.brickLib
-                0x00800120       0xee tetris.o
+                0x00800120      0x132 tetris.o
                 0x00800120                brickLib
- .data.pause    0x0080020e        0x1 tetris.o
-                0x0080020e                pause
+ .data.pause    0x00800252        0x1 tetris.o
+                0x00800252                pause
  *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.r*)
-                0x00800210                . = ALIGN (0x2)
- *fill*         0x0080020f        0x1 
-                0x00800210                _edata = .
-                0x00800210                PROVIDE (__data_end, .)
+                0x00800254                . = ALIGN (0x2)
+ *fill*         0x00800253        0x1 
+                0x00800254                _edata = .
+                0x00800254                PROVIDE (__data_end, .)
 
-.bss            0x00800210      0x5c1
-                0x00800210                PROVIDE (__bss_start, .)
+.bss            0x00800254      0x5c3
+                0x00800254                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
- .bss.rxUSART   0x00800210        0x3 main.o
-                0x00800210                rxUSART
+ .bss.rxUSART   0x00800254        0x3 main.o
+                0x00800254                rxUSART
  .bss.count_1000
-                0x00800213        0x2 main.o
-                0x00800213                count_1000
- .bss.led_off   0x00800215        0x3 main.o
-                0x00800215                led_off
+                0x00800257        0x2 main.o
+                0x00800257                count_1000
+ .bss.led_off   0x00800259        0x3 main.o
+                0x00800259                led_off
  .bss.selectedColor
-                0x00800218        0x1 tetris.o
-                0x00800218                selectedColor
+                0x0080025c        0x1 tetris.o
+                0x0080025c                selectedColor
  .bss.selectedBrick
-                0x00800219        0x1 tetris.o
-                0x00800219                selectedBrick
+                0x0080025d        0x1 tetris.o
+                0x0080025d                selectedBrick
  .bss.tetrisGameOver
-                0x0080021a        0x1 tetris.o
-                0x0080021a                tetrisGameOver
- .bss.speed     0x0080021b        0x1 tetris.o
-                0x0080021b                speed
- .bss.random9   0x0080021c        0x1 tetris.o
-                0x0080021c                random9
- .bss.random6   0x0080021d        0x1 tetris.o
-                0x0080021d                random6
+                0x0080025e        0x1 tetris.o
+                0x0080025e                tetrisGameOver
+ .bss.I_rot     0x0080025f        0x1 tetris.o
+                0x0080025f                I_rot
+ .bss.t_rot     0x00800260        0x1 tetris.o
+                0x00800260                t_rot
+ .bss.speed     0x00800261        0x1 tetris.o
+                0x00800261                speed
+ .bss.random9   0x00800262        0x1 tetris.o
+                0x00800262                random9
+ .bss.random6   0x00800263        0x1 tetris.o
+                0x00800263                random6
  *(COMMON)
- COMMON         0x0080021e      0x38f main.o
-                0x0080021e                transmit_buffer
-                0x00800228                button
-                0x00800229                led
- COMMON         0x008005ad      0x224 tetris.o
-                0x008005ad                nbRowsThisLevel
-                0x008005ae                activeBrick
-                0x008005c4                tmpBrick
-                0x008005da                printcolor
-                0x008005db                nbRowsTotal
-                0x008005dd                field
-                0x008007d1                PROVIDE (__bss_end, .)
-                0x00001420                __data_load_start = LOADADDR (.data)
-                0x00001530                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800264      0x38f main.o
+                0x00800264                transmit_buffer
+                0x0080026e                button
+                0x0080026f                led
+ COMMON         0x008005f3      0x224 tetris.o
+                0x008005f3                nbRowsThisLevel
+                0x008005f4                activeBrick
+                0x0080060a                tmpBrick
+                0x00800620                printcolor
+                0x00800621                nbRowsTotal
+                0x00800623                field
+                0x00800817                PROVIDE (__bss_end, .)
+                0x0000145e                __data_load_start = LOADADDR (.data)
+                0x000015b2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x008007d1        0x0
+.noinit         0x00800817        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x008007d1                _end = .
+                0x00800817                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -629,60 +636,60 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x148
+.debug_aranges  0x00000000      0x150
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x40 light_ws2812.o
  .debug_aranges
-                0x00000040       0x40 main.o
+                0x00000040       0x48 main.o
  .debug_aranges
-                0x00000080       0xc8 tetris.o
+                0x00000088       0xc8 tetris.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x2e49
+.debug_info     0x00000000     0x2fba
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x5f4 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_info    0x000005f4      0x523 light_ws2812.o
- .debug_info    0x00000b17      0x4a5 main.o
- .debug_info    0x00000fbc     0x1e8d tetris.o
+ .debug_info    0x00000b17      0x55e main.o
+ .debug_info    0x00001075     0x1f45 tetris.o
 
-.debug_abbrev   0x00000000      0xca6
+.debug_abbrev   0x00000000      0xccc
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x5a2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_abbrev  0x000005a2      0x15f light_ws2812.o
- .debug_abbrev  0x00000701      0x220 main.o
- .debug_abbrev  0x00000921      0x385 tetris.o
+ .debug_abbrev  0x00000701      0x239 main.o
+ .debug_abbrev  0x0000093a      0x392 tetris.o
 
-.debug_line     0x00000000     0x153b
+.debug_line     0x00000000     0x1621
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x134 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_line    0x00000134      0x2e2 light_ws2812.o
- .debug_line    0x00000416      0x30a main.o
- .debug_line    0x00000720      0xe1b tetris.o
+ .debug_line    0x00000416      0x38c main.o
+ .debug_line    0x000007a2      0xe7f tetris.o
 
-.debug_frame    0x00000000      0x2f4
+.debug_frame    0x00000000      0x310
  *(.debug_frame)
  .debug_frame   0x00000000       0x64 light_ws2812.o
- .debug_frame   0x00000064       0x9c main.o
- .debug_frame   0x00000100      0x1f4 tetris.o
+ .debug_frame   0x00000064       0xb8 main.o
+ .debug_frame   0x0000011c      0x1f4 tetris.o
 
-.debug_str      0x00000000      0x7d2
+.debug_str      0x00000000      0x7ee
  *(.debug_str)
  .debug_str     0x00000000      0x208 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_str     0x00000208      0x233 light_ws2812.o
                                 0x26c (size before relaxing)
- .debug_str     0x0000043b      0x190 main.o
-                                0x2fc (size before relaxing)
- .debug_str     0x000005cb      0x207 tetris.o
-                                0x48f (size before relaxing)
+ .debug_str     0x0000043b      0x1a4 main.o
+                                0x31f (size before relaxing)
+ .debug_str     0x000005df      0x20f tetris.o
+                                0x4a2 (size before relaxing)
 
-.debug_loc      0x00000000     0x22be
+.debug_loc      0x00000000     0x23ee
  *(.debug_loc)
  .debug_loc     0x00000000      0x72c light_ws2812.o
- .debug_loc     0x0000072c      0x148 main.o
- .debug_loc     0x00000874     0x1a4a tetris.o
+ .debug_loc     0x0000072c      0x22b main.o
+ .debug_loc     0x00000957     0x1a97 tetris.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -702,11 +709,11 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x228
+.debug_ranges   0x00000000      0x278
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x30 light_ws2812.o
- .debug_ranges  0x00000030       0x30 main.o
- .debug_ranges  0x00000060      0x1c8 tetris.o
+ .debug_ranges  0x00000030       0x38 main.o
+ .debug_ranges  0x00000068      0x210 tetris.o
 
 .debug_macro
  *(.debug_macro)

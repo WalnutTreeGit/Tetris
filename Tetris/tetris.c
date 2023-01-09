@@ -18,6 +18,9 @@ const int PROGMEM randomcolor[40] = {4, 0, 7, 3, 6, 2, 5, 9, 8, 1, 8, 9, 2, 4, 0
 const int PROGMEM test[7]  = {0,1,2,3,4,5,6};
 const int brickSpeed[] = {1000,800,600,400,200};
 byte speed = 0;
+
+ byte t_rot = 0;
+ byte I_rot = 0;
 	
 //int speed = 1000;
 
@@ -59,7 +62,32 @@ typedef struct AbstractBrick {
 	int pix[4][4];				//For each Brick's design
 }AbstractBrick; 
 
-AbstractBrick brickLib[7] = {
+
+AbstractBrick pieceI[2] = {
+	{
+		1,
+		4,
+		{
+			{1, 0, 0, 0},
+			{1, 0, 0, 0},
+			{1, 0, 0, 0},
+			{1, 0, 0, 0}
+		}
+	},
+	{
+		1,
+		4,
+		{
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{1, 1, 1, 1}
+		}
+	}
+};
+
+
+AbstractBrick brickLib[9] = {
 	{
 		1,//yoffset when adding brick to field
 		4, // size
@@ -130,6 +158,26 @@ AbstractBrick brickLib[7] = {
 			{0, 0, 0, 0}
 		}
 	},
+	{
+		1,
+		4,
+		{
+			{1, 1, 1, 1},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0}
+		}
+	},
+	{
+		1,
+		4,
+		{
+			{1, 1, 1, 1},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0}
+		}
+	},
 };
 
 
@@ -167,8 +215,6 @@ void temp2()
 	printField();
 }
 
-
-
 void addActiveBrickToField() // Fixar bloco e suas propriedades ao ponto específico do field.
 {
 	byte fx, fy; // used to check if brick is within bounds, no trespassing outside
@@ -188,6 +234,7 @@ void addActiveBrickToField() // Fixar bloco e suas propriedades ao ponto específ
 			}
 		}
 	}
+	I_rot = 0;
 	_delay_us(ws2812_resettime);
 }
 
@@ -227,8 +274,6 @@ int checkBottom()
 
 int checkFieldCollision(struct Brick* brick)
 {
-	
-	
 	/*
 	byte bx, by; // variable++
 	byte fx, fy; // next position of block
@@ -262,7 +307,6 @@ int checkFieldCollision(struct Brick* brick)
 	}
 	return 0;
 	*/
-	
 	/*
 	  byte bx, by;
 	  byte fx, fy;
@@ -296,7 +340,6 @@ int checkFieldCollision(struct Brick* brick)
 		  }
 	  }
 	  */
-	  
 	   byte bx, by;
 	   byte fx, fy;
 	   for (by = 0; by < 4; by++) 
@@ -313,7 +356,6 @@ int checkFieldCollision(struct Brick* brick)
 		   }
 	   }
 	   return 0;
-	  
   }
 	
 //Clear space where the next brick is displayed
@@ -380,7 +422,7 @@ void showNextPiece()
 void newActiveBrick() 
 {
 	//Reads value from flash memory for brick's shape and color
-	selectedBrick = pgm_read_byte(&randombrick[random6]); // 0-6, 7 pieces
+	selectedBrick = 1; //pgm_read_byte(&randombrick[random6]); // 0-6, 7 pieces
 	selectedColor = pgm_read_byte(&randomcolor[random9]); // 0-9, 10 colors
 	//printcolor = selectedColor;
 	
@@ -397,7 +439,7 @@ void newActiveBrick()
 	activeBrick.xpos = 6;
 	
 	//activeBrick.ypos = 21 - 1 - activeBrick.yOffset;			//Top of the screen
-	activeBrick.ypos = 3;
+	activeBrick.ypos = 7;
 	
 	activeBrick.enabled = 1;
 
@@ -476,6 +518,8 @@ void printField()
 // CHECK ON TABLE
 void rotateActiveBrick() {
 	//Copy active brick pix array to temporary pix array
+	byte n;
+	
 	for (byte y = 0; y < 4; y++) 
 	{
 		for (byte x = 0; x < 4; x++) 
@@ -508,46 +552,126 @@ void rotateActiveBrick() {
 		tmpBrick.pix[3][2] = 0;
 		tmpBrick.pix[3][1] = 0;
 		tmpBrick.pix[3][0] = 0;
+		
+		t_rot++;
+		
+		if (t_rot == 2)
+		{
+			//tmpBrick.ypos--;
+			tmpBrick.ypos = tmpBrick.ypos - 1;
+			//activeBrick.ypos = activeBrick.ypos - 1;
+			//activeBrick.siz = 2;
+			//printField();
+			//activeBrick.siz = 3;
+		}
+		
+		
+		if (t_rot > 3)
+		{
+			t_rot = 0;
+		}
 
 	} 
+	
 	else if (selectedBrick == 0)
 	{
 		return;
 	}
-	else if (activeBrick.siz == 4) {
-		//Perform rotation around center "cross"
-		tmpBrick.pix[0][0] = activeBrick.pix[0][3];
-		tmpBrick.pix[0][1] = activeBrick.pix[1][3];
-		tmpBrick.pix[0][2] = activeBrick.pix[2][3];
-		tmpBrick.pix[0][3] = activeBrick.pix[3][3];
-		tmpBrick.pix[1][0] = activeBrick.pix[0][2];
-		tmpBrick.pix[1][1] = activeBrick.pix[1][2];
-		tmpBrick.pix[1][2] = activeBrick.pix[2][2];
-		tmpBrick.pix[1][3] = activeBrick.pix[3][2];
-		tmpBrick.pix[2][0] = activeBrick.pix[0][1];
-		tmpBrick.pix[2][1] = activeBrick.pix[1][1];
-		tmpBrick.pix[2][2] = activeBrick.pix[2][1];
-		tmpBrick.pix[2][3] = activeBrick.pix[3][1];
-		tmpBrick.pix[3][0] = activeBrick.pix[0][0];
-		tmpBrick.pix[3][1] = activeBrick.pix[1][0];
-		tmpBrick.pix[3][2] = activeBrick.pix[2][0];
-		tmpBrick.pix[3][3] = activeBrick.pix[3][0];
+	
+	
+	if (activeBrick.siz == 4 && selectedBrick != 0)
+	{
+		if (I_rot == 0)
+		{
+			for (byte y = 0; y < 4; y++)
+			{
+				for (byte x = 0; x < 4; x++)
+				{
+					tmpBrick.pix[y][x] = (brickLib[8]).pix[y][x];
+				}
+			}
+			I_rot = 1;
+		}
+		else
+		{
+			for (byte y = 0; y < 4; y++)
+			{
+				for (byte x = 0; x < 4; x++)
+				{
+					tmpBrick.pix[y][x] = (brickLib[1]).pix[y][x];
+				}
+			}
+			I_rot = 0;
+		}
 	}
+		
+		
+		
+	/*	
+	else if (activeBrick.siz == 4) 
+	{
+		if (I_rot == 0)				//em pé
+		{
+			n = 3;					// rodar 3 vezes
+			I_rot = 1;				// deitado
+		}
+		else						// deitado
+		{
+			n = 1;					// rodar uma vez
+			I_rot = 0;				// em pé
+		}
+		
+		for (int i = 0; i < n; i++)
+		{
+			//Perform rotation around center "cross"
+			tmpBrick.pix[0][0] = activeBrick.pix[0][3];
+			tmpBrick.pix[0][1] = activeBrick.pix[1][3];
+			tmpBrick.pix[0][2] = activeBrick.pix[2][3];
+			tmpBrick.pix[0][3] = activeBrick.pix[3][3];
+			tmpBrick.pix[1][0] = activeBrick.pix[0][2];
+			tmpBrick.pix[1][1] = activeBrick.pix[1][2];
+			tmpBrick.pix[1][2] = activeBrick.pix[2][2];
+			tmpBrick.pix[1][3] = activeBrick.pix[3][2];
+			tmpBrick.pix[2][0] = activeBrick.pix[0][1];
+			tmpBrick.pix[2][1] = activeBrick.pix[1][1];
+			tmpBrick.pix[2][2] = activeBrick.pix[2][1];
+			tmpBrick.pix[2][3] = activeBrick.pix[3][1];
+			tmpBrick.pix[3][0] = activeBrick.pix[0][0];
+			tmpBrick.pix[3][1] = activeBrick.pix[1][0];
+			tmpBrick.pix[3][2] = activeBrick.pix[2][0];
+			tmpBrick.pix[3][3] = activeBrick.pix[3][0];
+			
+			for (byte y = 0; y < 4; y++)
+			{
+				for (byte x = 0; x < 4; x++)
+				{
+					activeBrick.pix[y][x] = tmpBrick.pix[y][x];
+					//activeBrick.ypos = tmpBrick.ypos;
+				}
+			}
+		}
+	}
+	*/
 	
 	//Now validate by checking collision.
 	//Collision possibilities:
 	//      -Brick now sticks outside field
 	//      -Brick now sticks inside fixed bricks of field
 	//In case of collision, we just discard the rotated temporary brick
-	if ((!checkSidesCollision(&tmpBrick)) && (!checkFieldCollision(&tmpBrick)))
+	
+	if ((!checkSidesCollision(&tmpBrick)) || (!checkFieldCollision(&tmpBrick)))
 	{
 		//Copy temporary brick pix array to active pix array
-		for (byte y = 0; y < 4; y++) {
-			for (byte x = 0; x < 4; x++) {
-				activeBrick.pix[x][y] = tmpBrick.pix[x][y];
+		
+		for (byte y = 0; y < 4; y++) 
+		{
+			for (byte x = 0; x < 4; x++) 
+			{
+				activeBrick.pix[y][x] = tmpBrick.pix[y][x];
 				//activeBrick.ypos = tmpBrick.ypos;
 			}
 		}
+		
 		/*
 		if (activeBrick.siz == 4)
 		{
@@ -556,6 +680,7 @@ void rotateActiveBrick() {
 		*/
 	}
 	
+	//activeBrick.ypos = tmpBrick.ypos;
 	printField(); // ?
 }
 
@@ -581,10 +706,16 @@ void shiftActiveBrick(char dir)
 		
 		if (activeBrick.ypos == 0) // If brick has reached the bottom, stop and generate new brick
 		{
-			addActiveBrickToField();
-			activeBrick.enabled = 0;
-			//clearNext();
-			newActiveBrick();
+			if (!checkFieldCollision(&activeBrick))
+			{
+				addActiveBrickToField();
+				activeBrick.enabled = 0;
+				printField();
+				
+				//clearNext();
+				newActiveBrick();
+				//clearNext();
+			}
 		}
 	}
 	/*
@@ -603,7 +734,7 @@ void shiftActiveBrick(char dir)
 	
 	//Check for collision
 	//In case of collision, go back to previous position
-	if ( ((checkSidesCollision(&activeBrick)) || (checkFieldCollision(&activeBrick))))
+	if ((checkSidesCollision(&activeBrick)) || (checkFieldCollision(&activeBrick)))
 	{
 		if (dir == left)
 		{
@@ -614,11 +745,13 @@ void shiftActiveBrick(char dir)
 			activeBrick.xpos--;
 		}
 		else if (dir == down)
-		{
-			activeBrick.ypos++;		//Go back up one
+		{	
+			activeBrick.ypos += 1;
 			addActiveBrickToField();
-			activeBrick.enabled = 0;//Disable brick, it is no longer moving
-			//clearNext();
+			activeBrick.enabled = 0;
+			printField();
+			newActiveBrick();
+			
 		}
 	}
 	
@@ -626,7 +759,6 @@ void shiftActiveBrick(char dir)
 	_delay_us(ws2812_resettime);
 	
 }
-
 
 // CHECK ON TABLE	
 void moveFieldDownOne(byte startRow) 

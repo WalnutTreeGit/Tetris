@@ -312,6 +312,7 @@ int main(void)
 	    _delay_us(ws2812_resettime);
     }
 	*/
+	
 	//testleds();
 	
 }
