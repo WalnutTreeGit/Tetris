@@ -17,6 +17,7 @@
 cRGB led_off = {.r = 0, .g = 0, .b = 0};
 	
 volatile unsigned char button;
+volatile int countspeed;
 
 // Configure Matrix to always go from left to right, contrary to hardware direction
 const const int matrix[row_total][column] PROGMEM = 
@@ -107,8 +108,6 @@ void testleds()
 	}
 }
 
-
-
 void init()
 {
 	DDRB|=_BV(ws2812_pin);  // (1 << ws2812_pin)
@@ -150,7 +149,6 @@ void init()
 	sei();	
 }
 
-
 ISR(USART_RX_vect)
 {
 	rxUSART.status = UCSR0A;
@@ -177,7 +175,8 @@ void send_message(char *buffer)
 
 ISR(TIMER0_COMPA_vect) {	// Timer 0
 	count_1000++;
-
+	countspeed++;
+	
 	if (count_1000 == 100)	// When Timer 0 counts to 100, time = 0.005 * 100 = 0.5s = 500ms
 	{
 		count_1000 = 0;		// Resets Timer
@@ -193,6 +192,13 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 			flag_LED = 1;	// Turns LED ON
 		}
 	}
+	
+	if (countspeed == falltime) // 200 * 0.005 * 200 = 1s
+	{
+		shiftActiveBrick('d');
+		countspeed = 0;						// Reset Timer
+	}
+	
 }
 
 int main(void)
@@ -244,9 +250,10 @@ int main(void)
 				break;
 			
 				// Pause
-				case 5:
+				case 'l':
 				pause = 0;
-				//Pause();
+				button = ' ';
+				Pause();
 				break;
 				
 				//default:

@@ -17,13 +17,14 @@ const int PROGMEM randombrick[28] = {4, 0, 3, 5, 1, 6, 3, 1, 4, 3, 2, 0, 6, 5, 0
 const int PROGMEM randomcolor[40] = {4, 0, 7, 3, 6, 2, 5, 9, 8, 1, 8, 9, 2, 4, 0, 1, 6, 7, 5, 3, 8, 1, 3, 2, 5, 7, 4, 0, 9, 6, 0, 5, 9, 8, 2, 1, 7, 6, 3, 4}; // random numbers from 0-9
 const int PROGMEM test[7]  = {0,1,2,3,4,5,6};
 const int brickSpeed[] = {1000,800,600,400,200};
-byte speed = 0;
+	
+volatile int falltime = 200; // 200 * 0.005 = 1s
 
  byte t_rot = 0;
  byte I_rot = 0;
 	
 //int speed = 1000;
-
+	
 byte tetrisGameOver = 0;
 byte selectedBrick = 0;
 byte selectedColor = 0;
@@ -185,7 +186,14 @@ AbstractBrick brickLib[9] = {
 void Pause()
 {
 	clearTable();
-	while (pause);//Paused until pressed again
+	while (!pause);//Paused until pressed again
+	{
+		if (button == 'l')
+		{
+			pause = 1;
+		}
+	}
+	pause = 0;
 	//printpause
 	printField();
 }
@@ -422,7 +430,7 @@ void showNextPiece()
 void newActiveBrick() 
 {
 	//Reads value from flash memory for brick's shape and color
-	selectedBrick = 1; //pgm_read_byte(&randombrick[random6]); // 0-6, 7 pieces
+	selectedBrick = pgm_read_byte(&randombrick[random6]); // 0-6, 7 pieces
 	selectedColor = pgm_read_byte(&randomcolor[random9]); // 0-9, 10 colors
 	//printcolor = selectedColor;
 	
@@ -439,7 +447,7 @@ void newActiveBrick()
 	activeBrick.xpos = 6;
 	
 	//activeBrick.ypos = 21 - 1 - activeBrick.yOffset;			//Top of the screen
-	activeBrick.ypos = 7;
+	activeBrick.ypos = 10;
 	
 	activeBrick.enabled = 1;
 
@@ -813,9 +821,9 @@ void checkFullLines()
 			{
 				nbRowsThisLevel = 0;
 				//Increase brick fall speed
-				if (speed < 7)
+				if (falltime > 40)
 				{
-					speed++;
+					falltime -= 10;
 				}
 			}
 		}
@@ -894,6 +902,7 @@ void menu()
 
 //Make Tetris Pieces Fall, speed depends on number of rows cleared
 // try to add to read from flash
+/*
 void fallActiveBrick()
 {
 	switch (speed)
@@ -928,6 +937,7 @@ void fallActiveBrick()
 		shiftActiveBrick('d');
 	}
 }
+*/
 
 //Piece goes all the way down until it reached the bottom or another piece
 void forcedown()

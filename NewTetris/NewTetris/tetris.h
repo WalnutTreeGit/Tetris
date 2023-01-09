@@ -13,7 +13,7 @@
 #define row 20
 #define row_total 25
 #define column 12
-#define brightness 0.8
+#define brightness 0.01
 #define row_title 15
 #define size_word 5
 #define size_piece 4
@@ -34,6 +34,8 @@ extern byte tetrisGameOver;
 extern byte pause;
 extern byte speed; 
 extern struct Brick activeBrick;
+extern volatile unsigned char button;
+extern volatile int falltime; // 200 * 0.005 = 1s
 
 int checkSidesCollision(struct Brick*);
 int checkFieldCollision(struct Brick*);
@@ -54,5 +56,6 @@ void checkFullLines();
 void showNextPiece();
 void clearNext();
 void clearField();
+void Pause();
 
 #endif /* TETRIS_H_ */
