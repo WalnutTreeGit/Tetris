@@ -99,13 +99,15 @@ void fall()
 
 void testleds()
 {
-	for (int i = 0 ; i < 256; i++)
+	clearTable();
+	for (int i = 0 ; i < 300; i++)
 	{
 		led[i].r = 11;
 		led[i].b = 11;
-		ws2812_setleds(led, MAXPIX);
-		_delay_ms(ws2812_resettime);
 	}
+	
+	ws2812_setleds(led, MAXPIX);
+	_delay_ms(ws2812_resettime);
 }
 
 void init()
@@ -175,7 +177,7 @@ void send_message(char *buffer)
 
 ISR(TIMER0_COMPA_vect) {	// Timer 0
 	count_1000++;
-	countspeed++;
+	//countspeed++;
 	
 	if (count_1000 == 100)	// When Timer 0 counts to 100, time = 0.005 * 100 = 0.5s = 500ms
 	{
@@ -203,7 +205,6 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 
 int main(void)
 {
-	init();
 	
 	while(1)
 	{
@@ -294,7 +295,6 @@ int main(void)
 		}
 	}
 	*/
-	
 	/*
 	while(1)
     {
@@ -321,7 +321,6 @@ int main(void)
 	    _delay_us(ws2812_resettime);
     }
 	*/
-	
 	//testleds();
 	
 }

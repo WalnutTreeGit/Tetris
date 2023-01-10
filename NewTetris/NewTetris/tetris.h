@@ -13,7 +13,7 @@
 #define row 20
 #define row_total 25
 #define column 12
-#define brightness 0.01
+#define brightness 0.2
 #define row_title 15
 #define size_word 5
 #define size_piece 4

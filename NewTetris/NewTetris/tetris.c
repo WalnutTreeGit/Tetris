@@ -88,7 +88,7 @@ AbstractBrick pieceI[2] = {
 };
 */
 
-AbstractBrick brickLib[9] = {
+AbstractBrick brickLib[10] = {
 	{
 		1,//yoffset when adding brick to field
 		2, // size
@@ -100,7 +100,7 @@ AbstractBrick brickLib[9] = {
 		}
 	},
 	{
-		0,
+		3,
 		4,
 		{ 
 			{1, 0, 0, 0},
@@ -171,11 +171,21 @@ AbstractBrick brickLib[9] = {
 	},
 	{
 		1,
-		3,
+		3,// Change size to 2 and move to top part
 		{
+			{0, 0, 0, 0},
 			{0, 1, 0, 0},
 			{1, 1, 1, 0},
+			{0, 0, 0, 0}
+		}
+	},
+	{
+		1,
+		3,
+		{
 			{0, 0, 0, 0},
+			{0, 0, 1, 0},
+			{1, 1, 1, 0},
 			{0, 0, 0, 0}
 		}
 	},
@@ -234,7 +244,6 @@ void addActiveBrickToField() // Fixar bloco e suas propriedades ao ponto específ
 			fy = activeBrick.ypos + by;
 
 			if (fx >= 0 && fy >= 0 && fx < column && fy < row && activeBrick.pix[by][bx]) { //Check if inside playing field
-				//field.pix[fy][fx] = field.pix[fy][fx] || activeBrick.pix[by][bx];
 				field.pix[fy][fx] = activeBrick.pix[by][bx];
 				//field.color[fy][fx] = selectedColor;
 				field.color[fy][fx] = activeBrick.color;
@@ -243,6 +252,7 @@ void addActiveBrickToField() // Fixar bloco e suas propriedades ao ponto específ
 		}
 	}
 	I_rot = 0;
+	t_rot = 0;
 	_delay_us(ws2812_resettime);
 }
 
@@ -446,8 +456,8 @@ void newActiveBrick()
 	//activeBrick.xpos = column / 2 - activeBrick.siz / 2; // //To center
 	activeBrick.xpos = 6;
 	
-	//activeBrick.ypos = 21 - 1 - activeBrick.yOffset;			//Top of the screen
-	activeBrick.ypos = 10;
+	activeBrick.ypos = 20 - 1 - activeBrick.yOffset;			//Top of the screen
+	//activeBrick.ypos = 17;
 	
 	activeBrick.enabled = 1;
 
@@ -560,8 +570,44 @@ void rotateActiveBrick() {
 		tmpBrick.pix[3][1] = 0;
 		tmpBrick.pix[3][0] = 0;
 		
+		//t_rot++;
+		/*
+		if (t_rot > 3)
+		{
+			t_rot = 0;
+		}
+		*/
+		/*
+		if (t_rot != 2)
+		{
+			for (byte y = 0; y < 4; y++)
+			{
+				for (byte x = 0; x < 4; x++)
+				{
+					tmpBrick.pix[y][x] = (brickLib[4]).pix[y][x];
+				}
+			}
+		}
 		
-		t_rot++;
+		*/
+		/*
+		if (t_rot == 0)
+		{
+			if (activeBrick.ypos == 1)
+			{
+				for (byte y = 0; y < 4; y++)
+				{
+					for (byte x = 0; x < 4; x++)
+					{
+						tmpBrick.pix[y][x] = (brickLib[8]).pix[y][x];
+					}
+				}
+			}
+			
+		}
+		*/
+		
+		/*
 		
 		if (t_rot == 2)
 		{
@@ -579,12 +625,19 @@ void rotateActiveBrick() {
 			//printField();
 			//activeBrick.siz = 3;
 		}
-		
-		
-		if (t_rot > 3)
+		else
 		{
-			t_rot = 0;
+			
 		}
+		
+		
+		
+		
+		
+		
+	
+		*/
+		
 	} 
 	
 	else if (selectedBrick == 0)
@@ -685,6 +738,9 @@ void rotateActiveBrick() {
 			}
 		}
 		
+		
+		
+		
 		/*
 		if (activeBrick.siz == 4)
 		{
@@ -719,6 +775,20 @@ void shiftActiveBrick(char dir)
 		
 		if (activeBrick.ypos == 0) // If brick has reached the bottom, stop and generate new brick
 		{
+			/*
+			if (t_rot == 2)
+			{
+				for (byte y = 0; y < 4; y++)
+				{
+					for (byte x = 0; x < 4; x++)
+					{
+						activeBrick.pix[y][x] = (brickLib[8]).pix[y][x];
+						//activeBrick.ypos = tmpBrick.ypos;
+					}
+				}
+			}
+			
+			*/
 			if (!checkFieldCollision(&activeBrick))
 			{
 				addActiveBrickToField();
