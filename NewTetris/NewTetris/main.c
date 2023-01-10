@@ -193,7 +193,7 @@ int main(void)
 	while(1)
 	{
 		init();
-	
+		_delay_ms(1000);
 		// BLUETOOTH
 		//Awaits for a button to be pressed
 		while (button != 'a' && button != 's' && button != 'd' && button != 'j'  && button != 'k'  && button != 'l' );
