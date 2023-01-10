@@ -18,6 +18,7 @@ cRGB led_off = {.r = 0, .g = 0, .b = 0};
 	
 volatile unsigned char button;
 volatile int countspeed;
+volatile int startgame = 0;
 
 // Configure Matrix to always go from left to right, contrary to hardware direction
 const const int matrix[row_total][column] PROGMEM = 
@@ -48,6 +49,7 @@ const const int matrix[row_total][column] PROGMEM =
 {287, 286, 285, 284, 283, 282, 281, 280, 279, 278, 277, 276},
 {288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299}};
 	
+// Configure colors by RGB code
 struct cRGB colors[10]=
 {
 	{.r = 150 * brightness, .g = 150 * brightness, .b = 150 * brightness}, // 0 white
@@ -78,37 +80,17 @@ typedef struct USARTRX
 volatile USARTRX_st rxUSART = {0, 0, 0, 0};
 char transmit_buffer[10];
 
-/*
-void fall()
-{
-	
-	
-		colors[5].r=000; colors[5].g=150; colors[5].b=255;//light blue (türkis)
-	int k;
-	for ( k = 0; k < height; k++)
-	{
-		int i = 209 - 12 * k;
-		led[i] = colors[5];
-		ws2812_setleds(led,MAXPIX);
-		led[i].r = 0;
-		led[i].b = 0;
-		led[i].g = 0;
-		_delay_ms(1000);
-	}
-} */
-
 void testleds()
 {
-	clearTable();
-	for (int i = 0 ; i < 300; i++)
+	for (int i = 0; i < MAXPIX; i++)
 	{
 		led[i].r = 11;
 		led[i].b = 11;
+	ws2812_setleds(led,MAXPIX);
+	_delay_us(ws2812_resettime);
 	}
-	
-	ws2812_setleds(led, MAXPIX);
-	_delay_ms(ws2812_resettime);
 }
+
 
 void init()
 {
@@ -116,7 +98,7 @@ void init()
 	clearTable();
 
 	//newActiveBrick();
-	//menu();
+	menu();
 	//sliding_menu();
 	_delay_ms(ws2812_resettime);
 	
@@ -177,7 +159,7 @@ void send_message(char *buffer)
 
 ISR(TIMER0_COMPA_vect) {	// Timer 0
 	count_1000++;
-	//countspeed++;
+	countspeed++;
 	
 	if (count_1000 == 100)	// When Timer 0 counts to 100, time = 0.005 * 100 = 0.5s = 500ms
 	{
@@ -195,7 +177,7 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 		}
 	}
 	
-	if (countspeed == falltime) // 200 * 0.005 * 200 = 1s
+	if (countspeed == falltime && startgame == 1) // 200 * 0.005 * 200 = 1s
 	{
 		shiftActiveBrick('d');
 		countspeed = 0;						// Reset Timer
@@ -205,7 +187,6 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 
 int main(void)
 {
-	
 	while(1)
 	{
 		init();
@@ -214,7 +195,7 @@ int main(void)
 		//Awaits for a button to be pressed
 		while (button != 'a' && button != 's' && button != 'd' && button != 'j'  && button != 'k'  && button != 'l' );
 		//while (button != ('a' || 's' || 'd' || 'j' || 'k' || 'l'));
-		
+		startgame = 1;
 		clearTable();
 		button = '0';
 		newActiveBrick();
@@ -270,6 +251,7 @@ int main(void)
 				clearTable();
 				clearField();
 				tetrisGameOver = 0;
+				startgame = 0;
 				break;
 			}
 		}

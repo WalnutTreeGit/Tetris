@@ -926,43 +926,62 @@ void menu()
 {	
 	for (int i = 0; i <= 3; i++)  
 	{
-		led[pgm_read_byte(&(matrix[0][i]))] = colors[1]; // I on its side
+		led[pgm_read_byte(&(matrix[0][i]))] = colors[0]; // I on its side
 	}
 	
+	// Orange T 
 	for (int i = 0; i <= 2; i++) 
 	{
-		led[pgm_read_byte(&(matrix[1][i]))] = colors[2];
-		led[pgm_read_byte(&(matrix[2][1]))] = colors[2]; // orange T 
-	}
-	/*
-	for (int i = 3; i <= 4; i++)
-	{
-		led[pgm_read_byte(&(matrix[1][i]))] = colors[6];
-		led[pgm_read_byte(&(matrix[1][i]))] = colors[6];
-	}
-	*/
-	for (int i = 4; i <= 5; i++)  
-	{
-		led[pgm_read_byte(&(matrix[0][i]))] = colors[3];
-		led[pgm_read_byte(&(matrix[2][i - 1]))] = colors[3]; // Z next to I
+		led[pgm_read_byte(&(matrix[1][i]))] = colors[1];
+		led[pgm_read_byte(&(matrix[2][1]))] = colors[1]; 
 	}
 	
+	// Upside down L
+		led[pgm_read_byte(&(matrix[0][4]))] = colors[2];
+		led[pgm_read_byte(&(matrix[1][4]))] = colors[2];
+		led[pgm_read_byte(&(matrix[2][4]))] = colors[2];
+		
+		led[pgm_read_byte(&(matrix[2][3]))] = colors[2];
+		
+	// Upside down T
+	
+	for (int i = 1; i <= 3; i++)
+	{
+		led[pgm_read_byte(&(matrix[3][i]))] = colors[7];
+		led[pgm_read_byte(&(matrix[2][2]))] = colors[7];
+	}
+		
+	// L on its side
 	for (int i = 5; i <= 7; i++)  
 	{
 		led[pgm_read_byte(&(matrix[0][i]))] = colors[4];
-		led[pgm_read_byte(&(matrix[1][5]))] = colors[4];	// L on its side
-		//led[pgm_read_byte(&(matrix[2][5]))] = colors[4];// L em pé
+		led[pgm_read_byte(&(matrix[1][5]))] = colors[4];	
 	}
 	
+	// Rotated s
+		led[pgm_read_byte(&(matrix[3][5]))] = colors[5];
+		led[pgm_read_byte(&(matrix[2][5]))] = colors[5];
+		led[pgm_read_byte(&(matrix[2][6]))] = colors[5];
+		led[pgm_read_byte(&(matrix[1][6]))] = colors[5];
+		
+	// Flat I
+	for (int i = 6; i <= 9; i++)
+	{
+		led[pgm_read_byte(&(matrix[3][i]))] = colors[3];
+	}
+	
+	
+	// L on its side 
 	for (int i = 9; i <= 11; i++)  
 	{
-		led[pgm_read_byte(&(matrix[0][i]))] = colors[4];
-		led[pgm_read_byte(&(matrix[1][11]))] = colors[4];	// green L on its side 
+		led[pgm_read_byte(&(matrix[0][i]))] = colors[8];
+		led[pgm_read_byte(&(matrix[1][11]))] = colors[8];
 		
+		// blue Q 
 		if (i < 11)
 		{
-		led[pgm_read_byte(&(matrix[1][i]))] = colors[5];
-		led[pgm_read_byte(&(matrix[2][i]))] = colors[5];	// blue Q 
+		led[pgm_read_byte(&(matrix[1][i]))] = colors[9];
+		led[pgm_read_byte(&(matrix[2][i]))] = colors[9];	
 		}
 	}
 	
@@ -1048,40 +1067,27 @@ int check_off(cRGB led)
 	return 0;
 }
 
-/* 
-	//Compare mechanism, BROKEN
-	
-	for (int i = 0; i < size_piece; i++)
-	{
-		for (int j = 0; j < row; j++ )
-		{
-			if (I_piece[i * row + j])
-			{
-				matrix[row_title - i][j] = colors[7];
-			}
-		}
-	}
-*/
 void sliding_menu()
 {
-	byte i = 0;
+	byte i = 11;
 	while (1)
 	{
 		// T  
 		
 		int offset_impar = 1;
 		int offset_par = (column - 1) - offset_impar;
+		int offset_t = 2;
 		
 		for (byte T = 0; T < 5; T++)
 		{
-			led[pgm_read_byte(&(matrix[row_title][offset_impar + i + T]))] = colors[7];		// IMPAR
+			led[pgm_read_byte(&(matrix[row_title][i - T]))] = colors[7];		// Upper part of T
 		}
-		led[pgm_read_byte(&(matrix[row_title][offset_impar + i - 1]))] = led_off;
-	
+		led[pgm_read_byte(&(matrix[row_title][i - 1]))] = led_off;			// Turn off led after
+		/*
 		offset_impar += 2; // 3
 		offset_par = (column - 1) - offset_impar;
 		
-		led[pgm_read_byte(&(matrix[row_title - 1][offset_par - i]))] = colors[5];			// PAR
+		led[pgm_read_byte(&(matrix[row_title - 1][offset_par - i]))] = colors[5];			// Bottom part of T
 		led[pgm_read_byte(&(matrix[row_title - 1][offset_par - i + 1]))] = led_off;
 		
 		led[pgm_read_byte(&(matrix[row_title - 2][offset_impar + i]))] = colors[7];			// IMPAR
@@ -1094,7 +1100,7 @@ void sliding_menu()
 		led[pgm_read_byte(&(matrix[row_title - 4][offset_impar + i - 1]))] = led_off;
 		
 		// E
-		
+		/*
 		offset_impar = -3; 
 		offset_par = (column - 1) + 1; // 12
 		
@@ -1212,12 +1218,12 @@ void sliding_menu()
 		
 		led[pgm_read_byte(&matrix[row_title - 3][offset_par - i])] = colors[4];			// PAR
 		led[pgm_read_byte(&matrix[row_title - 3][offset_par - i - 1])] = led_off;
+		*/
+		i--;
 		
-		i++;
-		
-		if ( i ==  31 ) // collunm  - 1 + 31
+		if ( i ==  0) // collunm  - 1 + 31
 		{
-			i = 0;
+			i = 11;
 		}
 		ws2812_setleds(led,MAXPIX);
 		_delay_ms(500);
