@@ -20,6 +20,8 @@ volatile unsigned char button;
 volatile int countspeed;
 volatile int startgame = 0;
 
+byte pause = 0;
+
 // Configure Matrix to always go from left to right, contrary to hardware direction
 const const int matrix[row_total][column] PROGMEM = 
 {
@@ -80,14 +82,15 @@ typedef struct USARTRX
 volatile USARTRX_st rxUSART = {0, 0, 0, 0};
 char transmit_buffer[10];
 
+
 void testleds()
 {
 	for (int i = 0; i < MAXPIX; i++)
 	{
 		led[i].r = 11;
 		led[i].b = 11;
-	ws2812_setleds(led,MAXPIX);
-	_delay_us(ws2812_resettime);
+		ws2812_setleds(led,MAXPIX);
+		_delay_us(ws2812_resettime);
 	}
 }
 
@@ -177,12 +180,12 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 		}
 	}
 	
-	if (countspeed == falltime && startgame == 1) // 200 * 0.005 * 200 = 1s
+	if (countspeed >= falltime && startgame == 1 && pause == 0) // 200 * 0.005 * 200 = 1s
 	{
 		shiftActiveBrick('d');
 		countspeed = 0;						// Reset Timer
 	}
-	
+
 }
 
 int main(void)
@@ -197,7 +200,7 @@ int main(void)
 		//while (button != ('a' || 's' || 'd' || 'j' || 'k' || 'l'));
 		startgame = 1;
 		clearTable();
-		button = '0';
+		button = ' ';
 		newActiveBrick();
 		//showNextPiece();
 		while(1)
@@ -232,11 +235,9 @@ int main(void)
 				break;
 			
 				// Pause
-				//case 'l':
-				case 'b':
-				pause = 0;
-				button = ' ';
-				Pause();
+				case 'p':
+				pause += 1;
+				pause = Pause(pause);
 				break;
 				
 				//default:

@@ -31,11 +31,11 @@ extern struct cRGB colors[10];
 extern cRGB led_off;
 extern cRGB temp_led;
 extern byte tetrisGameOver;
-extern byte pause;
 extern byte speed; 
 extern struct Brick activeBrick;
 extern volatile unsigned char button;
 extern volatile int falltime; // 200 * 0.005 = 1s
+
 
 int checkSidesCollision(struct Brick*);
 int checkFieldCollision(struct Brick*);
@@ -56,6 +56,6 @@ void checkFullLines();
 void showNextPiece();
 void clearNext();
 void clearField();
-void Pause();
+byte Pause(byte);
 
 #endif /* TETRIS_H_ */

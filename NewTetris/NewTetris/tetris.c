@@ -33,8 +33,6 @@ byte printcolor;
 byte nbRowsThisLevel;
 uint16_t nbRowsTotal;
 
-byte pause = 1;
-
 
 typedef struct Field {
 	byte pix[row][column + 1]; //Field matrix, Make field one larger so that collision detection with bottom of field can be done in a uniform way
@@ -193,19 +191,16 @@ AbstractBrick brickLib[10] = {
 
 
 //edit to show bars
-void Pause()
+byte Pause(byte paus)
 {
-	clearTable();
-	while (!pause);//Paused until pressed again
+	if (paus > 1)
 	{
-		if (button == 'l')
-		{
-			pause = 1;
-		}
+		paus = 0;
+		printField();
+		return paus;
 	}
-	pause = 0;
-	//printpause
-	printField();
+	clearTable();
+	return paus;
 }
 
 void temp()
