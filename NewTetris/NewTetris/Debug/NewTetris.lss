@@ -3,31 +3,31 @@ NewTetris.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000176  00800100  0000131e  000013b2  2**0
+  0 .data         00000132  00800100  00001424  000014b8  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         0000131e  00000000  00000000  00000094  2**1
+  1 .text         00001424  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          000005c7  00800276  00800276  00001528  2**0
+  2 .bss          000005ae  00800232  00800232  000015ea  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00001528  2**0
+  3 .comment      00000030  00000000  00000000  000015ea  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00001558  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  0000161c  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000148  00000000  00000000  00001598  2**0
+  5 .debug_aranges 00000118  00000000  00000000  0000165c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00002655  00000000  00000000  000016e0  2**0
+  6 .debug_info   000022e9  00000000  00000000  00001774  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000d24  00000000  00000000  00003d35  2**0
+  7 .debug_abbrev 00000c45  00000000  00000000  00003a5d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00001419  00000000  00000000  00004a59  2**0
+  8 .debug_line   0000128a  00000000  00000000  000046a2  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  0000033c  00000000  00000000  00005e74  2**2
+  9 .debug_frame  000002d8  00000000  00000000  0000592c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000811  00000000  00000000  000061b0  2**0
+ 10 .debug_str    0000077e  00000000  00000000  00005c04  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00001a75  00000000  00000000  000069c1  2**0
+ 11 .debug_loc    000018e0  00000000  00000000  00006382  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000270  00000000  00000000  00008436  2**0
+ 12 .debug_ranges 00000240  00000000  00000000  00007c62  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -387,18 +387,18 @@ Disassembly of section .text:
      354:	12 e0       	ldi	r17, 0x02	; 2
      356:	a0 e0       	ldi	r26, 0x00	; 0
      358:	b1 e0       	ldi	r27, 0x01	; 1
-     35a:	ee e1       	ldi	r30, 0x1E	; 30
-     35c:	f3 e1       	ldi	r31, 0x13	; 19
+     35a:	e4 e2       	ldi	r30, 0x24	; 36
+     35c:	f4 e1       	ldi	r31, 0x14	; 20
      35e:	02 c0       	rjmp	.+4      	; 0x364 <__do_copy_data+0x10>
      360:	05 90       	lpm	r0, Z+
      362:	0d 92       	st	X+, r0
-     364:	a6 37       	cpi	r26, 0x76	; 118
+     364:	a2 33       	cpi	r26, 0x32	; 50
      366:	b1 07       	cpc	r27, r17
      368:	d9 f7       	brne	.-10     	; 0x360 <__do_copy_data+0xc>
 
 0000036a <__do_clear_bss>:
-     36a:	28 e0       	ldi	r18, 0x08	; 8
-     36c:	a6 e7       	ldi	r26, 0x76	; 118
+     36a:	27 e0       	ldi	r18, 0x07	; 7
+     36c:	a2 e3       	ldi	r26, 0x32	; 50
      36e:	b2 e0       	ldi	r27, 0x02	; 2
      370:	01 c0       	rjmp	.+2      	; 0x374 <.do_clear_bss_start>
 
@@ -406,11 +406,11 @@ Disassembly of section .text:
      372:	1d 92       	st	X+, r1
 
 00000374 <.do_clear_bss_start>:
-     374:	ad 33       	cpi	r26, 0x3D	; 61
+     374:	a0 3e       	cpi	r26, 0xE0	; 224
      376:	b2 07       	cpc	r27, r18
      378:	e1 f7       	brne	.-8      	; 0x372 <.do_clear_bss_loop>
      37a:	0e 94 bc 02 	call	0x578	; 0x578 <main>
-     37e:	0c 94 8d 09 	jmp	0x131a	; 0x131a <_exit>
+     37e:	0c 94 10 0a 	jmp	0x1420	; 0x1420 <_exit>
 
 00000382 <__bad_interrupt>:
      382:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -468,17 +468,25 @@ Disassembly of section .text:
      3d8:	08 95       	ret
 
 000003da <init>:
-	{
-		while((UCSR0A & (1<<UDRE0)) == 0);
-		UDR0 = buffer[i];
-		i++;
-	}
-}
+volatile USARTRX_st rxUSART = {0, 0, 0, 0};
+char transmit_buffer[10];
+
+void init()
+{
+	DDRB|=_BV(ws2812_pin);  // (1 << ws2812_pin)
      3da:	84 b1       	in	r24, 0x04	; 4
      3dc:	80 62       	ori	r24, 0x20	; 32
      3de:	84 b9       	out	0x04, r24	; 4
-     3e0:	0e 94 91 07 	call	0xf22	; 0xf22 <clearTable>
-     3e4:	0e 94 ba 07 	call	0xf74	; 0xf74 <menu>
+	clearTable();
+     3e0:	0e 94 10 08 	call	0x1020	; 0x1020 <clearTable>
+	menu();
+     3e4:	0e 94 39 08 	call	0x1072	; 0x1072 <menu>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
      3e8:	2f e7       	ldi	r18, 0x7F	; 127
      3ea:	88 e3       	ldi	r24, 0x38	; 56
      3ec:	91 e0       	ldi	r25, 0x01	; 1
@@ -488,39 +496,73 @@ Disassembly of section .text:
      3f4:	e1 f7       	brne	.-8      	; 0x3ee <init+0x14>
      3f6:	00 c0       	rjmp	.+0      	; 0x3f8 <init+0x1e>
      3f8:	00 00       	nop
+	_delay_ms(ws2812_resettime);
+	
+	
+	//Config CTC LED 1Hz
+	DDRB |= (1<<DDB1);		// Config PORTB Pin B1 as Output
      3fa:	84 b1       	in	r24, 0x04	; 4
      3fc:	82 60       	ori	r24, 0x02	; 2
      3fe:	84 b9       	out	0x04, r24	; 4
+	//DDRB = 0b00000010;	// Another way of doing the previous line
+
+	PORTB = 0b00000010;		// Pin B1 ON
      400:	82 e0       	ldi	r24, 0x02	; 2
      402:	85 b9       	out	0x05, r24	; 5
+	//PORTD |= (1<<PORTD5);
+
+	OCR0A = 39;				// OCR0A = (T * fclk_IO / Prescaler) - 1 ~= 39; T = 0.005s = 5ms; fclk_IO = 8000000Hz = 8MHz; Prescaler = 1024
      404:	97 e2       	ldi	r25, 0x27	; 39
      406:	97 bd       	out	0x27, r25	; 39
+
+	TCCR0A = 0b00000010;	// TCCR0A - CTC in Normal mode
      408:	84 bd       	out	0x24, r24	; 36
+	//TCCR0A |= (1<<WGM01);
+
+	TCCR0B = 0b11000101;	// TCCR0B - Force Output Compare A & B; Prescaler 1024
      40a:	95 ec       	ldi	r25, 0xC5	; 197
      40c:	95 bd       	out	0x25, r25	; 37
+	//TCCR0B |= (1<<FOC0A)|(1<<FOC0B)|(1<<CS02)|(1<<CS00);
+
+	TIMSK0 |= (1<<OCIE0A);	// TIMSK0 - Output Compare Match A Interrupt Enabled
      40e:	ee e6       	ldi	r30, 0x6E	; 110
      410:	f0 e0       	ldi	r31, 0x00	; 0
      412:	90 81       	ld	r25, Z
      414:	92 60       	ori	r25, 0x02	; 2
      416:	90 83       	st	Z, r25
+	//TIMSK0 = 0b00000010;
+	
+	
+	//Config Bluetooth
+	UBRR0H = 0;
      418:	10 92 c5 00 	sts	0x00C5, r1	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7f80c5>
+	UBRR0L = 103;									// Set baud rate to 9600 with f = 8MHz
      41c:	97 e6       	ldi	r25, 0x67	; 103
      41e:	90 93 c4 00 	sts	0x00C4, r25	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7f80c4>
+	UCSR0A = (1<<U2X0);								//Asynchronous Double speed
      422:	80 93 c0 00 	sts	0x00C0, r24	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
+	UCSR0B |= (1<<RXCIE0)|(1<<RXEN0)|(1<<TXEN0);	// Interrupt enable, Enable receive and transmit
      426:	e1 ec       	ldi	r30, 0xC1	; 193
      428:	f0 e0       	ldi	r31, 0x00	; 0
      42a:	80 81       	ld	r24, Z
      42c:	88 69       	ori	r24, 0x98	; 152
      42e:	80 83       	st	Z, r24
+	UCSR0C |= (1<<UCSZ01)|(1<<UCSZ00);				//8-bit configuration
      430:	e2 ec       	ldi	r30, 0xC2	; 194
      432:	f0 e0       	ldi	r31, 0x00	; 0
      434:	80 81       	ld	r24, Z
      436:	86 60       	ori	r24, 0x06	; 6
      438:	80 83       	st	Z, r24
+	
+	sei();	
      43a:	78 94       	sei
      43c:	08 95       	ret
 
 0000043e <__vector_18>:
+}
+
+ISR(USART_RX_vect)
+{
      43e:	1f 92       	push	r1
      440:	0f 92       	push	r0
      442:	0f b6       	in	r0, 0x3f	; 63
@@ -531,29 +573,39 @@ Disassembly of section .text:
      44c:	bf 93       	push	r27
      44e:	ef 93       	push	r30
      450:	ff 93       	push	r31
+	rxUSART.status = UCSR0A;
      452:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
-     456:	e6 e7       	ldi	r30, 0x76	; 118
+     456:	e2 e3       	ldi	r30, 0x32	; 50
      458:	f2 e0       	ldi	r31, 0x02	; 2
      45a:	81 83       	std	Z+1, r24	; 0x01
+	
+	if ( rxUSART.status & ((1<<FE0) | (1<<DOR0) | (1>>UPE0)))
      45c:	81 81       	ldd	r24, Z+1	; 0x01
      45e:	88 71       	andi	r24, 0x18	; 24
      460:	29 f0       	breq	.+10     	; 0x46c <__vector_18+0x2e>
-     462:	e8 e7       	ldi	r30, 0x78	; 120
+	rxUSART.error = 1;
+     462:	e4 e3       	ldi	r30, 0x34	; 52
      464:	f2 e0       	ldi	r31, 0x02	; 2
      466:	80 81       	ld	r24, Z
      468:	82 60       	ori	r24, 0x02	; 2
      46a:	80 83       	st	Z, r24
+	
+	rxUSART.receiver_buffer = UDR0;
      46c:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
-     470:	e6 e7       	ldi	r30, 0x76	; 118
+     470:	e2 e3       	ldi	r30, 0x32	; 50
      472:	f2 e0       	ldi	r31, 0x02	; 2
      474:	80 83       	st	Z, r24
-     476:	a8 e7       	ldi	r26, 0x78	; 120
+	rxUSART.receive = 1;
+     476:	a4 e3       	ldi	r26, 0x34	; 52
      478:	b2 e0       	ldi	r27, 0x02	; 2
      47a:	8c 91       	ld	r24, X
      47c:	81 60       	ori	r24, 0x01	; 1
      47e:	8c 93       	st	X, r24
+	
+	button = rxUSART.receiver_buffer;
      480:	80 81       	ld	r24, Z
-     482:	80 93 92 02 	sts	0x0292, r24	; 0x800292 <button>
+     482:	80 93 4d 02 	sts	0x024D, r24	; 0x80024d <button>
+}
      486:	ff 91       	pop	r31
      488:	ef 91       	pop	r30
      48a:	bf 91       	pop	r27
@@ -586,28 +638,28 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
      4b8:	ef 93       	push	r30
      4ba:	ff 93       	push	r31
 	count_1000++;
-     4bc:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <count_1000>
-     4c0:	90 91 7a 02 	lds	r25, 0x027A	; 0x80027a <count_1000+0x1>
+     4bc:	80 91 35 02 	lds	r24, 0x0235	; 0x800235 <count_1000>
+     4c0:	90 91 36 02 	lds	r25, 0x0236	; 0x800236 <count_1000+0x1>
      4c4:	01 96       	adiw	r24, 0x01	; 1
-     4c6:	90 93 7a 02 	sts	0x027A, r25	; 0x80027a <count_1000+0x1>
-     4ca:	80 93 79 02 	sts	0x0279, r24	; 0x800279 <count_1000>
+     4c6:	90 93 36 02 	sts	0x0236, r25	; 0x800236 <count_1000+0x1>
+     4ca:	80 93 35 02 	sts	0x0235, r24	; 0x800235 <count_1000>
 	countspeed++;
-     4ce:	80 91 93 02 	lds	r24, 0x0293	; 0x800293 <countspeed>
-     4d2:	90 91 94 02 	lds	r25, 0x0294	; 0x800294 <countspeed+0x1>
+     4ce:	80 91 4e 02 	lds	r24, 0x024E	; 0x80024e <countspeed>
+     4d2:	90 91 4f 02 	lds	r25, 0x024F	; 0x80024f <countspeed+0x1>
      4d6:	01 96       	adiw	r24, 0x01	; 1
-     4d8:	90 93 94 02 	sts	0x0294, r25	; 0x800294 <countspeed+0x1>
-     4dc:	80 93 93 02 	sts	0x0293, r24	; 0x800293 <countspeed>
+     4d8:	90 93 4f 02 	sts	0x024F, r25	; 0x80024f <countspeed+0x1>
+     4dc:	80 93 4e 02 	sts	0x024E, r24	; 0x80024e <countspeed>
 	
 	if (count_1000 == 100)	// When Timer 0 counts to 100, time = 0.005 * 100 = 0.5s = 500ms
-     4e0:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <count_1000>
-     4e4:	90 91 7a 02 	lds	r25, 0x027A	; 0x80027a <count_1000+0x1>
+     4e0:	80 91 35 02 	lds	r24, 0x0235	; 0x800235 <count_1000>
+     4e4:	90 91 36 02 	lds	r25, 0x0236	; 0x800236 <count_1000+0x1>
      4e8:	84 36       	cpi	r24, 0x64	; 100
      4ea:	91 05       	cpc	r25, r1
      4ec:	c1 f4       	brne	.+48     	; 0x51e <__vector_14+0x84>
 	{
 		count_1000 = 0;		// Resets Timer
-     4ee:	10 92 7a 02 	sts	0x027A, r1	; 0x80027a <count_1000+0x1>
-     4f2:	10 92 79 02 	sts	0x0279, r1	; 0x800279 <count_1000>
+     4ee:	10 92 36 02 	sts	0x0236, r1	; 0x800236 <count_1000+0x1>
+     4f2:	10 92 35 02 	sts	0x0235, r1	; 0x800235 <count_1000>
 
 		if (flag_LED == 1)	// If LED ON
      4f6:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <__DATA_REGION_ORIGIN__>
@@ -635,30 +687,30 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 		}
 	}
 	
-	if (countspeed >= falltime && startgame == 1 && pause == 0) // 200 * 0.005 * 200 = 1s
-     51e:	20 91 93 02 	lds	r18, 0x0293	; 0x800293 <countspeed>
-     522:	30 91 94 02 	lds	r19, 0x0294	; 0x800294 <countspeed+0x1>
-     526:	80 91 74 02 	lds	r24, 0x0274	; 0x800274 <falltime>
-     52a:	90 91 75 02 	lds	r25, 0x0275	; 0x800275 <falltime+0x1>
+	// 200 * 0.005 * 200 = 1s
+	if (countspeed >= falltime && startgame == 1 && pause == 0) 
+     51e:	20 91 4e 02 	lds	r18, 0x024E	; 0x80024e <countspeed>
+     522:	30 91 4f 02 	lds	r19, 0x024F	; 0x80024f <countspeed+0x1>
+     526:	80 91 30 02 	lds	r24, 0x0230	; 0x800230 <falltime>
+     52a:	90 91 31 02 	lds	r25, 0x0231	; 0x800231 <falltime+0x1>
      52e:	28 17       	cp	r18, r24
      530:	39 07       	cpc	r19, r25
      532:	8c f0       	brlt	.+34     	; 0x556 <__vector_14+0xbc>
-     534:	80 91 7c 02 	lds	r24, 0x027C	; 0x80027c <startgame>
-     538:	90 91 7d 02 	lds	r25, 0x027D	; 0x80027d <startgame+0x1>
+     534:	80 91 38 02 	lds	r24, 0x0238	; 0x800238 <startgame>
+     538:	90 91 39 02 	lds	r25, 0x0239	; 0x800239 <startgame+0x1>
      53c:	01 97       	sbiw	r24, 0x01	; 1
      53e:	59 f4       	brne	.+22     	; 0x556 <__vector_14+0xbc>
-     540:	80 91 7b 02 	lds	r24, 0x027B	; 0x80027b <pause>
+     540:	80 91 37 02 	lds	r24, 0x0237	; 0x800237 <pause>
      544:	81 11       	cpse	r24, r1
      546:	07 c0       	rjmp	.+14     	; 0x556 <__vector_14+0xbc>
 	{
 		shiftActiveBrick('d');
      548:	84 e6       	ldi	r24, 0x64	; 100
-     54a:	0e 94 55 06 	call	0xcaa	; 0xcaa <shiftActiveBrick>
+     54a:	0e 94 da 06 	call	0xdb4	; 0xdb4 <shiftActiveBrick>
 		countspeed = 0;						// Reset Timer
-     54e:	10 92 94 02 	sts	0x0294, r1	; 0x800294 <countspeed+0x1>
-     552:	10 92 93 02 	sts	0x0293, r1	; 0x800293 <countspeed>
+     54e:	10 92 4f 02 	sts	0x024F, r1	; 0x80024f <countspeed+0x1>
+     552:	10 92 4e 02 	sts	0x024E, r1	; 0x80024e <countspeed>
 	}
-
 }
      556:	ff 91       	pop	r31
      558:	ef 91       	pop	r30
@@ -686,12 +738,6 @@ int main(void)
 	{
 		init();
      578:	0e 94 ed 01 	call	0x3da	; 0x3da <init>
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
-
-	__builtin_avr_delay_cycles(__ticks_dc);
      57c:	2f ef       	ldi	r18, 0xFF	; 255
      57e:	89 e6       	ldi	r24, 0x69	; 105
      580:	98 e1       	ldi	r25, 0x18	; 24
@@ -702,47 +748,46 @@ int main(void)
      58a:	00 c0       	rjmp	.+0      	; 0x58c <main+0x14>
      58c:	00 00       	nop
 		_delay_ms(1000);
-		// BLUETOOTH
-		//Awaits for a button to be pressed
+		
+		// Waits for a button to be pressed for game to start
 		while (button != 'a' && button != 's' && button != 'd' && button != 'j'  && button != 'k'  && button != 'l' );
-     58e:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     58e:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      592:	81 36       	cpi	r24, 0x61	; 97
      594:	a1 f0       	breq	.+40     	; 0x5be <main+0x46>
-     596:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     596:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      59a:	83 37       	cpi	r24, 0x73	; 115
      59c:	81 f0       	breq	.+32     	; 0x5be <main+0x46>
-     59e:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     59e:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      5a2:	84 36       	cpi	r24, 0x64	; 100
      5a4:	61 f0       	breq	.+24     	; 0x5be <main+0x46>
-     5a6:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     5a6:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      5aa:	8a 36       	cpi	r24, 0x6A	; 106
      5ac:	41 f0       	breq	.+16     	; 0x5be <main+0x46>
-     5ae:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     5ae:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      5b2:	8b 36       	cpi	r24, 0x6B	; 107
      5b4:	21 f0       	breq	.+8      	; 0x5be <main+0x46>
-     5b6:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     5b6:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      5ba:	8c 36       	cpi	r24, 0x6C	; 108
      5bc:	41 f7       	brne	.-48     	; 0x58e <main+0x16>
-		//while (button != ('a' || 's' || 'd' || 'j' || 'k' || 'l'));
 		startgame = 1;
      5be:	81 e0       	ldi	r24, 0x01	; 1
      5c0:	90 e0       	ldi	r25, 0x00	; 0
-     5c2:	90 93 7d 02 	sts	0x027D, r25	; 0x80027d <startgame+0x1>
-     5c6:	80 93 7c 02 	sts	0x027C, r24	; 0x80027c <startgame>
+     5c2:	90 93 39 02 	sts	0x0239, r25	; 0x800239 <startgame+0x1>
+     5c6:	80 93 38 02 	sts	0x0238, r24	; 0x800238 <startgame>
 		clearTable();
-     5ca:	0e 94 91 07 	call	0xf22	; 0xf22 <clearTable>
+     5ca:	0e 94 10 08 	call	0x1020	; 0x1020 <clearTable>
+		
+		// Resets button so it does not perform action
 		button = ' ';
      5ce:	80 e2       	ldi	r24, 0x20	; 32
-     5d0:	80 93 92 02 	sts	0x0292, r24	; 0x800292 <button>
+     5d0:	80 93 4d 02 	sts	0x024D, r24	; 0x80024d <button>
 		newActiveBrick();
-     5d4:	0e 94 d7 04 	call	0x9ae	; 0x9ae <newActiveBrick>
+     5d4:	0e 94 56 05 	call	0xaac	; 0xaac <newActiveBrick>
 		while(1)
 		{
-			// BLUETOOTH
-			//shiftActiveBrick('d');
-			//fallActiveBrick();
+			// Checks for pressed button
 			switch (button)
-     5d8:	80 91 92 02 	lds	r24, 0x0292	; 0x800292 <button>
+     5d8:	80 91 4d 02 	lds	r24, 0x024D	; 0x80024d <button>
      5dc:	8a 36       	cpi	r24, 0x6A	; 106
      5de:	c9 f0       	breq	.+50     	; 0x612 <main+0x9a>
      5e0:	28 f4       	brcc	.+10     	; 0x5ec <main+0x74>
@@ -763,7 +808,7 @@ int main(void)
 				case 'a':
 				shiftActiveBrick('l');
      5fa:	8c e6       	ldi	r24, 0x6C	; 108
-     5fc:	0e 94 55 06 	call	0xcaa	; 0xcaa <shiftActiveBrick>
+     5fc:	0e 94 da 06 	call	0xdb4	; 0xdb4 <shiftActiveBrick>
 				break;
      600:	17 c0       	rjmp	.+46     	; 0x630 <main+0xb8>
 
@@ -771,7 +816,7 @@ int main(void)
 				case 'd':
 				shiftActiveBrick('r');
      602:	82 e7       	ldi	r24, 0x72	; 114
-     604:	0e 94 55 06 	call	0xcaa	; 0xcaa <shiftActiveBrick>
+     604:	0e 94 da 06 	call	0xdb4	; 0xdb4 <shiftActiveBrick>
 				break;
      608:	13 c0       	rjmp	.+38     	; 0x630 <main+0xb8>
 			
@@ -779,42 +824,40 @@ int main(void)
 				case 's':
 				shiftActiveBrick('d');
      60a:	84 e6       	ldi	r24, 0x64	; 100
-     60c:	0e 94 55 06 	call	0xcaa	; 0xcaa <shiftActiveBrick>
+     60c:	0e 94 da 06 	call	0xdb4	; 0xdb4 <shiftActiveBrick>
 				break;
      610:	0f c0       	rjmp	.+30     	; 0x630 <main+0xb8>
 			
 				// Rotate
 				case 'j':
 				rotateActiveBrick();
-     612:	0e 94 77 05 	call	0xaee	; 0xaee <rotateActiveBrick>
+     612:	0e 94 fc 05 	call	0xbf8	; 0xbf8 <rotateActiveBrick>
 				break;
      616:	0c c0       	rjmp	.+24     	; 0x630 <main+0xb8>
 			
+				// Force down
 				case 'k':
 				forcedown();
-     618:	0e 94 5a 09 	call	0x12b4	; 0x12b4 <forcedown>
+     618:	0e 94 d9 09 	call	0x13b2	; 0x13b2 <forcedown>
 				break;
      61c:	09 c0       	rjmp	.+18     	; 0x630 <main+0xb8>
 			
 				// Pause
 				case 'p':
 				pause += 1;
-     61e:	80 91 7b 02 	lds	r24, 0x027B	; 0x80027b <pause>
+     61e:	80 91 37 02 	lds	r24, 0x0237	; 0x800237 <pause>
      622:	8f 5f       	subi	r24, 0xFF	; 255
-     624:	80 93 7b 02 	sts	0x027B, r24	; 0x80027b <pause>
+     624:	80 93 37 02 	sts	0x0237, r24	; 0x800237 <pause>
 				pause = Pause(pause);
-     628:	0e 94 ad 07 	call	0xf5a	; 0xf5a <Pause>
-     62c:	80 93 7b 02 	sts	0x027B, r24	; 0x80027b <pause>
+     628:	0e 94 2c 08 	call	0x1058	; 0x1058 <Pause>
+     62c:	80 93 37 02 	sts	0x0237, r24	; 0x800237 <pause>
 				break;
-				
-				//default:
-				// default statements
 			}
 			checkFullLines();
-     630:	0e 94 fc 06 	call	0xdf8	; 0xdf8 <checkFullLines>
+     630:	0e 94 80 07 	call	0xf00	; 0xf00 <checkFullLines>
 			button = ' ';
      634:	80 e2       	ldi	r24, 0x20	; 32
-     636:	80 93 92 02 	sts	0x0292, r24	; 0x800292 <button>
+     636:	80 93 4d 02 	sts	0x024D, r24	; 0x80024d <button>
      63a:	2f e7       	ldi	r18, 0x7F	; 127
      63c:	88 e3       	ldi	r24, 0x38	; 56
      63e:	91 e0       	ldi	r25, 0x01	; 1
@@ -826,24 +869,24 @@ int main(void)
      64a:	00 00       	nop
 			_delay_ms(50);
 			if (tetrisGameOver) 
-     64c:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <tetrisGameOver>
+     64c:	80 91 40 02 	lds	r24, 0x0240	; 0x800240 <tetrisGameOver>
      650:	88 23       	and	r24, r24
      652:	11 f2       	breq	.-124    	; 0x5d8 <main+0x60>
 			{
 				falltime = 200;
      654:	88 ec       	ldi	r24, 0xC8	; 200
      656:	90 e0       	ldi	r25, 0x00	; 0
-     658:	90 93 75 02 	sts	0x0275, r25	; 0x800275 <falltime+0x1>
-     65c:	80 93 74 02 	sts	0x0274, r24	; 0x800274 <falltime>
+     658:	90 93 31 02 	sts	0x0231, r25	; 0x800231 <falltime+0x1>
+     65c:	80 93 30 02 	sts	0x0230, r24	; 0x800230 <falltime>
 				clearTable();
-     660:	0e 94 91 07 	call	0xf22	; 0xf22 <clearTable>
+     660:	0e 94 10 08 	call	0x1020	; 0x1020 <clearTable>
 				clearField();
-     664:	0e 94 76 07 	call	0xeec	; 0xeec <clearField>
+     664:	0e 94 f2 07 	call	0xfe4	; 0xfe4 <clearField>
 				tetrisGameOver = 0;
-     668:	10 92 83 02 	sts	0x0283, r1	; 0x800283 <tetrisGameOver>
+     668:	10 92 40 02 	sts	0x0240, r1	; 0x800240 <tetrisGameOver>
 				startgame = 0;
-     66c:	10 92 7d 02 	sts	0x027D, r1	; 0x80027d <startgame+0x1>
-     670:	10 92 7c 02 	sts	0x027C, r1	; 0x80027c <startgame>
+     66c:	10 92 39 02 	sts	0x0239, r1	; 0x800239 <startgame+0x1>
+     670:	10 92 38 02 	sts	0x0238, r1	; 0x800238 <startgame>
 				break;
 			}
 		}
@@ -851,2149 +894,2505 @@ int main(void)
      674:	81 cf       	rjmp	.-254    	; 0x578 <main>
 
 00000676 <addActiveBrickToField>:
-	for (int x = 0; x < column; x++)
+	clearTable();
+	return paus;
+}
+
+void addActiveBrickToField()
+{
+     676:	1f 93       	push	r17
+     678:	cf 93       	push	r28
+     67a:	df 93       	push	r29
+	byte fx, fy;					// used to check if brick is within bounds, no trespassing outside
+	for (byte by = 0; by < 4; by++)
+     67c:	b0 e0       	ldi	r27, 0x00	; 0
+     67e:	40 c0       	rjmp	.+128    	; 0x700 <addActiveBrickToField+0x8a>
 	{
-		field.pix[y][x] = 1;
-		field.color[y][x] = 1;
+		for (byte bx = 0; bx < 4; bx++)
+		{
+			fx = activeBrick.xpos + bx;
+     680:	e4 ed       	ldi	r30, 0xD4	; 212
+     682:	f5 e0       	ldi	r31, 0x05	; 5
+     684:	81 81       	ldd	r24, Z+1	; 0x01
+     686:	8a 0f       	add	r24, r26
+			fy = activeBrick.ypos + by;
+     688:	22 81       	ldd	r18, Z+2	; 0x02
+     68a:	2b 0f       	add	r18, r27
+			
+			//Check if Hitbox inside playing field
+			if (fx >= 0 && fy >= 0 && fx < column && fy < row && activeBrick.pix[by][bx]) { 
+     68c:	8c 30       	cpi	r24, 0x0C	; 12
+     68e:	90 f5       	brcc	.+100    	; 0x6f4 <addActiveBrickToField+0x7e>
+     690:	24 31       	cpi	r18, 0x14	; 20
+     692:	80 f5       	brcc	.+96     	; 0x6f4 <addActiveBrickToField+0x7e>
+     694:	4b 2f       	mov	r20, r27
+     696:	50 e0       	ldi	r21, 0x00	; 0
+     698:	6a 2f       	mov	r22, r26
+     69a:	70 e0       	ldi	r23, 0x00	; 0
+     69c:	fa 01       	movw	r30, r20
+     69e:	ee 0f       	add	r30, r30
+     6a0:	ff 1f       	adc	r31, r31
+     6a2:	ee 0f       	add	r30, r30
+     6a4:	ff 1f       	adc	r31, r31
+     6a6:	ec 52       	subi	r30, 0x2C	; 44
+     6a8:	fa 4f       	sbci	r31, 0xFA	; 250
+     6aa:	e6 0f       	add	r30, r22
+     6ac:	f7 1f       	adc	r31, r23
+     6ae:	15 81       	ldd	r17, Z+5	; 0x05
+     6b0:	11 23       	and	r17, r17
+     6b2:	01 f1       	breq	.+64     	; 0x6f4 <addActiveBrickToField+0x7e>
+				field.pix[fy][fx] = activeBrick.pix[by][bx];
+     6b4:	30 e0       	ldi	r19, 0x00	; 0
+     6b6:	90 e0       	ldi	r25, 0x00	; 0
+     6b8:	e9 01       	movw	r28, r18
+     6ba:	cc 0f       	add	r28, r28
+     6bc:	dd 1f       	adc	r29, r29
+     6be:	fe 01       	movw	r30, r28
+     6c0:	e2 0f       	add	r30, r18
+     6c2:	f3 1f       	adc	r31, r19
+     6c4:	ee 0f       	add	r30, r30
+     6c6:	ff 1f       	adc	r31, r31
+     6c8:	ee 0f       	add	r30, r30
+     6ca:	ff 1f       	adc	r31, r31
+     6cc:	e0 50       	subi	r30, 0x00	; 0
+     6ce:	fa 4f       	sbci	r31, 0xFA	; 250
+     6d0:	e8 0f       	add	r30, r24
+     6d2:	f9 1f       	adc	r31, r25
+     6d4:	10 83       	st	Z, r17
+				field.color[fy][fx] = activeBrick.color;
+     6d6:	10 91 e9 05 	lds	r17, 0x05E9	; 0x8005e9 <activeBrick+0x15>
+     6da:	e0 51       	subi	r30, 0x10	; 16
+     6dc:	ff 4f       	sbci	r31, 0xFF	; 255
+     6de:	10 83       	st	Z, r17
+				activeBrick.pix[by][bx] = 0;
+     6e0:	44 0f       	add	r20, r20
+     6e2:	55 1f       	adc	r21, r21
+     6e4:	44 0f       	add	r20, r20
+     6e6:	55 1f       	adc	r21, r21
+     6e8:	4c 52       	subi	r20, 0x2C	; 44
+     6ea:	5a 4f       	sbci	r21, 0xFA	; 250
+     6ec:	fa 01       	movw	r30, r20
+     6ee:	e6 0f       	add	r30, r22
+     6f0:	f7 1f       	adc	r31, r23
+     6f2:	15 82       	std	Z+5, r1	; 0x05
+void addActiveBrickToField()
+{
+	byte fx, fy;					// used to check if brick is within bounds, no trespassing outside
+	for (byte by = 0; by < 4; by++)
+	{
+		for (byte bx = 0; bx < 4; bx++)
+     6f4:	af 5f       	subi	r26, 0xFF	; 255
+     6f6:	01 c0       	rjmp	.+2      	; 0x6fa <addActiveBrickToField+0x84>
+     6f8:	a0 e0       	ldi	r26, 0x00	; 0
+     6fa:	a4 30       	cpi	r26, 0x04	; 4
+     6fc:	08 f2       	brcs	.-126    	; 0x680 <addActiveBrickToField+0xa>
+}
+
+void addActiveBrickToField()
+{
+	byte fx, fy;					// used to check if brick is within bounds, no trespassing outside
+	for (byte by = 0; by < 4; by++)
+     6fe:	bf 5f       	subi	r27, 0xFF	; 255
+     700:	b4 30       	cpi	r27, 0x04	; 4
+     702:	d0 f3       	brcs	.-12     	; 0x6f8 <addActiveBrickToField+0x82>
+				field.color[fy][fx] = activeBrick.color;
+				activeBrick.pix[by][bx] = 0;
+			}
+		}
 	}
-	printField();
-     676:	cf 93       	push	r28
-     678:	df 93       	push	r29
-     67a:	b0 e0       	ldi	r27, 0x00	; 0
-     67c:	4b c0       	rjmp	.+150    	; 0x714 <addActiveBrickToField+0x9e>
-     67e:	ea e1       	ldi	r30, 0x1A	; 26
-     680:	f6 e0       	ldi	r31, 0x06	; 6
-     682:	81 81       	ldd	r24, Z+1	; 0x01
-     684:	8a 0f       	add	r24, r26
-     686:	22 81       	ldd	r18, Z+2	; 0x02
-     688:	2b 0f       	add	r18, r27
-     68a:	8c 30       	cpi	r24, 0x0C	; 12
-     68c:	e0 f5       	brcc	.+120    	; 0x706 <addActiveBrickToField+0x90>
-     68e:	24 31       	cpi	r18, 0x14	; 20
-     690:	d0 f5       	brcc	.+116    	; 0x706 <addActiveBrickToField+0x90>
-     692:	4b 2f       	mov	r20, r27
-     694:	50 e0       	ldi	r21, 0x00	; 0
-     696:	6a 2f       	mov	r22, r26
-     698:	70 e0       	ldi	r23, 0x00	; 0
-     69a:	fa 01       	movw	r30, r20
-     69c:	ee 0f       	add	r30, r30
-     69e:	ff 1f       	adc	r31, r31
-     6a0:	ee 0f       	add	r30, r30
-     6a2:	ff 1f       	adc	r31, r31
-     6a4:	e6 5e       	subi	r30, 0xE6	; 230
-     6a6:	f9 4f       	sbci	r31, 0xF9	; 249
-     6a8:	e6 0f       	add	r30, r22
-     6aa:	f7 1f       	adc	r31, r23
-     6ac:	c5 81       	ldd	r28, Z+5	; 0x05
-     6ae:	cc 23       	and	r28, r28
-     6b0:	51 f1       	breq	.+84     	; 0x706 <addActiveBrickToField+0x90>
-     6b2:	30 e0       	ldi	r19, 0x00	; 0
-     6b4:	90 e0       	ldi	r25, 0x00	; 0
-     6b6:	dd e0       	ldi	r29, 0x0D	; 13
-     6b8:	d2 9f       	mul	r29, r18
-     6ba:	f0 01       	movw	r30, r0
-     6bc:	d3 9f       	mul	r29, r19
-     6be:	f0 0d       	add	r31, r0
-     6c0:	11 24       	eor	r1, r1
-     6c2:	e7 5b       	subi	r30, 0xB7	; 183
-     6c4:	f9 4f       	sbci	r31, 0xF9	; 249
-     6c6:	e8 0f       	add	r30, r24
-     6c8:	f9 1f       	adc	r31, r25
-     6ca:	c0 83       	st	Z, r28
-     6cc:	c0 91 2f 06 	lds	r28, 0x062F	; 0x80062f <activeBrick+0x15>
-     6d0:	f9 01       	movw	r30, r18
-     6d2:	ee 0f       	add	r30, r30
-     6d4:	ff 1f       	adc	r31, r31
-     6d6:	2e 0f       	add	r18, r30
-     6d8:	3f 1f       	adc	r19, r31
-     6da:	22 0f       	add	r18, r18
-     6dc:	33 1f       	adc	r19, r19
-     6de:	22 0f       	add	r18, r18
-     6e0:	33 1f       	adc	r19, r19
-     6e2:	27 5b       	subi	r18, 0xB7	; 183
-     6e4:	39 4f       	sbci	r19, 0xF9	; 249
-     6e6:	82 0f       	add	r24, r18
-     6e8:	93 1f       	adc	r25, r19
-     6ea:	fc 01       	movw	r30, r24
-     6ec:	ec 5f       	subi	r30, 0xFC	; 252
-     6ee:	fe 4f       	sbci	r31, 0xFE	; 254
-     6f0:	c0 83       	st	Z, r28
-     6f2:	44 0f       	add	r20, r20
-     6f4:	55 1f       	adc	r21, r21
-     6f6:	44 0f       	add	r20, r20
-     6f8:	55 1f       	adc	r21, r21
-     6fa:	46 5e       	subi	r20, 0xE6	; 230
-     6fc:	59 4f       	sbci	r21, 0xF9	; 249
-     6fe:	fa 01       	movw	r30, r20
-     700:	e6 0f       	add	r30, r22
-     702:	f7 1f       	adc	r31, r23
-     704:	15 82       	std	Z+5, r1	; 0x05
-     706:	af 5f       	subi	r26, 0xFF	; 255
-     708:	01 c0       	rjmp	.+2      	; 0x70c <addActiveBrickToField+0x96>
-     70a:	a0 e0       	ldi	r26, 0x00	; 0
-     70c:	a4 30       	cpi	r26, 0x04	; 4
-     70e:	08 f4       	brcc	.+2      	; 0x712 <addActiveBrickToField+0x9c>
-     710:	b6 cf       	rjmp	.-148    	; 0x67e <addActiveBrickToField+0x8>
-     712:	bf 5f       	subi	r27, 0xFF	; 255
-     714:	b4 30       	cpi	r27, 0x04	; 4
-     716:	c8 f3       	brcs	.-14     	; 0x70a <addActiveBrickToField+0x94>
-     718:	10 92 84 02 	sts	0x0284, r1	; 0x800284 <I_rot>
-     71c:	10 92 85 02 	sts	0x0285, r1	; 0x800285 <t_rot>
-     720:	85 e8       	ldi	r24, 0x85	; 133
-     722:	8a 95       	dec	r24
-     724:	f1 f7       	brne	.-4      	; 0x722 <addActiveBrickToField+0xac>
-     726:	00 00       	nop
-     728:	df 91       	pop	r29
-     72a:	cf 91       	pop	r28
-     72c:	08 95       	ret
+	I_rot = 0;
+     704:	10 92 3d 02 	sts	0x023D, r1	; 0x80023d <I_rot>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
 
-0000072e <checkSidesCollision>:
-     72e:	dc 01       	movw	r26, r24
-     730:	30 e0       	ldi	r19, 0x00	; 0
-     732:	19 c0       	rjmp	.+50     	; 0x766 <checkSidesCollision+0x38>
-     734:	e3 2f       	mov	r30, r19
-     736:	f0 e0       	ldi	r31, 0x00	; 0
-     738:	ee 0f       	add	r30, r30
-     73a:	ff 1f       	adc	r31, r31
-     73c:	ee 0f       	add	r30, r30
-     73e:	ff 1f       	adc	r31, r31
-     740:	ea 0f       	add	r30, r26
-     742:	fb 1f       	adc	r31, r27
-     744:	e9 0f       	add	r30, r25
-     746:	f1 1d       	adc	r31, r1
-     748:	25 81       	ldd	r18, Z+5	; 0x05
-     74a:	22 23       	and	r18, r18
-     74c:	31 f0       	breq	.+12     	; 0x75a <checkSidesCollision+0x2c>
-     74e:	11 96       	adiw	r26, 0x01	; 1
-     750:	2c 91       	ld	r18, X
-     752:	11 97       	sbiw	r26, 0x01	; 1
-     754:	29 0f       	add	r18, r25
-     756:	2c 30       	cpi	r18, 0x0C	; 12
-     758:	58 f4       	brcc	.+22     	; 0x770 <checkSidesCollision+0x42>
-     75a:	9f 5f       	subi	r25, 0xFF	; 255
-     75c:	01 c0       	rjmp	.+2      	; 0x760 <checkSidesCollision+0x32>
-     75e:	90 e0       	ldi	r25, 0x00	; 0
-     760:	94 30       	cpi	r25, 0x04	; 4
-     762:	40 f3       	brcs	.-48     	; 0x734 <checkSidesCollision+0x6>
-     764:	3f 5f       	subi	r19, 0xFF	; 255
-     766:	34 30       	cpi	r19, 0x04	; 4
-     768:	d0 f3       	brcs	.-12     	; 0x75e <checkSidesCollision+0x30>
-     76a:	80 e0       	ldi	r24, 0x00	; 0
-     76c:	90 e0       	ldi	r25, 0x00	; 0
-     76e:	08 95       	ret
-     770:	81 e0       	ldi	r24, 0x01	; 1
-     772:	90 e0       	ldi	r25, 0x00	; 0
-     774:	08 95       	ret
+	__builtin_avr_delay_cycles(__ticks_dc);
+     708:	85 e8       	ldi	r24, 0x85	; 133
+     70a:	8a 95       	dec	r24
+     70c:	f1 f7       	brne	.-4      	; 0x70a <addActiveBrickToField+0x94>
+     70e:	00 00       	nop
+	_delay_us(ws2812_resettime);
+}
+     710:	df 91       	pop	r29
+     712:	cf 91       	pop	r28
+     714:	1f 91       	pop	r17
+     716:	08 95       	ret
 
-00000776 <checkFieldCollision>:
-     776:	dc 01       	movw	r26, r24
-     778:	30 e0       	ldi	r19, 0x00	; 0
-     77a:	27 c0       	rjmp	.+78     	; 0x7ca <checkFieldCollision+0x54>
-     77c:	11 96       	adiw	r26, 0x01	; 1
-     77e:	8c 91       	ld	r24, X
-     780:	11 97       	sbiw	r26, 0x01	; 1
-     782:	89 0f       	add	r24, r25
-     784:	12 96       	adiw	r26, 0x02	; 2
-     786:	ec 91       	ld	r30, X
-     788:	12 97       	sbiw	r26, 0x02	; 2
-     78a:	23 2f       	mov	r18, r19
-     78c:	2e 0f       	add	r18, r30
-     78e:	e3 2f       	mov	r30, r19
-     790:	f0 e0       	ldi	r31, 0x00	; 0
-     792:	ee 0f       	add	r30, r30
-     794:	ff 1f       	adc	r31, r31
-     796:	ee 0f       	add	r30, r30
-     798:	ff 1f       	adc	r31, r31
-     79a:	ea 0f       	add	r30, r26
-     79c:	fb 1f       	adc	r31, r27
-     79e:	e9 0f       	add	r30, r25
-     7a0:	f1 1d       	adc	r31, r1
-     7a2:	45 81       	ldd	r20, Z+5	; 0x05
-     7a4:	41 30       	cpi	r20, 0x01	; 1
-     7a6:	59 f4       	brne	.+22     	; 0x7be <checkFieldCollision+0x48>
-     7a8:	4d e0       	ldi	r20, 0x0D	; 13
-     7aa:	24 9f       	mul	r18, r20
-     7ac:	f0 01       	movw	r30, r0
-     7ae:	11 24       	eor	r1, r1
-     7b0:	e7 5b       	subi	r30, 0xB7	; 183
-     7b2:	f9 4f       	sbci	r31, 0xF9	; 249
-     7b4:	e8 0f       	add	r30, r24
-     7b6:	f1 1d       	adc	r31, r1
-     7b8:	80 81       	ld	r24, Z
-     7ba:	81 30       	cpi	r24, 0x01	; 1
-     7bc:	59 f0       	breq	.+22     	; 0x7d4 <checkFieldCollision+0x5e>
-     7be:	9f 5f       	subi	r25, 0xFF	; 255
-     7c0:	01 c0       	rjmp	.+2      	; 0x7c4 <checkFieldCollision+0x4e>
-     7c2:	90 e0       	ldi	r25, 0x00	; 0
-     7c4:	94 30       	cpi	r25, 0x04	; 4
-     7c6:	d0 f2       	brcs	.-76     	; 0x77c <checkFieldCollision+0x6>
-     7c8:	3f 5f       	subi	r19, 0xFF	; 255
-     7ca:	34 30       	cpi	r19, 0x04	; 4
-     7cc:	d0 f3       	brcs	.-12     	; 0x7c2 <checkFieldCollision+0x4c>
-     7ce:	80 e0       	ldi	r24, 0x00	; 0
-     7d0:	90 e0       	ldi	r25, 0x00	; 0
-     7d2:	08 95       	ret
-     7d4:	81 e0       	ldi	r24, 0x01	; 1
-     7d6:	90 e0       	ldi	r25, 0x00	; 0
-     7d8:	08 95       	ret
+00000718 <checkSidesCollision>:
 
-000007da <printField>:
-     7da:	cf 92       	push	r12
-     7dc:	df 92       	push	r13
-     7de:	ef 92       	push	r14
-     7e0:	40 e0       	ldi	r20, 0x00	; 0
-     7e2:	50 e0       	ldi	r21, 0x00	; 0
-     7e4:	d3 c0       	rjmp	.+422    	; 0x98c <__stack+0x8d>
-     7e6:	20 91 1a 06 	lds	r18, 0x061A	; 0x80061a <activeBrick>
-     7ea:	22 23       	and	r18, r18
-     7ec:	59 f1       	breq	.+86     	; 0x844 <__DATA_REGION_LENGTH__+0x44>
-     7ee:	20 91 1b 06 	lds	r18, 0x061B	; 0x80061b <activeBrick+0x1>
-     7f2:	30 e0       	ldi	r19, 0x00	; 0
-     7f4:	42 17       	cp	r20, r18
-     7f6:	53 07       	cpc	r21, r19
-     7f8:	3c f1       	brlt	.+78     	; 0x848 <__DATA_REGION_LENGTH__+0x48>
-     7fa:	60 91 1e 06 	lds	r22, 0x061E	; 0x80061e <activeBrick+0x4>
-     7fe:	70 e0       	ldi	r23, 0x00	; 0
-     800:	f9 01       	movw	r30, r18
-     802:	e6 0f       	add	r30, r22
-     804:	f7 1f       	adc	r31, r23
-     806:	4e 17       	cp	r20, r30
-     808:	5f 07       	cpc	r21, r31
-     80a:	04 f5       	brge	.+64     	; 0x84c <__DATA_REGION_LENGTH__+0x4c>
-     80c:	e0 91 1c 06 	lds	r30, 0x061C	; 0x80061c <activeBrick+0x2>
-     810:	f0 e0       	ldi	r31, 0x00	; 0
-     812:	8e 17       	cp	r24, r30
-     814:	9f 07       	cpc	r25, r31
-     816:	e4 f0       	brlt	.+56     	; 0x850 <__DATA_REGION_LENGTH__+0x50>
-     818:	6e 0f       	add	r22, r30
-     81a:	7f 1f       	adc	r23, r31
-     81c:	86 17       	cp	r24, r22
-     81e:	97 07       	cpc	r25, r23
-     820:	cc f4       	brge	.+50     	; 0x854 <__DATA_REGION_LENGTH__+0x54>
-     822:	bc 01       	movw	r22, r24
-     824:	6e 1b       	sub	r22, r30
-     826:	7f 0b       	sbc	r23, r31
-     828:	fa 01       	movw	r30, r20
-     82a:	e2 1b       	sub	r30, r18
-     82c:	f3 0b       	sbc	r31, r19
-     82e:	9b 01       	movw	r18, r22
-     830:	22 0f       	add	r18, r18
-     832:	33 1f       	adc	r19, r19
-     834:	22 0f       	add	r18, r18
-     836:	33 1f       	adc	r19, r19
-     838:	26 5e       	subi	r18, 0xE6	; 230
-     83a:	39 4f       	sbci	r19, 0xF9	; 249
-     83c:	e2 0f       	add	r30, r18
-     83e:	f3 1f       	adc	r31, r19
-     840:	35 81       	ldd	r19, Z+5	; 0x05
-     842:	09 c0       	rjmp	.+18     	; 0x856 <__DATA_REGION_LENGTH__+0x56>
-     844:	30 e0       	ldi	r19, 0x00	; 0
-     846:	07 c0       	rjmp	.+14     	; 0x856 <__DATA_REGION_LENGTH__+0x56>
-     848:	30 e0       	ldi	r19, 0x00	; 0
-     84a:	05 c0       	rjmp	.+10     	; 0x856 <__DATA_REGION_LENGTH__+0x56>
-     84c:	30 e0       	ldi	r19, 0x00	; 0
-     84e:	03 c0       	rjmp	.+6      	; 0x856 <__DATA_REGION_LENGTH__+0x56>
-     850:	30 e0       	ldi	r19, 0x00	; 0
-     852:	01 c0       	rjmp	.+2      	; 0x856 <__DATA_REGION_LENGTH__+0x56>
-     854:	30 e0       	ldi	r19, 0x00	; 0
-     856:	2d e0       	ldi	r18, 0x0D	; 13
-     858:	28 9f       	mul	r18, r24
-     85a:	f0 01       	movw	r30, r0
-     85c:	29 9f       	mul	r18, r25
-     85e:	f0 0d       	add	r31, r0
-     860:	11 24       	eor	r1, r1
-     862:	e7 5b       	subi	r30, 0xB7	; 183
-     864:	f9 4f       	sbci	r31, 0xF9	; 249
-     866:	e4 0f       	add	r30, r20
-     868:	f5 1f       	adc	r31, r21
-     86a:	20 81       	ld	r18, Z
-     86c:	22 23       	and	r18, r18
-     86e:	b9 f1       	breq	.+110    	; 0x8de <__DATA_REGION_LENGTH__+0xde>
-     870:	9c 01       	movw	r18, r24
-     872:	22 0f       	add	r18, r18
-     874:	33 1f       	adc	r19, r19
-     876:	f9 01       	movw	r30, r18
-     878:	e8 0f       	add	r30, r24
-     87a:	f9 1f       	adc	r31, r25
-     87c:	ee 0f       	add	r30, r30
-     87e:	ff 1f       	adc	r31, r31
-     880:	ee 0f       	add	r30, r30
-     882:	ff 1f       	adc	r31, r31
-     884:	e4 0f       	add	r30, r20
-     886:	f5 1f       	adc	r31, r21
-     888:	ee 0f       	add	r30, r30
-     88a:	ff 1f       	adc	r31, r31
-     88c:	e8 59       	subi	r30, 0x98	; 152
-     88e:	ff 4f       	sbci	r31, 0xFF	; 255
-     890:	e4 91       	lpm	r30, Z
-     892:	f0 e0       	ldi	r31, 0x00	; 0
-     894:	d9 01       	movw	r26, r18
-     896:	a8 0f       	add	r26, r24
-     898:	b9 1f       	adc	r27, r25
-     89a:	aa 0f       	add	r26, r26
-     89c:	bb 1f       	adc	r27, r27
-     89e:	aa 0f       	add	r26, r26
-     8a0:	bb 1f       	adc	r27, r27
-     8a2:	a7 5b       	subi	r26, 0xB7	; 183
-     8a4:	b9 4f       	sbci	r27, 0xF9	; 249
-     8a6:	a4 0f       	add	r26, r20
-     8a8:	b5 1f       	adc	r27, r21
-     8aa:	ac 5f       	subi	r26, 0xFC	; 252
-     8ac:	be 4f       	sbci	r27, 0xFE	; 254
-     8ae:	2c 91       	ld	r18, X
-     8b0:	30 e0       	ldi	r19, 0x00	; 0
-     8b2:	bf 01       	movw	r22, r30
-     8b4:	66 0f       	add	r22, r22
-     8b6:	77 1f       	adc	r23, r23
-     8b8:	e6 0f       	add	r30, r22
-     8ba:	f7 1f       	adc	r31, r23
-     8bc:	eb 56       	subi	r30, 0x6B	; 107
-     8be:	fd 4f       	sbci	r31, 0xFD	; 253
-     8c0:	d9 01       	movw	r26, r18
-     8c2:	aa 0f       	add	r26, r26
-     8c4:	bb 1f       	adc	r27, r27
-     8c6:	2a 0f       	add	r18, r26
-     8c8:	3b 1f       	adc	r19, r27
-     8ca:	d9 01       	movw	r26, r18
-     8cc:	ae 5f       	subi	r26, 0xFE	; 254
-     8ce:	be 4f       	sbci	r27, 0xFE	; 254
-     8d0:	cd 90       	ld	r12, X+
-     8d2:	dd 90       	ld	r13, X+
-     8d4:	ec 90       	ld	r14, X
-     8d6:	c0 82       	st	Z, r12
-     8d8:	d1 82       	std	Z+1, r13	; 0x01
-     8da:	e2 82       	std	Z+2, r14	; 0x02
-     8dc:	4d c0       	rjmp	.+154    	; 0x978 <__stack+0x79>
-     8de:	33 23       	and	r19, r19
-     8e0:	51 f1       	breq	.+84     	; 0x936 <__stack+0x37>
-     8e2:	fc 01       	movw	r30, r24
-     8e4:	ee 0f       	add	r30, r30
-     8e6:	ff 1f       	adc	r31, r31
-     8e8:	e8 0f       	add	r30, r24
-     8ea:	f9 1f       	adc	r31, r25
-     8ec:	ee 0f       	add	r30, r30
-     8ee:	ff 1f       	adc	r31, r31
-     8f0:	ee 0f       	add	r30, r30
-     8f2:	ff 1f       	adc	r31, r31
-     8f4:	e4 0f       	add	r30, r20
-     8f6:	f5 1f       	adc	r31, r21
-     8f8:	ee 0f       	add	r30, r30
-     8fa:	ff 1f       	adc	r31, r31
-     8fc:	e8 59       	subi	r30, 0x98	; 152
-     8fe:	ff 4f       	sbci	r31, 0xFF	; 255
-     900:	e4 91       	lpm	r30, Z
-     902:	f0 e0       	ldi	r31, 0x00	; 0
-     904:	20 91 2f 06 	lds	r18, 0x062F	; 0x80062f <activeBrick+0x15>
-     908:	30 e0       	ldi	r19, 0x00	; 0
-     90a:	bf 01       	movw	r22, r30
-     90c:	66 0f       	add	r22, r22
-     90e:	77 1f       	adc	r23, r23
-     910:	e6 0f       	add	r30, r22
-     912:	f7 1f       	adc	r31, r23
-     914:	eb 56       	subi	r30, 0x6B	; 107
-     916:	fd 4f       	sbci	r31, 0xFD	; 253
-     918:	d9 01       	movw	r26, r18
-     91a:	aa 0f       	add	r26, r26
-     91c:	bb 1f       	adc	r27, r27
-     91e:	2a 0f       	add	r18, r26
-     920:	3b 1f       	adc	r19, r27
-     922:	d9 01       	movw	r26, r18
-     924:	ae 5f       	subi	r26, 0xFE	; 254
-     926:	be 4f       	sbci	r27, 0xFE	; 254
-     928:	cd 90       	ld	r12, X+
-     92a:	dd 90       	ld	r13, X+
-     92c:	ec 90       	ld	r14, X
-     92e:	c0 82       	st	Z, r12
-     930:	d1 82       	std	Z+1, r13	; 0x01
-     932:	e2 82       	std	Z+2, r14	; 0x02
-     934:	21 c0       	rjmp	.+66     	; 0x978 <__stack+0x79>
-     936:	fc 01       	movw	r30, r24
-     938:	ee 0f       	add	r30, r30
-     93a:	ff 1f       	adc	r31, r31
-     93c:	e8 0f       	add	r30, r24
-     93e:	f9 1f       	adc	r31, r25
-     940:	ee 0f       	add	r30, r30
-     942:	ff 1f       	adc	r31, r31
-     944:	ee 0f       	add	r30, r30
-     946:	ff 1f       	adc	r31, r31
-     948:	e4 0f       	add	r30, r20
-     94a:	f5 1f       	adc	r31, r21
-     94c:	ee 0f       	add	r30, r30
-     94e:	ff 1f       	adc	r31, r31
-     950:	e8 59       	subi	r30, 0x98	; 152
-     952:	ff 4f       	sbci	r31, 0xFF	; 255
-     954:	e4 91       	lpm	r30, Z
-     956:	f0 e0       	ldi	r31, 0x00	; 0
-     958:	9f 01       	movw	r18, r30
-     95a:	22 0f       	add	r18, r18
-     95c:	33 1f       	adc	r19, r19
-     95e:	e2 0f       	add	r30, r18
-     960:	f3 1f       	adc	r31, r19
-     962:	eb 56       	subi	r30, 0x6B	; 107
-     964:	fd 4f       	sbci	r31, 0xFD	; 253
-     966:	c0 90 7e 02 	lds	r12, 0x027E	; 0x80027e <led_off>
-     96a:	d0 90 7f 02 	lds	r13, 0x027F	; 0x80027f <led_off+0x1>
-     96e:	e0 90 80 02 	lds	r14, 0x0280	; 0x800280 <led_off+0x2>
-     972:	c0 82       	st	Z, r12
-     974:	d1 82       	std	Z+1, r13	; 0x01
-     976:	e2 82       	std	Z+2, r14	; 0x02
-     978:	01 96       	adiw	r24, 0x01	; 1
-     97a:	02 c0       	rjmp	.+4      	; 0x980 <__stack+0x81>
-     97c:	80 e0       	ldi	r24, 0x00	; 0
-     97e:	90 e0       	ldi	r25, 0x00	; 0
-     980:	84 31       	cpi	r24, 0x14	; 20
-     982:	91 05       	cpc	r25, r1
-     984:	0c f4       	brge	.+2      	; 0x988 <__stack+0x89>
-     986:	2f cf       	rjmp	.-418    	; 0x7e6 <printField+0xc>
-     988:	4f 5f       	subi	r20, 0xFF	; 255
-     98a:	5f 4f       	sbci	r21, 0xFF	; 255
-     98c:	4c 30       	cpi	r20, 0x0C	; 12
-     98e:	51 05       	cpc	r21, r1
-     990:	ac f3       	brlt	.-22     	; 0x97c <__stack+0x7d>
-     992:	6c e2       	ldi	r22, 0x2C	; 44
-     994:	71 e0       	ldi	r23, 0x01	; 1
-     996:	85 e9       	ldi	r24, 0x95	; 149
-     998:	92 e0       	ldi	r25, 0x02	; 2
-     99a:	0e 94 c3 01 	call	0x386	; 0x386 <ws2812_setleds>
-     99e:	85 e8       	ldi	r24, 0x85	; 133
-     9a0:	8a 95       	dec	r24
-     9a2:	f1 f7       	brne	.-4      	; 0x9a0 <__stack+0xa1>
-     9a4:	00 00       	nop
-     9a6:	ef 90       	pop	r14
-     9a8:	df 90       	pop	r13
-     9aa:	cf 90       	pop	r12
-     9ac:	08 95       	ret
+//Check vertical collision with sides of field
+int checkSidesCollision(struct Brick* brick) 
+{	
+     718:	dc 01       	movw	r26, r24
+	byte fx; 
+	for (byte by = 0; by < 4; by++) 
+     71a:	30 e0       	ldi	r19, 0x00	; 0
+     71c:	19 c0       	rjmp	.+50     	; 0x750 <checkSidesCollision+0x38>
+	{
+		for (byte bx = 0; bx < 4; bx++) 
+		{
+			if ((*brick).pix[by][bx]) 
+     71e:	e3 2f       	mov	r30, r19
+     720:	f0 e0       	ldi	r31, 0x00	; 0
+     722:	ee 0f       	add	r30, r30
+     724:	ff 1f       	adc	r31, r31
+     726:	ee 0f       	add	r30, r30
+     728:	ff 1f       	adc	r31, r31
+     72a:	ea 0f       	add	r30, r26
+     72c:	fb 1f       	adc	r31, r27
+     72e:	e9 0f       	add	r30, r25
+     730:	f1 1d       	adc	r31, r1
+     732:	25 81       	ldd	r18, Z+5	; 0x05
+     734:	22 23       	and	r18, r18
+     736:	31 f0       	breq	.+12     	; 0x744 <checkSidesCollision+0x2c>
+			{
+				fx = (*brick).xpos + bx;		//Determine the brick.pix position on the field
+     738:	11 96       	adiw	r26, 0x01	; 1
+     73a:	2c 91       	ld	r18, X
+     73c:	11 97       	sbiw	r26, 0x01	; 1
+     73e:	29 0f       	add	r18, r25
+				if (fx < 0 || fx >= column) 
+     740:	2c 30       	cpi	r18, 0x0C	; 12
+     742:	58 f4       	brcc	.+22     	; 0x75a <checkSidesCollision+0x42>
+int checkSidesCollision(struct Brick* brick) 
+{	
+	byte fx; 
+	for (byte by = 0; by < 4; by++) 
+	{
+		for (byte bx = 0; bx < 4; bx++) 
+     744:	9f 5f       	subi	r25, 0xFF	; 255
+     746:	01 c0       	rjmp	.+2      	; 0x74a <checkSidesCollision+0x32>
+     748:	90 e0       	ldi	r25, 0x00	; 0
+     74a:	94 30       	cpi	r25, 0x04	; 4
+     74c:	40 f3       	brcs	.-48     	; 0x71e <checkSidesCollision+0x6>
 
-000009ae <newActiveBrick>:
-	activeBrick = nextBrick;
-	*/
+//Check vertical collision with sides of field
+int checkSidesCollision(struct Brick* brick) 
+{	
+	byte fx; 
+	for (byte by = 0; by < 4; by++) 
+     74e:	3f 5f       	subi	r19, 0xFF	; 255
+     750:	34 30       	cpi	r19, 0x04	; 4
+     752:	d0 f3       	brcs	.-12     	; 0x748 <checkSidesCollision+0x30>
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+     754:	80 e0       	ldi	r24, 0x00	; 0
+     756:	90 e0       	ldi	r25, 0x00	; 0
+     758:	08 95       	ret
+			if ((*brick).pix[by][bx]) 
+			{
+				fx = (*brick).xpos + bx;		//Determine the brick.pix position on the field
+				if (fx < 0 || fx >= column) 
+				{
+					return 1;
+     75a:	81 e0       	ldi	r24, 0x01	; 1
+     75c:	90 e0       	ldi	r25, 0x00	; 0
+				}
+			}
+		}
+	}
+	return 0;
+}
+     75e:	08 95       	ret
+
+00000760 <checkFieldCollision>:
+
+int checkFieldCollision(struct Brick* brick)
+{
+     760:	dc 01       	movw	r26, r24
+	   byte bx, by;
+	   byte fx, fy;
+	   for (by = 0; by < 4; by++) 
+     762:	40 e0       	ldi	r20, 0x00	; 0
+     764:	2c c0       	rjmp	.+88     	; 0x7be <checkFieldCollision+0x5e>
+	   {
+		   for (bx = 0; bx < 4; bx++) 
+		   {
+			   fx = (*brick).xpos + bx;
+     766:	11 96       	adiw	r26, 0x01	; 1
+     768:	9c 91       	ld	r25, X
+     76a:	11 97       	sbiw	r26, 0x01	; 1
+     76c:	98 0f       	add	r25, r24
+			   fy = (*brick).ypos + by;
+     76e:	12 96       	adiw	r26, 0x02	; 2
+     770:	2c 91       	ld	r18, X
+     772:	12 97       	sbiw	r26, 0x02	; 2
+     774:	24 0f       	add	r18, r20
+			   
+			   // Check if next led is on
+			   if (( (*brick).pix[by][bx] == 1) && ( field.pix[fy][fx] == 1)) 
+     776:	e4 2f       	mov	r30, r20
+     778:	f0 e0       	ldi	r31, 0x00	; 0
+     77a:	ee 0f       	add	r30, r30
+     77c:	ff 1f       	adc	r31, r31
+     77e:	ee 0f       	add	r30, r30
+     780:	ff 1f       	adc	r31, r31
+     782:	ea 0f       	add	r30, r26
+     784:	fb 1f       	adc	r31, r27
+     786:	e8 0f       	add	r30, r24
+     788:	f1 1d       	adc	r31, r1
+     78a:	35 81       	ldd	r19, Z+5	; 0x05
+     78c:	31 30       	cpi	r19, 0x01	; 1
+     78e:	89 f4       	brne	.+34     	; 0x7b2 <checkFieldCollision+0x52>
+     790:	30 e0       	ldi	r19, 0x00	; 0
+     792:	f9 01       	movw	r30, r18
+     794:	ee 0f       	add	r30, r30
+     796:	ff 1f       	adc	r31, r31
+     798:	e2 0f       	add	r30, r18
+     79a:	f3 1f       	adc	r31, r19
+     79c:	ee 0f       	add	r30, r30
+     79e:	ff 1f       	adc	r31, r31
+     7a0:	ee 0f       	add	r30, r30
+     7a2:	ff 1f       	adc	r31, r31
+     7a4:	e0 50       	subi	r30, 0x00	; 0
+     7a6:	fa 4f       	sbci	r31, 0xFA	; 250
+     7a8:	e9 0f       	add	r30, r25
+     7aa:	f1 1d       	adc	r31, r1
+     7ac:	90 81       	ld	r25, Z
+     7ae:	91 30       	cpi	r25, 0x01	; 1
+     7b0:	59 f0       	breq	.+22     	; 0x7c8 <checkFieldCollision+0x68>
+{
+	   byte bx, by;
+	   byte fx, fy;
+	   for (by = 0; by < 4; by++) 
+	   {
+		   for (bx = 0; bx < 4; bx++) 
+     7b2:	8f 5f       	subi	r24, 0xFF	; 255
+     7b4:	01 c0       	rjmp	.+2      	; 0x7b8 <checkFieldCollision+0x58>
+     7b6:	80 e0       	ldi	r24, 0x00	; 0
+     7b8:	84 30       	cpi	r24, 0x04	; 4
+     7ba:	a8 f2       	brcs	.-86     	; 0x766 <checkFieldCollision+0x6>
+
+int checkFieldCollision(struct Brick* brick)
+{
+	   byte bx, by;
+	   byte fx, fy;
+	   for (by = 0; by < 4; by++) 
+     7bc:	4f 5f       	subi	r20, 0xFF	; 255
+     7be:	44 30       	cpi	r20, 0x04	; 4
+     7c0:	d0 f3       	brcs	.-12     	; 0x7b6 <checkFieldCollision+0x56>
+			   {
+				   return 1;
+			   }
+		   }
+	   }
+	   return 0;
+     7c2:	80 e0       	ldi	r24, 0x00	; 0
+     7c4:	90 e0       	ldi	r25, 0x00	; 0
+     7c6:	08 95       	ret
+			   fy = (*brick).ypos + by;
+			   
+			   // Check if next led is on
+			   if (( (*brick).pix[by][bx] == 1) && ( field.pix[fy][fx] == 1)) 
+			   {
+				   return 1;
+     7c8:	81 e0       	ldi	r24, 0x01	; 1
+     7ca:	90 e0       	ldi	r25, 0x00	; 0
+			   }
+		   }
+	   }
+	   return 0;
+  }
+     7cc:	08 95       	ret
+
+000007ce <clearNext>:
+	
+//Clear space where the next brick is displayed
+void clearNext()
+{
+	for (int x = 7; x < 12; x++)
+     7ce:	27 e0       	ldi	r18, 0x07	; 7
+     7d0:	30 e0       	ldi	r19, 0x00	; 0
+     7d2:	17 c0       	rjmp	.+46     	; 0x802 <__DATA_REGION_LENGTH__+0x2>
+	{
+		for (int y = 20; y < 24; y++)
+		{
+			field.pix[y][x] = 0;
+     7d4:	fc 01       	movw	r30, r24
+     7d6:	ee 0f       	add	r30, r30
+     7d8:	ff 1f       	adc	r31, r31
+     7da:	e8 0f       	add	r30, r24
+     7dc:	f9 1f       	adc	r31, r25
+     7de:	ee 0f       	add	r30, r30
+     7e0:	ff 1f       	adc	r31, r31
+     7e2:	ee 0f       	add	r30, r30
+     7e4:	ff 1f       	adc	r31, r31
+     7e6:	e0 50       	subi	r30, 0x00	; 0
+     7e8:	fa 4f       	sbci	r31, 0xFA	; 250
+     7ea:	e2 0f       	add	r30, r18
+     7ec:	f3 1f       	adc	r31, r19
+     7ee:	10 82       	st	Z, r1
+//Clear space where the next brick is displayed
+void clearNext()
+{
+	for (int x = 7; x < 12; x++)
+	{
+		for (int y = 20; y < 24; y++)
+     7f0:	01 96       	adiw	r24, 0x01	; 1
+     7f2:	02 c0       	rjmp	.+4      	; 0x7f8 <clearNext+0x2a>
+     7f4:	84 e1       	ldi	r24, 0x14	; 20
+     7f6:	90 e0       	ldi	r25, 0x00	; 0
+     7f8:	88 31       	cpi	r24, 0x18	; 24
+     7fa:	91 05       	cpc	r25, r1
+     7fc:	5c f3       	brlt	.-42     	; 0x7d4 <clearNext+0x6>
+  }
+	
+//Clear space where the next brick is displayed
+void clearNext()
+{
+	for (int x = 7; x < 12; x++)
+     7fe:	2f 5f       	subi	r18, 0xFF	; 255
+     800:	3f 4f       	sbci	r19, 0xFF	; 255
+     802:	2c 30       	cpi	r18, 0x0C	; 12
+     804:	31 05       	cpc	r19, r1
+     806:	b4 f3       	brlt	.-20     	; 0x7f4 <clearNext+0x26>
+		for (int y = 20; y < 24; y++)
+		{
+			field.pix[y][x] = 0;
+		}
+	}
+}
+     808:	08 95       	ret
+
+0000080a <showNextPiece>:
+
+//Temporarily changes brick to next brick so it can be displayed at the top
+void showNextPiece()
+{
+     80a:	cf 93       	push	r28
+     80c:	df 93       	push	r29
+	//Reads value from flash memory for brick's shape and color
+	selectedBrick = pgm_read_byte(&randombrick[random6]); // 0-6, 7 pieces
+     80e:	e0 91 42 02 	lds	r30, 0x0242	; 0x800242 <random6>
+     812:	f0 e0       	ldi	r31, 0x00	; 0
+     814:	ee 0f       	add	r30, r30
+     816:	ff 1f       	adc	r31, r31
+     818:	e0 5f       	subi	r30, 0xF0	; 240
+     81a:	fc 4f       	sbci	r31, 0xFC	; 252
+     81c:	44 91       	lpm	r20, Z
+     81e:	40 93 3f 02 	sts	0x023F, r20	; 0x80023f <selectedBrick>
+	selectedColor = pgm_read_byte(&randomcolor[random9]); // 0-9, 10 colors
+     822:	e0 91 41 02 	lds	r30, 0x0241	; 0x800241 <random9>
+     826:	f0 e0       	ldi	r31, 0x00	; 0
+     828:	ee 0f       	add	r30, r30
+     82a:	ff 1f       	adc	r31, r31
+     82c:	e0 54       	subi	r30, 0x40	; 64
+     82e:	fd 4f       	sbci	r31, 0xFD	; 253
+     830:	e4 91       	lpm	r30, Z
+     832:	e0 93 3e 02 	sts	0x023E, r30	; 0x80023e <selectedColor>
+	
+	activeBrick.siz = brickLib[selectedBrick].siz;
+     836:	50 e0       	ldi	r21, 0x00	; 0
+     838:	82 e2       	ldi	r24, 0x22	; 34
+     83a:	84 9f       	mul	r24, r20
+     83c:	e0 01       	movw	r28, r0
+     83e:	85 9f       	mul	r24, r21
+     840:	d0 0d       	add	r29, r0
+     842:	11 24       	eor	r1, r1
+     844:	c0 5e       	subi	r28, 0xE0	; 224
+     846:	de 4f       	sbci	r29, 0xFE	; 254
+     848:	89 81       	ldd	r24, Y+1	; 0x01
+     84a:	a4 ed       	ldi	r26, 0xD4	; 212
+     84c:	b5 e0       	ldi	r27, 0x05	; 5
+     84e:	14 96       	adiw	r26, 0x04	; 4
+     850:	8c 93       	st	X, r24
+     852:	14 97       	sbiw	r26, 0x04	; 4
+	activeBrick.yOffset = brickLib[selectedBrick].yOffset;
+     854:	88 81       	ld	r24, Y
+     856:	13 96       	adiw	r26, 0x03	; 3
+     858:	8c 93       	st	X, r24
+     85a:	13 97       	sbiw	r26, 0x03	; 3
+
+	activeBrick.color = selectedColor;
+     85c:	55 96       	adiw	r26, 0x15	; 21
+     85e:	ec 93       	st	X, r30
+     860:	55 97       	sbiw	r26, 0x15	; 21
+	
+	//Position where the next brick is displayed
+	activeBrick.ypos = 20;
+     862:	84 e1       	ldi	r24, 0x14	; 20
+     864:	12 96       	adiw	r26, 0x02	; 2
+     866:	8c 93       	st	X, r24
+     868:	12 97       	sbiw	r26, 0x02	; 2
+	activeBrick.xpos = 9;
+     86a:	89 e0       	ldi	r24, 0x09	; 9
+     86c:	11 96       	adiw	r26, 0x01	; 1
+     86e:	8c 93       	st	X, r24
+	
+	for (byte y = 0; y < 4; y++)
+     870:	a0 e0       	ldi	r26, 0x00	; 0
+     872:	24 c0       	rjmp	.+72     	; 0x8bc <showNextPiece+0xb2>
+	{
+		for (byte x = 0; x < 4; x++)
+		{
+			activeBrick.pix[x][y] = (brickLib[selectedBrick]).pix[x][y];
+     874:	26 2f       	mov	r18, r22
+     876:	30 e0       	ldi	r19, 0x00	; 0
+     878:	8a 2f       	mov	r24, r26
+     87a:	90 e0       	ldi	r25, 0x00	; 0
+     87c:	22 0f       	add	r18, r18
+     87e:	33 1f       	adc	r19, r19
+     880:	22 0f       	add	r18, r18
+     882:	33 1f       	adc	r19, r19
+     884:	71 e1       	ldi	r23, 0x11	; 17
+     886:	74 9f       	mul	r23, r20
+     888:	f0 01       	movw	r30, r0
+     88a:	75 9f       	mul	r23, r21
+     88c:	f0 0d       	add	r31, r0
+     88e:	11 24       	eor	r1, r1
+     890:	e2 0f       	add	r30, r18
+     892:	f3 1f       	adc	r31, r19
+     894:	e8 0f       	add	r30, r24
+     896:	f9 1f       	adc	r31, r25
+     898:	31 96       	adiw	r30, 0x01	; 1
+     89a:	ee 0f       	add	r30, r30
+     89c:	ff 1f       	adc	r31, r31
+     89e:	e0 5e       	subi	r30, 0xE0	; 224
+     8a0:	fe 4f       	sbci	r31, 0xFE	; 254
+     8a2:	70 81       	ld	r23, Z
+     8a4:	2c 52       	subi	r18, 0x2C	; 44
+     8a6:	3a 4f       	sbci	r19, 0xFA	; 250
+     8a8:	f9 01       	movw	r30, r18
+     8aa:	e8 0f       	add	r30, r24
+     8ac:	f9 1f       	adc	r31, r25
+     8ae:	75 83       	std	Z+5, r23	; 0x05
+	activeBrick.ypos = 20;
+	activeBrick.xpos = 9;
+	
+	for (byte y = 0; y < 4; y++)
+	{
+		for (byte x = 0; x < 4; x++)
+     8b0:	6f 5f       	subi	r22, 0xFF	; 255
+     8b2:	01 c0       	rjmp	.+2      	; 0x8b6 <showNextPiece+0xac>
+     8b4:	60 e0       	ldi	r22, 0x00	; 0
+     8b6:	64 30       	cpi	r22, 0x04	; 4
+     8b8:	e8 f2       	brcs	.-70     	; 0x874 <showNextPiece+0x6a>
+	
+	//Position where the next brick is displayed
+	activeBrick.ypos = 20;
+	activeBrick.xpos = 9;
+	
+	for (byte y = 0; y < 4; y++)
+     8ba:	af 5f       	subi	r26, 0xFF	; 255
+     8bc:	a4 30       	cpi	r26, 0x04	; 4
+     8be:	d0 f3       	brcs	.-12     	; 0x8b4 <showNextPiece+0xaa>
+		for (byte x = 0; x < 4; x++)
+		{
+			activeBrick.pix[x][y] = (brickLib[selectedBrick]).pix[x][y];
+		}
+	}
+	addActiveBrickToField();
+     8c0:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
+     8c4:	85 e8       	ldi	r24, 0x85	; 133
+     8c6:	8a 95       	dec	r24
+     8c8:	f1 f7       	brne	.-4      	; 0x8c6 <showNextPiece+0xbc>
+     8ca:	00 00       	nop
+	_delay_us(ws2812_resettime);
+}
+     8cc:	df 91       	pop	r29
+     8ce:	cf 91       	pop	r28
+     8d0:	08 95       	ret
+
+000008d2 <printField>:
+		tetrisGameOver = 1;
+	}	
+}
+
+void printField() 
+{
+     8d2:	cf 92       	push	r12
+     8d4:	df 92       	push	r13
+     8d6:	ef 92       	push	r14
+	byte activeBrickSpecificPix = 0;
+		
+	int x = 0;
+	int y = 0;
+				
+	for (x = 0; x < column; x++) 
+     8d8:	40 e0       	ldi	r20, 0x00	; 0
+     8da:	50 e0       	ldi	r21, 0x00	; 0
+     8dc:	d6 c0       	rjmp	.+428    	; 0xa8a <__stack+0x18b>
+	{
+		for (y = 0; y < row; y++) 
+		{
+			//Check if activebrick is on the screen
+			if (activeBrick.enabled && (x >= activeBrick.xpos) && (x < (activeBrick.xpos + (activeBrick.siz)))
+     8de:	20 91 d4 05 	lds	r18, 0x05D4	; 0x8005d4 <activeBrick>
+     8e2:	22 23       	and	r18, r18
+     8e4:	59 f1       	breq	.+86     	; 0x93c <__stack+0x3d>
+     8e6:	20 91 d5 05 	lds	r18, 0x05D5	; 0x8005d5 <activeBrick+0x1>
+     8ea:	30 e0       	ldi	r19, 0x00	; 0
+     8ec:	42 17       	cp	r20, r18
+     8ee:	53 07       	cpc	r21, r19
+     8f0:	3c f1       	brlt	.+78     	; 0x940 <__stack+0x41>
+     8f2:	60 91 d8 05 	lds	r22, 0x05D8	; 0x8005d8 <activeBrick+0x4>
+     8f6:	70 e0       	ldi	r23, 0x00	; 0
+     8f8:	f9 01       	movw	r30, r18
+     8fa:	e6 0f       	add	r30, r22
+     8fc:	f7 1f       	adc	r31, r23
+     8fe:	4e 17       	cp	r20, r30
+     900:	5f 07       	cpc	r21, r31
+     902:	04 f5       	brge	.+64     	; 0x944 <__stack+0x45>
+			&& (y >= activeBrick.ypos) && (y < (activeBrick.ypos + (activeBrick.siz)))) 
+     904:	e0 91 d6 05 	lds	r30, 0x05D6	; 0x8005d6 <activeBrick+0x2>
+     908:	f0 e0       	ldi	r31, 0x00	; 0
+     90a:	8e 17       	cp	r24, r30
+     90c:	9f 07       	cpc	r25, r31
+     90e:	e4 f0       	brlt	.+56     	; 0x948 <__stack+0x49>
+     910:	6e 0f       	add	r22, r30
+     912:	7f 1f       	adc	r23, r31
+     914:	86 17       	cp	r24, r22
+     916:	97 07       	cpc	r25, r23
+     918:	cc f4       	brge	.+50     	; 0x94c <__stack+0x4d>
+			{ 		
+				activeBrickSpecificPix = activeBrick.pix[y - activeBrick.ypos][x - activeBrick.xpos]; // 1 or 0
+     91a:	bc 01       	movw	r22, r24
+     91c:	6e 1b       	sub	r22, r30
+     91e:	7f 0b       	sbc	r23, r31
+     920:	fa 01       	movw	r30, r20
+     922:	e2 1b       	sub	r30, r18
+     924:	f3 0b       	sbc	r31, r19
+     926:	9b 01       	movw	r18, r22
+     928:	22 0f       	add	r18, r18
+     92a:	33 1f       	adc	r19, r19
+     92c:	22 0f       	add	r18, r18
+     92e:	33 1f       	adc	r19, r19
+     930:	2c 52       	subi	r18, 0x2C	; 44
+     932:	3a 4f       	sbci	r19, 0xFA	; 250
+     934:	e2 0f       	add	r30, r18
+     936:	f3 1f       	adc	r31, r19
+     938:	35 81       	ldd	r19, Z+5	; 0x05
+     93a:	09 c0       	rjmp	.+18     	; 0x94e <__stack+0x4f>
+     93c:	30 e0       	ldi	r19, 0x00	; 0
+     93e:	07 c0       	rjmp	.+14     	; 0x94e <__stack+0x4f>
+     940:	30 e0       	ldi	r19, 0x00	; 0
+     942:	05 c0       	rjmp	.+10     	; 0x94e <__stack+0x4f>
+     944:	30 e0       	ldi	r19, 0x00	; 0
+     946:	03 c0       	rjmp	.+6      	; 0x94e <__stack+0x4f>
+     948:	30 e0       	ldi	r19, 0x00	; 0
+     94a:	01 c0       	rjmp	.+2      	; 0x94e <__stack+0x4f>
+     94c:	30 e0       	ldi	r19, 0x00	; 0
+			}
+			
+			if (field.pix[y][x]) 
+     94e:	fc 01       	movw	r30, r24
+     950:	ee 0f       	add	r30, r30
+     952:	ff 1f       	adc	r31, r31
+     954:	e8 0f       	add	r30, r24
+     956:	f9 1f       	adc	r31, r25
+     958:	ee 0f       	add	r30, r30
+     95a:	ff 1f       	adc	r31, r31
+     95c:	ee 0f       	add	r30, r30
+     95e:	ff 1f       	adc	r31, r31
+     960:	e0 50       	subi	r30, 0x00	; 0
+     962:	fa 4f       	sbci	r31, 0xFA	; 250
+     964:	e4 0f       	add	r30, r20
+     966:	f5 1f       	adc	r31, r21
+     968:	20 81       	ld	r18, Z
+     96a:	22 23       	and	r18, r18
+     96c:	b9 f1       	breq	.+110    	; 0x9dc <__stack+0xdd>
+			{
+				led[pgm_read_byte(&matrix[y][x])] = colors[field.color[y][x]];	// if led is on, color remains the same so it does not get turned off
+     96e:	9c 01       	movw	r18, r24
+     970:	22 0f       	add	r18, r18
+     972:	33 1f       	adc	r19, r19
+     974:	f9 01       	movw	r30, r18
+     976:	e8 0f       	add	r30, r24
+     978:	f9 1f       	adc	r31, r25
+     97a:	ee 0f       	add	r30, r30
+     97c:	ff 1f       	adc	r31, r31
+     97e:	ee 0f       	add	r30, r30
+     980:	ff 1f       	adc	r31, r31
+     982:	e4 0f       	add	r30, r20
+     984:	f5 1f       	adc	r31, r21
+     986:	ee 0f       	add	r30, r30
+     988:	ff 1f       	adc	r31, r31
+     98a:	e8 59       	subi	r30, 0x98	; 152
+     98c:	ff 4f       	sbci	r31, 0xFF	; 255
+     98e:	e4 91       	lpm	r30, Z
+     990:	f0 e0       	ldi	r31, 0x00	; 0
+     992:	d9 01       	movw	r26, r18
+     994:	a8 0f       	add	r26, r24
+     996:	b9 1f       	adc	r27, r25
+     998:	aa 0f       	add	r26, r26
+     99a:	bb 1f       	adc	r27, r27
+     99c:	aa 0f       	add	r26, r26
+     99e:	bb 1f       	adc	r27, r27
+     9a0:	a0 50       	subi	r26, 0x00	; 0
+     9a2:	ba 4f       	sbci	r27, 0xFA	; 250
+     9a4:	a4 0f       	add	r26, r20
+     9a6:	b5 1f       	adc	r27, r21
+     9a8:	a0 51       	subi	r26, 0x10	; 16
+     9aa:	bf 4f       	sbci	r27, 0xFF	; 255
+     9ac:	2c 91       	ld	r18, X
+     9ae:	30 e0       	ldi	r19, 0x00	; 0
+     9b0:	bf 01       	movw	r22, r30
+     9b2:	66 0f       	add	r22, r22
+     9b4:	77 1f       	adc	r23, r23
+     9b6:	e6 0f       	add	r30, r22
+     9b8:	f7 1f       	adc	r31, r23
+     9ba:	e0 5b       	subi	r30, 0xB0	; 176
+     9bc:	fd 4f       	sbci	r31, 0xFD	; 253
+     9be:	d9 01       	movw	r26, r18
+     9c0:	aa 0f       	add	r26, r26
+     9c2:	bb 1f       	adc	r27, r27
+     9c4:	2a 0f       	add	r18, r26
+     9c6:	3b 1f       	adc	r19, r27
+     9c8:	d9 01       	movw	r26, r18
+     9ca:	ae 5f       	subi	r26, 0xFE	; 254
+     9cc:	be 4f       	sbci	r27, 0xFE	; 254
+     9ce:	cd 90       	ld	r12, X+
+     9d0:	dd 90       	ld	r13, X+
+     9d2:	ec 90       	ld	r14, X
+     9d4:	c0 82       	st	Z, r12
+     9d6:	d1 82       	std	Z+1, r13	; 0x01
+     9d8:	e2 82       	std	Z+2, r14	; 0x02
+     9da:	4d c0       	rjmp	.+154    	; 0xa76 <__stack+0x177>
+			}
+			else if (activeBrickSpecificPix)									// Print Active Brick's pix 
+     9dc:	33 23       	and	r19, r19
+     9de:	51 f1       	breq	.+84     	; 0xa34 <__stack+0x135>
+			{
+				led[pgm_read_byte(&matrix[y][x])] = colors[activeBrick.color];
+     9e0:	fc 01       	movw	r30, r24
+     9e2:	ee 0f       	add	r30, r30
+     9e4:	ff 1f       	adc	r31, r31
+     9e6:	e8 0f       	add	r30, r24
+     9e8:	f9 1f       	adc	r31, r25
+     9ea:	ee 0f       	add	r30, r30
+     9ec:	ff 1f       	adc	r31, r31
+     9ee:	ee 0f       	add	r30, r30
+     9f0:	ff 1f       	adc	r31, r31
+     9f2:	e4 0f       	add	r30, r20
+     9f4:	f5 1f       	adc	r31, r21
+     9f6:	ee 0f       	add	r30, r30
+     9f8:	ff 1f       	adc	r31, r31
+     9fa:	e8 59       	subi	r30, 0x98	; 152
+     9fc:	ff 4f       	sbci	r31, 0xFF	; 255
+     9fe:	e4 91       	lpm	r30, Z
+     a00:	f0 e0       	ldi	r31, 0x00	; 0
+     a02:	20 91 e9 05 	lds	r18, 0x05E9	; 0x8005e9 <activeBrick+0x15>
+     a06:	30 e0       	ldi	r19, 0x00	; 0
+     a08:	bf 01       	movw	r22, r30
+     a0a:	66 0f       	add	r22, r22
+     a0c:	77 1f       	adc	r23, r23
+     a0e:	e6 0f       	add	r30, r22
+     a10:	f7 1f       	adc	r31, r23
+     a12:	e0 5b       	subi	r30, 0xB0	; 176
+     a14:	fd 4f       	sbci	r31, 0xFD	; 253
+     a16:	d9 01       	movw	r26, r18
+     a18:	aa 0f       	add	r26, r26
+     a1a:	bb 1f       	adc	r27, r27
+     a1c:	2a 0f       	add	r18, r26
+     a1e:	3b 1f       	adc	r19, r27
+     a20:	d9 01       	movw	r26, r18
+     a22:	ae 5f       	subi	r26, 0xFE	; 254
+     a24:	be 4f       	sbci	r27, 0xFE	; 254
+     a26:	cd 90       	ld	r12, X+
+     a28:	dd 90       	ld	r13, X+
+     a2a:	ec 90       	ld	r14, X
+     a2c:	c0 82       	st	Z, r12
+     a2e:	d1 82       	std	Z+1, r13	; 0x01
+     a30:	e2 82       	std	Z+2, r14	; 0x02
+     a32:	21 c0       	rjmp	.+66     	; 0xa76 <__stack+0x177>
+			}		
+			else 
+			{
+				led[pgm_read_byte(&matrix[y][x])] = led_off;					// Remaining unused blocks are off	
+     a34:	fc 01       	movw	r30, r24
+     a36:	ee 0f       	add	r30, r30
+     a38:	ff 1f       	adc	r31, r31
+     a3a:	e8 0f       	add	r30, r24
+     a3c:	f9 1f       	adc	r31, r25
+     a3e:	ee 0f       	add	r30, r30
+     a40:	ff 1f       	adc	r31, r31
+     a42:	ee 0f       	add	r30, r30
+     a44:	ff 1f       	adc	r31, r31
+     a46:	e4 0f       	add	r30, r20
+     a48:	f5 1f       	adc	r31, r21
+     a4a:	ee 0f       	add	r30, r30
+     a4c:	ff 1f       	adc	r31, r31
+     a4e:	e8 59       	subi	r30, 0x98	; 152
+     a50:	ff 4f       	sbci	r31, 0xFF	; 255
+     a52:	e4 91       	lpm	r30, Z
+     a54:	f0 e0       	ldi	r31, 0x00	; 0
+     a56:	9f 01       	movw	r18, r30
+     a58:	22 0f       	add	r18, r18
+     a5a:	33 1f       	adc	r19, r19
+     a5c:	e2 0f       	add	r30, r18
+     a5e:	f3 1f       	adc	r31, r19
+     a60:	e0 5b       	subi	r30, 0xB0	; 176
+     a62:	fd 4f       	sbci	r31, 0xFD	; 253
+     a64:	c0 90 3a 02 	lds	r12, 0x023A	; 0x80023a <led_off>
+     a68:	d0 90 3b 02 	lds	r13, 0x023B	; 0x80023b <led_off+0x1>
+     a6c:	e0 90 3c 02 	lds	r14, 0x023C	; 0x80023c <led_off+0x2>
+     a70:	c0 82       	st	Z, r12
+     a72:	d1 82       	std	Z+1, r13	; 0x01
+     a74:	e2 82       	std	Z+2, r14	; 0x02
+	int x = 0;
+	int y = 0;
+				
+	for (x = 0; x < column; x++) 
+	{
+		for (y = 0; y < row; y++) 
+     a76:	01 96       	adiw	r24, 0x01	; 1
+     a78:	02 c0       	rjmp	.+4      	; 0xa7e <__stack+0x17f>
+     a7a:	80 e0       	ldi	r24, 0x00	; 0
+     a7c:	90 e0       	ldi	r25, 0x00	; 0
+     a7e:	84 31       	cpi	r24, 0x14	; 20
+     a80:	91 05       	cpc	r25, r1
+     a82:	0c f4       	brge	.+2      	; 0xa86 <__stack+0x187>
+     a84:	2c cf       	rjmp	.-424    	; 0x8de <printField+0xc>
+	byte activeBrickSpecificPix = 0;
+		
+	int x = 0;
+	int y = 0;
+				
+	for (x = 0; x < column; x++) 
+     a86:	4f 5f       	subi	r20, 0xFF	; 255
+     a88:	5f 4f       	sbci	r21, 0xFF	; 255
+     a8a:	4c 30       	cpi	r20, 0x0C	; 12
+     a8c:	51 05       	cpc	r21, r1
+     a8e:	ac f3       	brlt	.-22     	; 0xa7a <__stack+0x17b>
+				led[pgm_read_byte(&matrix[y][x])] = led_off;					// Remaining unused blocks are off	
+			}
+			activeBrickSpecificPix = 0;
+		}
+	}
+	ws2812_setleds(led,MAXPIX);
+     a90:	6c e2       	ldi	r22, 0x2C	; 44
+     a92:	71 e0       	ldi	r23, 0x01	; 1
+     a94:	80 e5       	ldi	r24, 0x50	; 80
+     a96:	92 e0       	ldi	r25, 0x02	; 2
+     a98:	0e 94 c3 01 	call	0x386	; 0x386 <ws2812_setleds>
+     a9c:	85 e8       	ldi	r24, 0x85	; 133
+     a9e:	8a 95       	dec	r24
+     aa0:	f1 f7       	brne	.-4      	; 0xa9e <__stack+0x19f>
+     aa2:	00 00       	nop
+	_delay_us(ws2812_resettime);
+}
+     aa4:	ef 90       	pop	r14
+     aa6:	df 90       	pop	r13
+     aa8:	cf 90       	pop	r12
+     aaa:	08 95       	ret
+
+00000aac <newActiveBrick>:
+	addActiveBrickToField();
+	_delay_us(ws2812_resettime);
 }
 
 void newActiveBrick() 
 {
-     9ae:	cf 93       	push	r28
-     9b0:	df 93       	push	r29
-     9b2:	cd b7       	in	r28, 0x3d	; 61
-     9b4:	de b7       	in	r29, 0x3e	; 62
-     9b6:	66 97       	sbiw	r28, 0x16	; 22
-     9b8:	0f b6       	in	r0, 0x3f	; 63
-     9ba:	f8 94       	cli
-     9bc:	de bf       	out	0x3e, r29	; 62
-     9be:	0f be       	out	0x3f, r0	; 63
-     9c0:	cd bf       	out	0x3d, r28	; 61
+     aac:	cf 93       	push	r28
+     aae:	df 93       	push	r29
+     ab0:	cd b7       	in	r28, 0x3d	; 61
+     ab2:	de b7       	in	r29, 0x3e	; 62
+     ab4:	66 97       	sbiw	r28, 0x16	; 22
+     ab6:	0f b6       	in	r0, 0x3f	; 63
+     ab8:	f8 94       	cli
+     aba:	de bf       	out	0x3e, r29	; 62
+     abc:	0f be       	out	0x3f, r0	; 63
+     abe:	cd bf       	out	0x3d, r28	; 61
 	//Reads value from flash memory for brick's shape and color
 	selectedBrick = pgm_read_byte(&randombrick[random6]); // 0-6, 7 pieces
-     9c2:	90 91 87 02 	lds	r25, 0x0287	; 0x800287 <random6>
-     9c6:	e9 2f       	mov	r30, r25
-     9c8:	f0 e0       	ldi	r31, 0x00	; 0
-     9ca:	ee 0f       	add	r30, r30
-     9cc:	ff 1f       	adc	r31, r31
-     9ce:	e0 5f       	subi	r30, 0xF0	; 240
-     9d0:	fc 4f       	sbci	r31, 0xFC	; 252
-     9d2:	44 91       	lpm	r20, Z
-     9d4:	40 93 82 02 	sts	0x0282, r20	; 0x800282 <selectedBrick>
+     ac0:	90 91 42 02 	lds	r25, 0x0242	; 0x800242 <random6>
+     ac4:	e9 2f       	mov	r30, r25
+     ac6:	f0 e0       	ldi	r31, 0x00	; 0
+     ac8:	ee 0f       	add	r30, r30
+     aca:	ff 1f       	adc	r31, r31
+     acc:	e0 5f       	subi	r30, 0xF0	; 240
+     ace:	fc 4f       	sbci	r31, 0xFC	; 252
+     ad0:	44 91       	lpm	r20, Z
+     ad2:	40 93 3f 02 	sts	0x023F, r20	; 0x80023f <selectedBrick>
 	selectedColor = pgm_read_byte(&randomcolor[random9]); // 0-9, 10 colors
-     9d8:	80 91 86 02 	lds	r24, 0x0286	; 0x800286 <random9>
-     9dc:	e8 2f       	mov	r30, r24
-     9de:	f0 e0       	ldi	r31, 0x00	; 0
-     9e0:	ee 0f       	add	r30, r30
-     9e2:	ff 1f       	adc	r31, r31
-     9e4:	e0 54       	subi	r30, 0x40	; 64
-     9e6:	fd 4f       	sbci	r31, 0xFD	; 253
-     9e8:	34 91       	lpm	r19, Z
-     9ea:	30 93 81 02 	sts	0x0281, r19	; 0x800281 <selectedColor>
-	//printcolor = selectedColor;
+     ad6:	80 91 41 02 	lds	r24, 0x0241	; 0x800241 <random9>
+     ada:	e8 2f       	mov	r30, r24
+     adc:	f0 e0       	ldi	r31, 0x00	; 0
+     ade:	ee 0f       	add	r30, r30
+     ae0:	ff 1f       	adc	r31, r31
+     ae2:	e0 54       	subi	r30, 0x40	; 64
+     ae4:	fd 4f       	sbci	r31, 0xFD	; 253
+     ae6:	64 91       	lpm	r22, Z
+     ae8:	60 93 3e 02 	sts	0x023E, r22	; 0x80023e <selectedColor>
 	
 	random6++;
-     9ee:	9f 5f       	subi	r25, 0xFF	; 255
-     9f0:	90 93 87 02 	sts	0x0287, r25	; 0x800287 <random6>
+     aec:	9f 5f       	subi	r25, 0xFF	; 255
+     aee:	90 93 42 02 	sts	0x0242, r25	; 0x800242 <random6>
 	random9++;
-     9f4:	8f 5f       	subi	r24, 0xFF	; 255
-     9f6:	80 93 86 02 	sts	0x0286, r24	; 0x800286 <random9>
+     af2:	8f 5f       	subi	r24, 0xFF	; 255
+     af4:	80 93 41 02 	sts	0x0241, r24	; 0x800241 <random9>
 	
 	if (random6 > 6) random6 = 0;
-     9fa:	97 30       	cpi	r25, 0x07	; 7
-     9fc:	10 f0       	brcs	.+4      	; 0xa02 <newActiveBrick+0x54>
-     9fe:	10 92 87 02 	sts	0x0287, r1	; 0x800287 <random6>
+     af8:	97 30       	cpi	r25, 0x07	; 7
+     afa:	10 f0       	brcs	.+4      	; 0xb00 <newActiveBrick+0x54>
+     afc:	10 92 42 02 	sts	0x0242, r1	; 0x800242 <random6>
 	if (random9 > 9) random9 = 0; 
-     a02:	8a 30       	cpi	r24, 0x0A	; 10
-     a04:	10 f0       	brcs	.+4      	; 0xa0a <newActiveBrick+0x5c>
-     a06:	10 92 86 02 	sts	0x0286, r1	; 0x800286 <random9>
+     b00:	8a 30       	cpi	r24, 0x0A	; 10
+     b02:	10 f0       	brcs	.+4      	; 0xb08 <newActiveBrick+0x5c>
+     b04:	10 92 41 02 	sts	0x0241, r1	; 0x800241 <random9>
 	
 	activeBrick.siz = brickLib[selectedBrick].siz;
-     a0a:	50 e0       	ldi	r21, 0x00	; 0
-     a0c:	22 e2       	ldi	r18, 0x22	; 34
-     a0e:	24 9f       	mul	r18, r20
-     a10:	c0 01       	movw	r24, r0
-     a12:	25 9f       	mul	r18, r21
-     a14:	90 0d       	add	r25, r0
-     a16:	11 24       	eor	r1, r1
-     a18:	80 5e       	subi	r24, 0xE0	; 224
-     a1a:	9e 4f       	sbci	r25, 0xFE	; 254
-     a1c:	dc 01       	movw	r26, r24
-     a1e:	11 96       	adiw	r26, 0x01	; 1
-     a20:	2c 91       	ld	r18, X
-     a22:	aa e1       	ldi	r26, 0x1A	; 26
-     a24:	b6 e0       	ldi	r27, 0x06	; 6
-     a26:	14 96       	adiw	r26, 0x04	; 4
-     a28:	2c 93       	st	X, r18
-     a2a:	14 97       	sbiw	r26, 0x04	; 4
+     b08:	50 e0       	ldi	r21, 0x00	; 0
+     b0a:	82 e2       	ldi	r24, 0x22	; 34
+     b0c:	84 9f       	mul	r24, r20
+     b0e:	90 01       	movw	r18, r0
+     b10:	85 9f       	mul	r24, r21
+     b12:	30 0d       	add	r19, r0
+     b14:	11 24       	eor	r1, r1
+     b16:	20 5e       	subi	r18, 0xE0	; 224
+     b18:	3e 4f       	sbci	r19, 0xFE	; 254
+     b1a:	d9 01       	movw	r26, r18
+     b1c:	11 96       	adiw	r26, 0x01	; 1
+     b1e:	8c 91       	ld	r24, X
+     b20:	a4 ed       	ldi	r26, 0xD4	; 212
+     b22:	b5 e0       	ldi	r27, 0x05	; 5
+     b24:	14 96       	adiw	r26, 0x04	; 4
+     b26:	8c 93       	st	X, r24
+     b28:	14 97       	sbiw	r26, 0x04	; 4
 	activeBrick.yOffset = brickLib[selectedBrick].yOffset;
-     a2c:	fc 01       	movw	r30, r24
-     a2e:	90 81       	ld	r25, Z
-     a30:	13 96       	adiw	r26, 0x03	; 3
-     a32:	9c 93       	st	X, r25
-     a34:	13 97       	sbiw	r26, 0x03	; 3
+     b2a:	f9 01       	movw	r30, r18
+     b2c:	20 81       	ld	r18, Z
+     b2e:	13 96       	adiw	r26, 0x03	; 3
+     b30:	2c 93       	st	X, r18
+     b32:	13 97       	sbiw	r26, 0x03	; 3
 	
-	//activeBrick.xpos = column / 2 - activeBrick.siz / 2; // //To center
-	activeBrick.xpos = 6;
-     a36:	86 e0       	ldi	r24, 0x06	; 6
-     a38:	11 96       	adiw	r26, 0x01	; 1
-     a3a:	8c 93       	st	X, r24
-     a3c:	11 97       	sbiw	r26, 0x01	; 1
+	activeBrick.xpos = column / 2 - activeBrick.siz / 2;		// To center
+     b34:	86 95       	lsr	r24
+     b36:	96 e0       	ldi	r25, 0x06	; 6
+     b38:	98 1b       	sub	r25, r24
+     b3a:	11 96       	adiw	r26, 0x01	; 1
+     b3c:	9c 93       	st	X, r25
+     b3e:	11 97       	sbiw	r26, 0x01	; 1
 	
 	activeBrick.ypos = 20 - 1 - activeBrick.yOffset;			//Top of the screen
-     a3e:	83 e1       	ldi	r24, 0x13	; 19
-     a40:	89 1b       	sub	r24, r25
-     a42:	12 96       	adiw	r26, 0x02	; 2
-     a44:	8c 93       	st	X, r24
-     a46:	12 97       	sbiw	r26, 0x02	; 2
-	//activeBrick.ypos = 17;
+     b40:	83 e1       	ldi	r24, 0x13	; 19
+     b42:	82 1b       	sub	r24, r18
+     b44:	12 96       	adiw	r26, 0x02	; 2
+     b46:	8c 93       	st	X, r24
+     b48:	12 97       	sbiw	r26, 0x02	; 2
 	
 	activeBrick.enabled = 1;
-     a48:	81 e0       	ldi	r24, 0x01	; 1
-     a4a:	8c 93       	st	X, r24
+     b4a:	81 e0       	ldi	r24, 0x01	; 1
+     b4c:	8c 93       	st	X, r24
 
-	activeBrick.color = selectedColor; // matrix = color;
-     a4c:	55 96       	adiw	r26, 0x15	; 21
-     a4e:	3c 93       	st	X, r19
-	//activeBrick.color = 0;
-	//1 + selectedColor;
+	activeBrick.color = selectedColor; 
+     b4e:	55 96       	adiw	r26, 0x15	; 21
+     b50:	6c 93       	st	X, r22
 	 
-	//Copy pix array of selected Brick
+	// Copy pix array of selected Brick
 	for (byte y = 0; y < 4; y++) 
-     a50:	70 e0       	ldi	r23, 0x00	; 0
-     a52:	25 c0       	rjmp	.+74     	; 0xa9e <newActiveBrick+0xf0>
+     b52:	70 e0       	ldi	r23, 0x00	; 0
+     b54:	25 c0       	rjmp	.+74     	; 0xba0 <newActiveBrick+0xf4>
 	{
 		for (byte x = 0; x < 4; x++) 
 		{
 			activeBrick.pix[y][x] = (brickLib[selectedBrick]).pix[y][x];
-     a54:	87 2f       	mov	r24, r23
-     a56:	90 e0       	ldi	r25, 0x00	; 0
-     a58:	26 2f       	mov	r18, r22
-     a5a:	30 e0       	ldi	r19, 0x00	; 0
-     a5c:	88 0f       	add	r24, r24
-     a5e:	99 1f       	adc	r25, r25
-     a60:	88 0f       	add	r24, r24
-     a62:	99 1f       	adc	r25, r25
-     a64:	a1 e1       	ldi	r26, 0x11	; 17
-     a66:	a4 9f       	mul	r26, r20
-     a68:	f0 01       	movw	r30, r0
-     a6a:	a5 9f       	mul	r26, r21
-     a6c:	f0 0d       	add	r31, r0
-     a6e:	11 24       	eor	r1, r1
-     a70:	e8 0f       	add	r30, r24
-     a72:	f9 1f       	adc	r31, r25
-     a74:	e2 0f       	add	r30, r18
-     a76:	f3 1f       	adc	r31, r19
-     a78:	31 96       	adiw	r30, 0x01	; 1
-     a7a:	ee 0f       	add	r30, r30
-     a7c:	ff 1f       	adc	r31, r31
-     a7e:	e0 5e       	subi	r30, 0xE0	; 224
-     a80:	fe 4f       	sbci	r31, 0xFE	; 254
-     a82:	e0 81       	ld	r30, Z
-     a84:	86 5e       	subi	r24, 0xE6	; 230
-     a86:	99 4f       	sbci	r25, 0xF9	; 249
-     a88:	dc 01       	movw	r26, r24
-     a8a:	a2 0f       	add	r26, r18
-     a8c:	b3 1f       	adc	r27, r19
-     a8e:	15 96       	adiw	r26, 0x05	; 5
-     a90:	ec 93       	st	X, r30
-	//1 + selectedColor;
+     b56:	87 2f       	mov	r24, r23
+     b58:	90 e0       	ldi	r25, 0x00	; 0
+     b5a:	26 2f       	mov	r18, r22
+     b5c:	30 e0       	ldi	r19, 0x00	; 0
+     b5e:	88 0f       	add	r24, r24
+     b60:	99 1f       	adc	r25, r25
+     b62:	88 0f       	add	r24, r24
+     b64:	99 1f       	adc	r25, r25
+     b66:	a1 e1       	ldi	r26, 0x11	; 17
+     b68:	a4 9f       	mul	r26, r20
+     b6a:	f0 01       	movw	r30, r0
+     b6c:	a5 9f       	mul	r26, r21
+     b6e:	f0 0d       	add	r31, r0
+     b70:	11 24       	eor	r1, r1
+     b72:	e8 0f       	add	r30, r24
+     b74:	f9 1f       	adc	r31, r25
+     b76:	e2 0f       	add	r30, r18
+     b78:	f3 1f       	adc	r31, r19
+     b7a:	31 96       	adiw	r30, 0x01	; 1
+     b7c:	ee 0f       	add	r30, r30
+     b7e:	ff 1f       	adc	r31, r31
+     b80:	e0 5e       	subi	r30, 0xE0	; 224
+     b82:	fe 4f       	sbci	r31, 0xFE	; 254
+     b84:	e0 81       	ld	r30, Z
+     b86:	8c 52       	subi	r24, 0x2C	; 44
+     b88:	9a 4f       	sbci	r25, 0xFA	; 250
+     b8a:	dc 01       	movw	r26, r24
+     b8c:	a2 0f       	add	r26, r18
+     b8e:	b3 1f       	adc	r27, r19
+     b90:	15 96       	adiw	r26, 0x05	; 5
+     b92:	ec 93       	st	X, r30
+	activeBrick.color = selectedColor; 
 	 
-	//Copy pix array of selected Brick
+	// Copy pix array of selected Brick
 	for (byte y = 0; y < 4; y++) 
 	{
 		for (byte x = 0; x < 4; x++) 
-     a92:	6f 5f       	subi	r22, 0xFF	; 255
-     a94:	01 c0       	rjmp	.+2      	; 0xa98 <newActiveBrick+0xea>
-     a96:	60 e0       	ldi	r22, 0x00	; 0
-     a98:	64 30       	cpi	r22, 0x04	; 4
-     a9a:	e0 f2       	brcs	.-72     	; 0xa54 <newActiveBrick+0xa6>
-	activeBrick.color = selectedColor; // matrix = color;
-	//activeBrick.color = 0;
-	//1 + selectedColor;
+     b94:	6f 5f       	subi	r22, 0xFF	; 255
+     b96:	01 c0       	rjmp	.+2      	; 0xb9a <newActiveBrick+0xee>
+     b98:	60 e0       	ldi	r22, 0x00	; 0
+     b9a:	64 30       	cpi	r22, 0x04	; 4
+     b9c:	e0 f2       	brcs	.-72     	; 0xb56 <newActiveBrick+0xaa>
+	activeBrick.enabled = 1;
+
+	activeBrick.color = selectedColor; 
 	 
-	//Copy pix array of selected Brick
+	// Copy pix array of selected Brick
 	for (byte y = 0; y < 4; y++) 
-     a9c:	7f 5f       	subi	r23, 0xFF	; 255
-     a9e:	74 30       	cpi	r23, 0x04	; 4
-     aa0:	d0 f3       	brcs	.-12     	; 0xa96 <newActiveBrick+0xe8>
-			activeBrick.pix[y][x] = (brickLib[selectedBrick]).pix[y][x];
+     b9e:	7f 5f       	subi	r23, 0xFF	; 255
+     ba0:	74 30       	cpi	r23, 0x04	; 4
+     ba2:	d0 f3       	brcs	.-12     	; 0xb98 <newActiveBrick+0xec>
 		}
 	}
 	
+	// Temporary save active Brick's state before showing next brick
 	Brick realBrick;
 	realBrick = activeBrick;
-     aa2:	86 e1       	ldi	r24, 0x16	; 22
-     aa4:	ea e1       	ldi	r30, 0x1A	; 26
-     aa6:	f6 e0       	ldi	r31, 0x06	; 6
-     aa8:	de 01       	movw	r26, r28
-     aaa:	11 96       	adiw	r26, 0x01	; 1
-     aac:	01 90       	ld	r0, Z+
-     aae:	0d 92       	st	X+, r0
-     ab0:	8a 95       	dec	r24
-     ab2:	e1 f7       	brne	.-8      	; 0xaac <newActiveBrick+0xfe>
-	//showNextPiece();
+     ba4:	86 e1       	ldi	r24, 0x16	; 22
+     ba6:	e4 ed       	ldi	r30, 0xD4	; 212
+     ba8:	f5 e0       	ldi	r31, 0x05	; 5
+     baa:	de 01       	movw	r26, r28
+     bac:	11 96       	adiw	r26, 0x01	; 1
+     bae:	01 90       	ld	r0, Z+
+     bb0:	0d 92       	st	X+, r0
+     bb2:	8a 95       	dec	r24
+     bb4:	e1 f7       	brne	.-8      	; 0xbae <newActiveBrick+0x102>
+	showNextPiece();
+     bb6:	0e 94 05 04 	call	0x80a	; 0x80a <showNextPiece>
 	activeBrick = realBrick;
-     ab4:	86 e1       	ldi	r24, 0x16	; 22
-     ab6:	fe 01       	movw	r30, r28
-     ab8:	31 96       	adiw	r30, 0x01	; 1
-     aba:	aa e1       	ldi	r26, 0x1A	; 26
-     abc:	b6 e0       	ldi	r27, 0x06	; 6
-     abe:	01 90       	ld	r0, Z+
-     ac0:	0d 92       	st	X+, r0
-     ac2:	8a 95       	dec	r24
-     ac4:	e1 f7       	brne	.-8      	; 0xabe <newActiveBrick+0x110>
-	
+     bba:	86 e1       	ldi	r24, 0x16	; 22
+     bbc:	fe 01       	movw	r30, r28
+     bbe:	31 96       	adiw	r30, 0x01	; 1
+     bc0:	a4 ed       	ldi	r26, 0xD4	; 212
+     bc2:	b5 e0       	ldi	r27, 0x05	; 5
+     bc4:	01 90       	ld	r0, Z+
+     bc6:	0d 92       	st	X+, r0
+     bc8:	8a 95       	dec	r24
+     bca:	e1 f7       	brne	.-8      	; 0xbc4 <newActiveBrick+0x118>
 	printField();
-     ac6:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
-	//clearNext();
+     bcc:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
+	clearNext();
+     bd0:	0e 94 e7 03 	call	0x7ce	; 0x7ce <clearNext>
 	
 	if (checkFieldCollision(&activeBrick)) 
-     aca:	8a e1       	ldi	r24, 0x1A	; 26
-     acc:	96 e0       	ldi	r25, 0x06	; 6
-     ace:	0e 94 bb 03 	call	0x776	; 0x776 <checkFieldCollision>
-     ad2:	89 2b       	or	r24, r25
-     ad4:	19 f0       	breq	.+6      	; 0xadc <newActiveBrick+0x12e>
+     bd4:	84 ed       	ldi	r24, 0xD4	; 212
+     bd6:	95 e0       	ldi	r25, 0x05	; 5
+     bd8:	0e 94 b0 03 	call	0x760	; 0x760 <checkFieldCollision>
+     bdc:	89 2b       	or	r24, r25
+     bde:	19 f0       	breq	.+6      	; 0xbe6 <newActiveBrick+0x13a>
 	{
 		tetrisGameOver = 1;
-     ad6:	81 e0       	ldi	r24, 0x01	; 1
-     ad8:	80 93 83 02 	sts	0x0283, r24	; 0x800283 <tetrisGameOver>
+     be0:	81 e0       	ldi	r24, 0x01	; 1
+     be2:	80 93 40 02 	sts	0x0240, r24	; 0x800240 <tetrisGameOver>
 	}	
 }
-     adc:	66 96       	adiw	r28, 0x16	; 22
-     ade:	0f b6       	in	r0, 0x3f	; 63
-     ae0:	f8 94       	cli
-     ae2:	de bf       	out	0x3e, r29	; 62
-     ae4:	0f be       	out	0x3f, r0	; 63
-     ae6:	cd bf       	out	0x3d, r28	; 61
-     ae8:	df 91       	pop	r29
-     aea:	cf 91       	pop	r28
-     aec:	08 95       	ret
+     be6:	66 96       	adiw	r28, 0x16	; 22
+     be8:	0f b6       	in	r0, 0x3f	; 63
+     bea:	f8 94       	cli
+     bec:	de bf       	out	0x3e, r29	; 62
+     bee:	0f be       	out	0x3f, r0	; 63
+     bf0:	cd bf       	out	0x3d, r28	; 61
+     bf2:	df 91       	pop	r29
+     bf4:	cf 91       	pop	r28
+     bf6:	08 95       	ret
 
-00000aee <rotateActiveBrick>:
+00000bf8 <rotateActiveBrick>:
 
 // CHECK ON TABLE
-void rotateActiveBrick() {
+void rotateActiveBrick() 
+{
 	//Copy active brick pix array to temporary pix array
-	
 	for (byte y = 0; y < 4; y++) 
-     aee:	60 e0       	ldi	r22, 0x00	; 0
-     af0:	1a c0       	rjmp	.+52     	; 0xb26 <rotateActiveBrick+0x38>
+     bf8:	60 e0       	ldi	r22, 0x00	; 0
+     bfa:	1a c0       	rjmp	.+52     	; 0xc30 <rotateActiveBrick+0x38>
 	{
 		for (byte x = 0; x < 4; x++) 
 		{
-			tmpBrick.pix[y][x] = activeBrick.pix[y][x]; // IMPORTANTE, verificar x,y e y,x na mesa
-     af2:	86 2f       	mov	r24, r22
-     af4:	90 e0       	ldi	r25, 0x00	; 0
-     af6:	24 2f       	mov	r18, r20
-     af8:	30 e0       	ldi	r19, 0x00	; 0
-     afa:	88 0f       	add	r24, r24
-     afc:	99 1f       	adc	r25, r25
-     afe:	88 0f       	add	r24, r24
-     b00:	99 1f       	adc	r25, r25
-     b02:	fc 01       	movw	r30, r24
-     b04:	e6 5e       	subi	r30, 0xE6	; 230
-     b06:	f9 4f       	sbci	r31, 0xF9	; 249
-     b08:	e2 0f       	add	r30, r18
-     b0a:	f3 1f       	adc	r31, r19
-     b0c:	55 81       	ldd	r21, Z+5	; 0x05
-     b0e:	80 5d       	subi	r24, 0xD0	; 208
-     b10:	99 4f       	sbci	r25, 0xF9	; 249
-     b12:	fc 01       	movw	r30, r24
-     b14:	e2 0f       	add	r30, r18
-     b16:	f3 1f       	adc	r31, r19
-     b18:	55 83       	std	Z+5, r21	; 0x05
-void rotateActiveBrick() {
+			tmpBrick.pix[y][x] = activeBrick.pix[y][x];
+     bfc:	86 2f       	mov	r24, r22
+     bfe:	90 e0       	ldi	r25, 0x00	; 0
+     c00:	24 2f       	mov	r18, r20
+     c02:	30 e0       	ldi	r19, 0x00	; 0
+     c04:	88 0f       	add	r24, r24
+     c06:	99 1f       	adc	r25, r25
+     c08:	88 0f       	add	r24, r24
+     c0a:	99 1f       	adc	r25, r25
+     c0c:	fc 01       	movw	r30, r24
+     c0e:	ec 52       	subi	r30, 0x2C	; 44
+     c10:	fa 4f       	sbci	r31, 0xFA	; 250
+     c12:	e2 0f       	add	r30, r18
+     c14:	f3 1f       	adc	r31, r19
+     c16:	55 81       	ldd	r21, Z+5	; 0x05
+     c18:	86 51       	subi	r24, 0x16	; 22
+     c1a:	9a 4f       	sbci	r25, 0xFA	; 250
+     c1c:	fc 01       	movw	r30, r24
+     c1e:	e2 0f       	add	r30, r18
+     c20:	f3 1f       	adc	r31, r19
+     c22:	55 83       	std	Z+5, r21	; 0x05
+void rotateActiveBrick() 
+{
 	//Copy active brick pix array to temporary pix array
-	
 	for (byte y = 0; y < 4; y++) 
 	{
 		for (byte x = 0; x < 4; x++) 
-     b1a:	4f 5f       	subi	r20, 0xFF	; 255
-     b1c:	01 c0       	rjmp	.+2      	; 0xb20 <rotateActiveBrick+0x32>
-     b1e:	40 e0       	ldi	r20, 0x00	; 0
-     b20:	44 30       	cpi	r20, 0x04	; 4
-     b22:	38 f3       	brcs	.-50     	; 0xaf2 <rotateActiveBrick+0x4>
+     c24:	4f 5f       	subi	r20, 0xFF	; 255
+     c26:	01 c0       	rjmp	.+2      	; 0xc2a <rotateActiveBrick+0x32>
+     c28:	40 e0       	ldi	r20, 0x00	; 0
+     c2a:	44 30       	cpi	r20, 0x04	; 4
+     c2c:	38 f3       	brcs	.-50     	; 0xbfc <rotateActiveBrick+0x4>
 
 // CHECK ON TABLE
-void rotateActiveBrick() {
+void rotateActiveBrick() 
+{
 	//Copy active brick pix array to temporary pix array
-	
 	for (byte y = 0; y < 4; y++) 
-     b24:	6f 5f       	subi	r22, 0xFF	; 255
-     b26:	64 30       	cpi	r22, 0x04	; 4
-     b28:	d0 f3       	brcs	.-12     	; 0xb1e <rotateActiveBrick+0x30>
+     c2e:	6f 5f       	subi	r22, 0xFF	; 255
+     c30:	64 30       	cpi	r22, 0x04	; 4
+     c32:	d0 f3       	brcs	.-12     	; 0xc28 <rotateActiveBrick+0x30>
 		for (byte x = 0; x < 4; x++) 
 		{
-			tmpBrick.pix[y][x] = activeBrick.pix[y][x]; // IMPORTANTE, verificar x,y e y,x na mesa
+			tmpBrick.pix[y][x] = activeBrick.pix[y][x];
 		}
 	}
 	tmpBrick.xpos = activeBrick.xpos;
-     b2a:	aa e1       	ldi	r26, 0x1A	; 26
-     b2c:	b6 e0       	ldi	r27, 0x06	; 6
-     b2e:	11 96       	adiw	r26, 0x01	; 1
-     b30:	8c 91       	ld	r24, X
-     b32:	11 97       	sbiw	r26, 0x01	; 1
-     b34:	e0 e3       	ldi	r30, 0x30	; 48
-     b36:	f6 e0       	ldi	r31, 0x06	; 6
-     b38:	81 83       	std	Z+1, r24	; 0x01
+     c34:	a4 ed       	ldi	r26, 0xD4	; 212
+     c36:	b5 e0       	ldi	r27, 0x05	; 5
+     c38:	11 96       	adiw	r26, 0x01	; 1
+     c3a:	8c 91       	ld	r24, X
+     c3c:	11 97       	sbiw	r26, 0x01	; 1
+     c3e:	ea ee       	ldi	r30, 0xEA	; 234
+     c40:	f5 e0       	ldi	r31, 0x05	; 5
+     c42:	81 83       	std	Z+1, r24	; 0x01
 	tmpBrick.ypos = activeBrick.ypos;
-     b3a:	12 96       	adiw	r26, 0x02	; 2
-     b3c:	8c 91       	ld	r24, X
-     b3e:	12 97       	sbiw	r26, 0x02	; 2
-     b40:	82 83       	std	Z+2, r24	; 0x02
+     c44:	12 96       	adiw	r26, 0x02	; 2
+     c46:	8c 91       	ld	r24, X
+     c48:	12 97       	sbiw	r26, 0x02	; 2
+     c4a:	82 83       	std	Z+2, r24	; 0x02
 	tmpBrick.siz = activeBrick.siz;
-     b42:	14 96       	adiw	r26, 0x04	; 4
-     b44:	8c 91       	ld	r24, X
-     b46:	14 97       	sbiw	r26, 0x04	; 4
-     b48:	84 83       	std	Z+4, r24	; 0x04
+     c4c:	14 96       	adiw	r26, 0x04	; 4
+     c4e:	8c 91       	ld	r24, X
+     c50:	14 97       	sbiw	r26, 0x04	; 4
+     c52:	84 83       	std	Z+4, r24	; 0x04
 
 	//Depending on size of the active brick, we will rotate differently
 	if (activeBrick.siz == 3) 
-     b4a:	83 30       	cpi	r24, 0x03	; 3
-     b4c:	59 f5       	brne	.+86     	; 0xba4 <rotateActiveBrick+0xb6>
+     c54:	83 30       	cpi	r24, 0x03	; 3
+     c56:	59 f5       	brne	.+86     	; 0xcae <rotateActiveBrick+0xb6>
 	{
 		//Perform rotation around center pix
 		tmpBrick.pix[0][0] = activeBrick.pix[0][2];
-     b4e:	17 96       	adiw	r26, 0x07	; 7
-     b50:	8c 91       	ld	r24, X
-     b52:	17 97       	sbiw	r26, 0x07	; 7
-     b54:	85 83       	std	Z+5, r24	; 0x05
+     c58:	17 96       	adiw	r26, 0x07	; 7
+     c5a:	8c 91       	ld	r24, X
+     c5c:	17 97       	sbiw	r26, 0x07	; 7
+     c5e:	85 83       	std	Z+5, r24	; 0x05
 		tmpBrick.pix[0][1] = activeBrick.pix[1][2];
-     b56:	1b 96       	adiw	r26, 0x0b	; 11
-     b58:	8c 91       	ld	r24, X
-     b5a:	1b 97       	sbiw	r26, 0x0b	; 11
-     b5c:	86 83       	std	Z+6, r24	; 0x06
+     c60:	1b 96       	adiw	r26, 0x0b	; 11
+     c62:	8c 91       	ld	r24, X
+     c64:	1b 97       	sbiw	r26, 0x0b	; 11
+     c66:	86 83       	std	Z+6, r24	; 0x06
 		tmpBrick.pix[0][2] = activeBrick.pix[2][2];
-     b5e:	1f 96       	adiw	r26, 0x0f	; 15
-     b60:	8c 91       	ld	r24, X
-     b62:	1f 97       	sbiw	r26, 0x0f	; 15
-     b64:	87 83       	std	Z+7, r24	; 0x07
+     c68:	1f 96       	adiw	r26, 0x0f	; 15
+     c6a:	8c 91       	ld	r24, X
+     c6c:	1f 97       	sbiw	r26, 0x0f	; 15
+     c6e:	87 83       	std	Z+7, r24	; 0x07
 		tmpBrick.pix[1][0] = activeBrick.pix[0][1];
-     b66:	16 96       	adiw	r26, 0x06	; 6
-     b68:	8c 91       	ld	r24, X
-     b6a:	16 97       	sbiw	r26, 0x06	; 6
-     b6c:	81 87       	std	Z+9, r24	; 0x09
+     c70:	16 96       	adiw	r26, 0x06	; 6
+     c72:	8c 91       	ld	r24, X
+     c74:	16 97       	sbiw	r26, 0x06	; 6
+     c76:	81 87       	std	Z+9, r24	; 0x09
 		tmpBrick.pix[1][1] = activeBrick.pix[1][1];
-     b6e:	1a 96       	adiw	r26, 0x0a	; 10
-     b70:	8c 91       	ld	r24, X
-     b72:	1a 97       	sbiw	r26, 0x0a	; 10
-     b74:	82 87       	std	Z+10, r24	; 0x0a
+     c78:	1a 96       	adiw	r26, 0x0a	; 10
+     c7a:	8c 91       	ld	r24, X
+     c7c:	1a 97       	sbiw	r26, 0x0a	; 10
+     c7e:	82 87       	std	Z+10, r24	; 0x0a
 		tmpBrick.pix[1][2] = activeBrick.pix[2][1];
-     b76:	1e 96       	adiw	r26, 0x0e	; 14
-     b78:	8c 91       	ld	r24, X
-     b7a:	1e 97       	sbiw	r26, 0x0e	; 14
-     b7c:	83 87       	std	Z+11, r24	; 0x0b
+     c80:	1e 96       	adiw	r26, 0x0e	; 14
+     c82:	8c 91       	ld	r24, X
+     c84:	1e 97       	sbiw	r26, 0x0e	; 14
+     c86:	83 87       	std	Z+11, r24	; 0x0b
 		tmpBrick.pix[2][0] = activeBrick.pix[0][0];
-     b7e:	15 96       	adiw	r26, 0x05	; 5
-     b80:	8c 91       	ld	r24, X
-     b82:	15 97       	sbiw	r26, 0x05	; 5
-     b84:	85 87       	std	Z+13, r24	; 0x0d
+     c88:	15 96       	adiw	r26, 0x05	; 5
+     c8a:	8c 91       	ld	r24, X
+     c8c:	15 97       	sbiw	r26, 0x05	; 5
+     c8e:	85 87       	std	Z+13, r24	; 0x0d
 		tmpBrick.pix[2][1] = activeBrick.pix[1][0];
-     b86:	19 96       	adiw	r26, 0x09	; 9
-     b88:	8c 91       	ld	r24, X
-     b8a:	19 97       	sbiw	r26, 0x09	; 9
-     b8c:	86 87       	std	Z+14, r24	; 0x0e
+     c90:	19 96       	adiw	r26, 0x09	; 9
+     c92:	8c 91       	ld	r24, X
+     c94:	19 97       	sbiw	r26, 0x09	; 9
+     c96:	86 87       	std	Z+14, r24	; 0x0e
 		tmpBrick.pix[2][2] = activeBrick.pix[2][0];
-     b8e:	1d 96       	adiw	r26, 0x0d	; 13
-     b90:	8c 91       	ld	r24, X
-     b92:	87 87       	std	Z+15, r24	; 0x0f
+     c98:	1d 96       	adiw	r26, 0x0d	; 13
+     c9a:	8c 91       	ld	r24, X
+     c9c:	87 87       	std	Z+15, r24	; 0x0f
 		//Keep other parts of temporary block clear
 		tmpBrick.pix[0][3] = 0;
-     b94:	10 86       	std	Z+8, r1	; 0x08
+     c9e:	10 86       	std	Z+8, r1	; 0x08
 		tmpBrick.pix[1][3] = 0;
-     b96:	14 86       	std	Z+12, r1	; 0x0c
+     ca0:	14 86       	std	Z+12, r1	; 0x0c
 		tmpBrick.pix[2][3] = 0;
-     b98:	10 8a       	std	Z+16, r1	; 0x10
+     ca2:	10 8a       	std	Z+16, r1	; 0x10
 		tmpBrick.pix[3][3] = 0;
-     b9a:	14 8a       	std	Z+20, r1	; 0x14
+     ca4:	14 8a       	std	Z+20, r1	; 0x14
 		tmpBrick.pix[3][2] = 0;
-     b9c:	13 8a       	std	Z+19, r1	; 0x13
+     ca6:	13 8a       	std	Z+19, r1	; 0x13
 		tmpBrick.pix[3][1] = 0;
-     b9e:	12 8a       	std	Z+18, r1	; 0x12
+     ca8:	12 8a       	std	Z+18, r1	; 0x12
 		tmpBrick.pix[3][0] = 0;
-     ba0:	11 8a       	std	Z+17, r1	; 0x11
-     ba2:	55 c0       	rjmp	.+170    	; 0xc4e <rotateActiveBrick+0x160>
-	
-		*/
-		
+     caa:	11 8a       	std	Z+17, r1	; 0x11
+     cac:	55 c0       	rjmp	.+170    	; 0xd58 <rotateActiveBrick+0x160>
 	} 
-	
+	// Square does not rotate
 	else if (selectedBrick == 0)
-     ba4:	90 91 82 02 	lds	r25, 0x0282	; 0x800282 <selectedBrick>
-     ba8:	99 23       	and	r25, r25
-     baa:	09 f4       	brne	.+2      	; 0xbae <rotateActiveBrick+0xc0>
-     bac:	7d c0       	rjmp	.+250    	; 0xca8 <rotateActiveBrick+0x1ba>
+     cae:	90 91 3f 02 	lds	r25, 0x023F	; 0x80023f <selectedBrick>
+     cb2:	99 23       	and	r25, r25
+     cb4:	09 f4       	brne	.+2      	; 0xcb8 <rotateActiveBrick+0xc0>
+     cb6:	7d c0       	rjmp	.+250    	; 0xdb2 <rotateActiveBrick+0x1ba>
 	{
 		return;
 	}
-	
+	// I piece will change pix
 	else if (activeBrick.siz == 4)
-     bae:	84 30       	cpi	r24, 0x04	; 4
-     bb0:	09 f0       	breq	.+2      	; 0xbb4 <rotateActiveBrick+0xc6>
-     bb2:	4d c0       	rjmp	.+154    	; 0xc4e <rotateActiveBrick+0x160>
+     cb8:	84 30       	cpi	r24, 0x04	; 4
+     cba:	09 f0       	breq	.+2      	; 0xcbe <rotateActiveBrick+0xc6>
+     cbc:	4d c0       	rjmp	.+154    	; 0xd58 <rotateActiveBrick+0x160>
 	{
 		if (I_rot == 0)
-     bb4:	80 91 84 02 	lds	r24, 0x0284	; 0x800284 <I_rot>
-     bb8:	88 23       	and	r24, r24
-     bba:	09 f1       	breq	.+66     	; 0xbfe <rotateActiveBrick+0x110>
-     bbc:	60 e0       	ldi	r22, 0x00	; 0
-     bbe:	43 c0       	rjmp	.+134    	; 0xc46 <rotateActiveBrick+0x158>
+     cbe:	80 91 3d 02 	lds	r24, 0x023D	; 0x80023d <I_rot>
+     cc2:	88 23       	and	r24, r24
+     cc4:	09 f1       	breq	.+66     	; 0xd08 <rotateActiveBrick+0x110>
+     cc6:	60 e0       	ldi	r22, 0x00	; 0
+     cc8:	43 c0       	rjmp	.+134    	; 0xd50 <rotateActiveBrick+0x158>
 		{
 			for (byte y = 0; y < 4; y++)
 			{
 				for (byte x = 0; x < 4; x++)
 				{
 					tmpBrick.pix[y][x] = (brickLib[7]).pix[y][x];
-     bc0:	86 2f       	mov	r24, r22
-     bc2:	90 e0       	ldi	r25, 0x00	; 0
-     bc4:	24 2f       	mov	r18, r20
-     bc6:	30 e0       	ldi	r19, 0x00	; 0
-     bc8:	88 0f       	add	r24, r24
-     bca:	99 1f       	adc	r25, r25
-     bcc:	88 0f       	add	r24, r24
-     bce:	99 1f       	adc	r25, r25
-     bd0:	fc 01       	movw	r30, r24
-     bd2:	e2 0f       	add	r30, r18
-     bd4:	f3 1f       	adc	r31, r19
-     bd6:	e8 58       	subi	r30, 0x88	; 136
-     bd8:	ff 4f       	sbci	r31, 0xFF	; 255
-     bda:	ee 0f       	add	r30, r30
-     bdc:	ff 1f       	adc	r31, r31
-     bde:	e0 5e       	subi	r30, 0xE0	; 224
-     be0:	fe 4f       	sbci	r31, 0xFE	; 254
-     be2:	50 81       	ld	r21, Z
-     be4:	80 5d       	subi	r24, 0xD0	; 208
-     be6:	99 4f       	sbci	r25, 0xF9	; 249
-     be8:	fc 01       	movw	r30, r24
-     bea:	e2 0f       	add	r30, r18
-     bec:	f3 1f       	adc	r31, r19
-     bee:	55 83       	std	Z+5, r21	; 0x05
+     cca:	86 2f       	mov	r24, r22
+     ccc:	90 e0       	ldi	r25, 0x00	; 0
+     cce:	24 2f       	mov	r18, r20
+     cd0:	30 e0       	ldi	r19, 0x00	; 0
+     cd2:	88 0f       	add	r24, r24
+     cd4:	99 1f       	adc	r25, r25
+     cd6:	88 0f       	add	r24, r24
+     cd8:	99 1f       	adc	r25, r25
+     cda:	fc 01       	movw	r30, r24
+     cdc:	e2 0f       	add	r30, r18
+     cde:	f3 1f       	adc	r31, r19
+     ce0:	e8 58       	subi	r30, 0x88	; 136
+     ce2:	ff 4f       	sbci	r31, 0xFF	; 255
+     ce4:	ee 0f       	add	r30, r30
+     ce6:	ff 1f       	adc	r31, r31
+     ce8:	e0 5e       	subi	r30, 0xE0	; 224
+     cea:	fe 4f       	sbci	r31, 0xFE	; 254
+     cec:	50 81       	ld	r21, Z
+     cee:	86 51       	subi	r24, 0x16	; 22
+     cf0:	9a 4f       	sbci	r25, 0xFA	; 250
+     cf2:	fc 01       	movw	r30, r24
+     cf4:	e2 0f       	add	r30, r18
+     cf6:	f3 1f       	adc	r31, r19
+     cf8:	55 83       	std	Z+5, r21	; 0x05
 	{
 		if (I_rot == 0)
 		{
 			for (byte y = 0; y < 4; y++)
 			{
 				for (byte x = 0; x < 4; x++)
-     bf0:	4f 5f       	subi	r20, 0xFF	; 255
-     bf2:	01 c0       	rjmp	.+2      	; 0xbf6 <rotateActiveBrick+0x108>
-     bf4:	40 e0       	ldi	r20, 0x00	; 0
-     bf6:	44 30       	cpi	r20, 0x04	; 4
-     bf8:	18 f3       	brcs	.-58     	; 0xbc0 <rotateActiveBrick+0xd2>
-	
+     cfa:	4f 5f       	subi	r20, 0xFF	; 255
+     cfc:	01 c0       	rjmp	.+2      	; 0xd00 <rotateActiveBrick+0x108>
+     cfe:	40 e0       	ldi	r20, 0x00	; 0
+     d00:	44 30       	cpi	r20, 0x04	; 4
+     d02:	18 f3       	brcs	.-58     	; 0xcca <rotateActiveBrick+0xd2>
+	// I piece will change pix
 	else if (activeBrick.siz == 4)
 	{
 		if (I_rot == 0)
 		{
 			for (byte y = 0; y < 4; y++)
-     bfa:	6f 5f       	subi	r22, 0xFF	; 255
-     bfc:	01 c0       	rjmp	.+2      	; 0xc00 <rotateActiveBrick+0x112>
-     bfe:	60 e0       	ldi	r22, 0x00	; 0
-     c00:	64 30       	cpi	r22, 0x04	; 4
-     c02:	c0 f3       	brcs	.-16     	; 0xbf4 <rotateActiveBrick+0x106>
+     d04:	6f 5f       	subi	r22, 0xFF	; 255
+     d06:	01 c0       	rjmp	.+2      	; 0xd0a <rotateActiveBrick+0x112>
+     d08:	60 e0       	ldi	r22, 0x00	; 0
+     d0a:	64 30       	cpi	r22, 0x04	; 4
+     d0c:	c0 f3       	brcs	.-16     	; 0xcfe <rotateActiveBrick+0x106>
 				for (byte x = 0; x < 4; x++)
 				{
 					tmpBrick.pix[y][x] = (brickLib[7]).pix[y][x];
 				}
 			}
 			I_rot = 1;
-     c04:	81 e0       	ldi	r24, 0x01	; 1
-     c06:	80 93 84 02 	sts	0x0284, r24	; 0x800284 <I_rot>
-     c0a:	21 c0       	rjmp	.+66     	; 0xc4e <rotateActiveBrick+0x160>
+     d0e:	81 e0       	ldi	r24, 0x01	; 1
+     d10:	80 93 3d 02 	sts	0x023D, r24	; 0x80023d <I_rot>
+     d14:	21 c0       	rjmp	.+66     	; 0xd58 <rotateActiveBrick+0x160>
 		{
 			for (byte y = 0; y < 4; y++)
 			{
 				for (byte x = 0; x < 4; x++)
 				{
 					tmpBrick.pix[y][x] = (brickLib[1]).pix[y][x];
-     c0c:	86 2f       	mov	r24, r22
-     c0e:	90 e0       	ldi	r25, 0x00	; 0
-     c10:	24 2f       	mov	r18, r20
-     c12:	30 e0       	ldi	r19, 0x00	; 0
-     c14:	88 0f       	add	r24, r24
-     c16:	99 1f       	adc	r25, r25
-     c18:	88 0f       	add	r24, r24
-     c1a:	99 1f       	adc	r25, r25
-     c1c:	fc 01       	movw	r30, r24
-     c1e:	e2 0f       	add	r30, r18
-     c20:	f3 1f       	adc	r31, r19
-     c22:	72 96       	adiw	r30, 0x12	; 18
-     c24:	ee 0f       	add	r30, r30
-     c26:	ff 1f       	adc	r31, r31
-     c28:	e0 5e       	subi	r30, 0xE0	; 224
-     c2a:	fe 4f       	sbci	r31, 0xFE	; 254
-     c2c:	50 81       	ld	r21, Z
-     c2e:	80 5d       	subi	r24, 0xD0	; 208
-     c30:	99 4f       	sbci	r25, 0xF9	; 249
-     c32:	fc 01       	movw	r30, r24
-     c34:	e2 0f       	add	r30, r18
-     c36:	f3 1f       	adc	r31, r19
-     c38:	55 83       	std	Z+5, r21	; 0x05
+     d16:	86 2f       	mov	r24, r22
+     d18:	90 e0       	ldi	r25, 0x00	; 0
+     d1a:	24 2f       	mov	r18, r20
+     d1c:	30 e0       	ldi	r19, 0x00	; 0
+     d1e:	88 0f       	add	r24, r24
+     d20:	99 1f       	adc	r25, r25
+     d22:	88 0f       	add	r24, r24
+     d24:	99 1f       	adc	r25, r25
+     d26:	fc 01       	movw	r30, r24
+     d28:	e2 0f       	add	r30, r18
+     d2a:	f3 1f       	adc	r31, r19
+     d2c:	72 96       	adiw	r30, 0x12	; 18
+     d2e:	ee 0f       	add	r30, r30
+     d30:	ff 1f       	adc	r31, r31
+     d32:	e0 5e       	subi	r30, 0xE0	; 224
+     d34:	fe 4f       	sbci	r31, 0xFE	; 254
+     d36:	50 81       	ld	r21, Z
+     d38:	86 51       	subi	r24, 0x16	; 22
+     d3a:	9a 4f       	sbci	r25, 0xFA	; 250
+     d3c:	fc 01       	movw	r30, r24
+     d3e:	e2 0f       	add	r30, r18
+     d40:	f3 1f       	adc	r31, r19
+     d42:	55 83       	std	Z+5, r21	; 0x05
 		}
 		else
 		{
 			for (byte y = 0; y < 4; y++)
 			{
 				for (byte x = 0; x < 4; x++)
-     c3a:	4f 5f       	subi	r20, 0xFF	; 255
-     c3c:	01 c0       	rjmp	.+2      	; 0xc40 <rotateActiveBrick+0x152>
-     c3e:	40 e0       	ldi	r20, 0x00	; 0
-     c40:	44 30       	cpi	r20, 0x04	; 4
-     c42:	20 f3       	brcs	.-56     	; 0xc0c <rotateActiveBrick+0x11e>
+     d44:	4f 5f       	subi	r20, 0xFF	; 255
+     d46:	01 c0       	rjmp	.+2      	; 0xd4a <rotateActiveBrick+0x152>
+     d48:	40 e0       	ldi	r20, 0x00	; 0
+     d4a:	44 30       	cpi	r20, 0x04	; 4
+     d4c:	20 f3       	brcs	.-56     	; 0xd16 <rotateActiveBrick+0x11e>
 			}
 			I_rot = 1;
 		}
 		else
 		{
 			for (byte y = 0; y < 4; y++)
-     c44:	6f 5f       	subi	r22, 0xFF	; 255
-     c46:	64 30       	cpi	r22, 0x04	; 4
-     c48:	d0 f3       	brcs	.-12     	; 0xc3e <rotateActiveBrick+0x150>
+     d4e:	6f 5f       	subi	r22, 0xFF	; 255
+     d50:	64 30       	cpi	r22, 0x04	; 4
+     d52:	d0 f3       	brcs	.-12     	; 0xd48 <rotateActiveBrick+0x150>
 				for (byte x = 0; x < 4; x++)
 				{
 					tmpBrick.pix[y][x] = (brickLib[1]).pix[y][x];
 				}
 			}
 			I_rot = 0;
-     c4a:	10 92 84 02 	sts	0x0284, r1	; 0x800284 <I_rot>
-	//Collision possibilities:
-	//      -Brick now sticks outside field
-	//      -Brick now sticks inside fixed bricks of field
-	//In case of collision, we just discard the rotated temporary brick
+     d54:	10 92 3d 02 	sts	0x023D, r1	; 0x80023d <I_rot>
+		}
+	}
 	
+	//Check for collision, in case of collision, discard the rotated temporary brick
 	if ((!checkSidesCollision(&tmpBrick)) && (!checkFieldCollision(&tmpBrick)))
-     c4e:	80 e3       	ldi	r24, 0x30	; 48
-     c50:	96 e0       	ldi	r25, 0x06	; 6
-     c52:	0e 94 97 03 	call	0x72e	; 0x72e <checkSidesCollision>
-     c56:	89 2b       	or	r24, r25
-     c58:	29 f5       	brne	.+74     	; 0xca4 <rotateActiveBrick+0x1b6>
-     c5a:	80 e3       	ldi	r24, 0x30	; 48
-     c5c:	96 e0       	ldi	r25, 0x06	; 6
-     c5e:	0e 94 bb 03 	call	0x776	; 0x776 <checkFieldCollision>
-     c62:	89 2b       	or	r24, r25
-     c64:	e1 f0       	breq	.+56     	; 0xc9e <rotateActiveBrick+0x1b0>
-     c66:	1e c0       	rjmp	.+60     	; 0xca4 <rotateActiveBrick+0x1b6>
-		
+     d58:	8a ee       	ldi	r24, 0xEA	; 234
+     d5a:	95 e0       	ldi	r25, 0x05	; 5
+     d5c:	0e 94 8c 03 	call	0x718	; 0x718 <checkSidesCollision>
+     d60:	89 2b       	or	r24, r25
+     d62:	29 f5       	brne	.+74     	; 0xdae <rotateActiveBrick+0x1b6>
+     d64:	8a ee       	ldi	r24, 0xEA	; 234
+     d66:	95 e0       	ldi	r25, 0x05	; 5
+     d68:	0e 94 b0 03 	call	0x760	; 0x760 <checkFieldCollision>
+     d6c:	89 2b       	or	r24, r25
+     d6e:	e1 f0       	breq	.+56     	; 0xda8 <rotateActiveBrick+0x1b0>
+     d70:	1e c0       	rjmp	.+60     	; 0xdae <rotateActiveBrick+0x1b6>
+		//Copy temporary brick pix array to active pix array
 		for (byte y = 0; y < 4; y++) 
 		{
 			for (byte x = 0; x < 4; x++) 
 			{
 				activeBrick.pix[y][x] = tmpBrick.pix[y][x];
-     c68:	86 2f       	mov	r24, r22
-     c6a:	90 e0       	ldi	r25, 0x00	; 0
-     c6c:	24 2f       	mov	r18, r20
-     c6e:	30 e0       	ldi	r19, 0x00	; 0
-     c70:	88 0f       	add	r24, r24
-     c72:	99 1f       	adc	r25, r25
-     c74:	88 0f       	add	r24, r24
-     c76:	99 1f       	adc	r25, r25
-     c78:	fc 01       	movw	r30, r24
-     c7a:	e0 5d       	subi	r30, 0xD0	; 208
-     c7c:	f9 4f       	sbci	r31, 0xF9	; 249
-     c7e:	e2 0f       	add	r30, r18
-     c80:	f3 1f       	adc	r31, r19
-     c82:	55 81       	ldd	r21, Z+5	; 0x05
-     c84:	86 5e       	subi	r24, 0xE6	; 230
-     c86:	99 4f       	sbci	r25, 0xF9	; 249
-     c88:	fc 01       	movw	r30, r24
-     c8a:	e2 0f       	add	r30, r18
-     c8c:	f3 1f       	adc	r31, r19
-     c8e:	55 83       	std	Z+5, r21	; 0x05
-	{
-		//Copy temporary brick pix array to active pix array
-		
-		for (byte y = 0; y < 4; y++) 
-		{
-			for (byte x = 0; x < 4; x++) 
-     c90:	4f 5f       	subi	r20, 0xFF	; 255
-     c92:	01 c0       	rjmp	.+2      	; 0xc96 <rotateActiveBrick+0x1a8>
-     c94:	40 e0       	ldi	r20, 0x00	; 0
-     c96:	44 30       	cpi	r20, 0x04	; 4
-     c98:	38 f3       	brcs	.-50     	; 0xc68 <rotateActiveBrick+0x17a>
-	
+     d72:	86 2f       	mov	r24, r22
+     d74:	90 e0       	ldi	r25, 0x00	; 0
+     d76:	24 2f       	mov	r18, r20
+     d78:	30 e0       	ldi	r19, 0x00	; 0
+     d7a:	88 0f       	add	r24, r24
+     d7c:	99 1f       	adc	r25, r25
+     d7e:	88 0f       	add	r24, r24
+     d80:	99 1f       	adc	r25, r25
+     d82:	fc 01       	movw	r30, r24
+     d84:	e6 51       	subi	r30, 0x16	; 22
+     d86:	fa 4f       	sbci	r31, 0xFA	; 250
+     d88:	e2 0f       	add	r30, r18
+     d8a:	f3 1f       	adc	r31, r19
+     d8c:	55 81       	ldd	r21, Z+5	; 0x05
+     d8e:	8c 52       	subi	r24, 0x2C	; 44
+     d90:	9a 4f       	sbci	r25, 0xFA	; 250
+     d92:	fc 01       	movw	r30, r24
+     d94:	e2 0f       	add	r30, r18
+     d96:	f3 1f       	adc	r31, r19
+     d98:	55 83       	std	Z+5, r21	; 0x05
 	if ((!checkSidesCollision(&tmpBrick)) && (!checkFieldCollision(&tmpBrick)))
 	{
 		//Copy temporary brick pix array to active pix array
-		
 		for (byte y = 0; y < 4; y++) 
-     c9a:	6f 5f       	subi	r22, 0xFF	; 255
-     c9c:	01 c0       	rjmp	.+2      	; 0xca0 <rotateActiveBrick+0x1b2>
-     c9e:	60 e0       	ldi	r22, 0x00	; 0
-     ca0:	64 30       	cpi	r22, 0x04	; 4
-     ca2:	c0 f3       	brcs	.-16     	; 0xc94 <rotateActiveBrick+0x1a6>
-		}
-		*/
-	}
+		{
+			for (byte x = 0; x < 4; x++) 
+     d9a:	4f 5f       	subi	r20, 0xFF	; 255
+     d9c:	01 c0       	rjmp	.+2      	; 0xda0 <rotateActiveBrick+0x1a8>
+     d9e:	40 e0       	ldi	r20, 0x00	; 0
+     da0:	44 30       	cpi	r20, 0x04	; 4
+     da2:	38 f3       	brcs	.-50     	; 0xd72 <rotateActiveBrick+0x17a>
 	
-	//activeBrick.ypos = tmpBrick.ypos;
-	printField(); // ?
-     ca4:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
-     ca8:	08 95       	ret
+	//Check for collision, in case of collision, discard the rotated temporary brick
+	if ((!checkSidesCollision(&tmpBrick)) && (!checkFieldCollision(&tmpBrick)))
+	{
+		//Copy temporary brick pix array to active pix array
+		for (byte y = 0; y < 4; y++) 
+     da4:	6f 5f       	subi	r22, 0xFF	; 255
+     da6:	01 c0       	rjmp	.+2      	; 0xdaa <rotateActiveBrick+0x1b2>
+     da8:	60 e0       	ldi	r22, 0x00	; 0
+     daa:	64 30       	cpi	r22, 0x04	; 4
+     dac:	c0 f3       	brcs	.-16     	; 0xd9e <rotateActiveBrick+0x1a6>
+			{
+				activeBrick.pix[y][x] = tmpBrick.pix[y][x];
+			}
+		}
+	}
+	printField();
+     dae:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
+     db2:	08 95       	ret
 
-00000caa <shiftActiveBrick>:
+00000db4 <shiftActiveBrick>:
 }
 
 //Shift brick left/right/down by one if possible
 void shiftActiveBrick(char dir) 
 {
-     caa:	cf 93       	push	r28
-     cac:	df 93       	push	r29
-     cae:	c8 2f       	mov	r28, r24
+     db4:	cf 93       	push	r28
+     db6:	df 93       	push	r29
+     db8:	c8 2f       	mov	r28, r24
 	char down = 'd';
 	char left = 'l';
 	char right = 'r';
 	
 	//Change position of active brick 
 	if (dir == left) 
-     cb0:	8c 36       	cpi	r24, 0x6C	; 108
-     cb2:	31 f4       	brne	.+12     	; 0xcc0 <shiftActiveBrick+0x16>
+     dba:	8c 36       	cpi	r24, 0x6C	; 108
+     dbc:	31 f4       	brne	.+12     	; 0xdca <shiftActiveBrick+0x16>
 	{
 		activeBrick.xpos--;
-     cb4:	ea e1       	ldi	r30, 0x1A	; 26
-     cb6:	f6 e0       	ldi	r31, 0x06	; 6
-     cb8:	81 81       	ldd	r24, Z+1	; 0x01
-     cba:	81 50       	subi	r24, 0x01	; 1
-     cbc:	81 83       	std	Z+1, r24	; 0x01
-     cbe:	1e c0       	rjmp	.+60     	; 0xcfc <shiftActiveBrick+0x52>
+     dbe:	e4 ed       	ldi	r30, 0xD4	; 212
+     dc0:	f5 e0       	ldi	r31, 0x05	; 5
+     dc2:	81 81       	ldd	r24, Z+1	; 0x01
+     dc4:	81 50       	subi	r24, 0x01	; 1
+     dc6:	81 83       	std	Z+1, r24	; 0x01
+     dc8:	20 c0       	rjmp	.+64     	; 0xe0a <shiftActiveBrick+0x56>
 	} 
 	else if (dir == right) 
-     cc0:	82 37       	cpi	r24, 0x72	; 114
-     cc2:	31 f4       	brne	.+12     	; 0xcd0 <shiftActiveBrick+0x26>
+     dca:	82 37       	cpi	r24, 0x72	; 114
+     dcc:	31 f4       	brne	.+12     	; 0xdda <shiftActiveBrick+0x26>
 	{
 		activeBrick.xpos++;
-     cc4:	ea e1       	ldi	r30, 0x1A	; 26
-     cc6:	f6 e0       	ldi	r31, 0x06	; 6
-     cc8:	81 81       	ldd	r24, Z+1	; 0x01
-     cca:	8f 5f       	subi	r24, 0xFF	; 255
-     ccc:	81 83       	std	Z+1, r24	; 0x01
-     cce:	16 c0       	rjmp	.+44     	; 0xcfc <shiftActiveBrick+0x52>
+     dce:	e4 ed       	ldi	r30, 0xD4	; 212
+     dd0:	f5 e0       	ldi	r31, 0x05	; 5
+     dd2:	81 81       	ldd	r24, Z+1	; 0x01
+     dd4:	8f 5f       	subi	r24, 0xFF	; 255
+     dd6:	81 83       	std	Z+1, r24	; 0x01
+     dd8:	18 c0       	rjmp	.+48     	; 0xe0a <shiftActiveBrick+0x56>
 }
 	else if (dir == down) 
-     cd0:	84 36       	cpi	r24, 0x64	; 100
-     cd2:	a1 f4       	brne	.+40     	; 0xcfc <shiftActiveBrick+0x52>
+     dda:	84 36       	cpi	r24, 0x64	; 100
+     ddc:	b1 f4       	brne	.+44     	; 0xe0a <shiftActiveBrick+0x56>
 	{
 		activeBrick.ypos--;
-     cd4:	ea e1       	ldi	r30, 0x1A	; 26
-     cd6:	f6 e0       	ldi	r31, 0x06	; 6
-     cd8:	82 81       	ldd	r24, Z+2	; 0x02
-     cda:	81 50       	subi	r24, 0x01	; 1
-     cdc:	82 83       	std	Z+2, r24	; 0x02
+     dde:	e4 ed       	ldi	r30, 0xD4	; 212
+     de0:	f5 e0       	ldi	r31, 0x05	; 5
+     de2:	82 81       	ldd	r24, Z+2	; 0x02
+     de4:	81 50       	subi	r24, 0x01	; 1
+     de6:	82 83       	std	Z+2, r24	; 0x02
 		
-		if (activeBrick.ypos == 0) // If brick has reached the bottom, stop and generate new brick
-     cde:	81 11       	cpse	r24, r1
-     ce0:	0d c0       	rjmp	.+26     	; 0xcfc <shiftActiveBrick+0x52>
-					}
-				}
-			}
-			
-			*/
+		// If brick has reached the bottom, stop and generate new brick
+		if (activeBrick.ypos == 0) 
+     de8:	81 11       	cpse	r24, r1
+     dea:	0f c0       	rjmp	.+30     	; 0xe0a <shiftActiveBrick+0x56>
+		{
 			if (!checkFieldCollision(&activeBrick))
-     ce2:	cf 01       	movw	r24, r30
-     ce4:	0e 94 bb 03 	call	0x776	; 0x776 <checkFieldCollision>
-     ce8:	89 2b       	or	r24, r25
-     cea:	41 f4       	brne	.+16     	; 0xcfc <shiftActiveBrick+0x52>
+     dec:	cf 01       	movw	r24, r30
+     dee:	0e 94 b0 03 	call	0x760	; 0x760 <checkFieldCollision>
+     df2:	89 2b       	or	r24, r25
+     df4:	51 f4       	brne	.+20     	; 0xe0a <shiftActiveBrick+0x56>
 			{
 				addActiveBrickToField();
-     cec:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
+     df6:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
 				activeBrick.enabled = 0;
-     cf0:	10 92 1a 06 	sts	0x061A, r1	; 0x80061a <activeBrick>
+     dfa:	10 92 d4 05 	sts	0x05D4, r1	; 0x8005d4 <activeBrick>
 				printField();
-     cf4:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
-				
-				//clearNext();
+     dfe:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
+				clearNext();
+     e02:	0e 94 e7 03 	call	0x7ce	; 0x7ce <clearNext>
 				newActiveBrick();
-     cf8:	0e 94 d7 04 	call	0x9ae	; 0x9ae <newActiveBrick>
+     e06:	0e 94 56 05 	call	0xaac	; 0xaac <newActiveBrick>
+		}
 	}
-	*/
 	
 	//Check for collision
 	//In case of collision, go back to previous position
 	if ((checkSidesCollision(&activeBrick)) || (checkFieldCollision(&activeBrick)))
-     cfc:	8a e1       	ldi	r24, 0x1A	; 26
-     cfe:	96 e0       	ldi	r25, 0x06	; 6
-     d00:	0e 94 97 03 	call	0x72e	; 0x72e <checkSidesCollision>
-     d04:	89 2b       	or	r24, r25
-     d06:	31 f4       	brne	.+12     	; 0xd14 <shiftActiveBrick+0x6a>
-     d08:	8a e1       	ldi	r24, 0x1A	; 26
-     d0a:	96 e0       	ldi	r25, 0x06	; 6
-     d0c:	0e 94 bb 03 	call	0x776	; 0x776 <checkFieldCollision>
-     d10:	89 2b       	or	r24, r25
-     d12:	f1 f0       	breq	.+60     	; 0xd50 <shiftActiveBrick+0xa6>
+     e0a:	84 ed       	ldi	r24, 0xD4	; 212
+     e0c:	95 e0       	ldi	r25, 0x05	; 5
+     e0e:	0e 94 8c 03 	call	0x718	; 0x718 <checkSidesCollision>
+     e12:	89 2b       	or	r24, r25
+     e14:	31 f4       	brne	.+12     	; 0xe22 <shiftActiveBrick+0x6e>
+     e16:	84 ed       	ldi	r24, 0xD4	; 212
+     e18:	95 e0       	ldi	r25, 0x05	; 5
+     e1a:	0e 94 b0 03 	call	0x760	; 0x760 <checkFieldCollision>
+     e1e:	89 2b       	or	r24, r25
+     e20:	f1 f0       	breq	.+60     	; 0xe5e <shiftActiveBrick+0xaa>
 	{
 		if (dir == left)
-     d14:	cc 36       	cpi	r28, 0x6C	; 108
-     d16:	31 f4       	brne	.+12     	; 0xd24 <shiftActiveBrick+0x7a>
+     e22:	cc 36       	cpi	r28, 0x6C	; 108
+     e24:	31 f4       	brne	.+12     	; 0xe32 <shiftActiveBrick+0x7e>
 		{
 			activeBrick.xpos++;
-     d18:	ea e1       	ldi	r30, 0x1A	; 26
-     d1a:	f6 e0       	ldi	r31, 0x06	; 6
-     d1c:	81 81       	ldd	r24, Z+1	; 0x01
-     d1e:	8f 5f       	subi	r24, 0xFF	; 255
-     d20:	81 83       	std	Z+1, r24	; 0x01
-     d22:	16 c0       	rjmp	.+44     	; 0xd50 <shiftActiveBrick+0xa6>
+     e26:	e4 ed       	ldi	r30, 0xD4	; 212
+     e28:	f5 e0       	ldi	r31, 0x05	; 5
+     e2a:	81 81       	ldd	r24, Z+1	; 0x01
+     e2c:	8f 5f       	subi	r24, 0xFF	; 255
+     e2e:	81 83       	std	Z+1, r24	; 0x01
+     e30:	16 c0       	rjmp	.+44     	; 0xe5e <shiftActiveBrick+0xaa>
 		}
 		else if (dir == right)
-     d24:	c2 37       	cpi	r28, 0x72	; 114
-     d26:	31 f4       	brne	.+12     	; 0xd34 <shiftActiveBrick+0x8a>
+     e32:	c2 37       	cpi	r28, 0x72	; 114
+     e34:	31 f4       	brne	.+12     	; 0xe42 <shiftActiveBrick+0x8e>
 		{
 			activeBrick.xpos--;
-     d28:	ea e1       	ldi	r30, 0x1A	; 26
-     d2a:	f6 e0       	ldi	r31, 0x06	; 6
-     d2c:	81 81       	ldd	r24, Z+1	; 0x01
-     d2e:	81 50       	subi	r24, 0x01	; 1
-     d30:	81 83       	std	Z+1, r24	; 0x01
-     d32:	0e c0       	rjmp	.+28     	; 0xd50 <shiftActiveBrick+0xa6>
+     e36:	e4 ed       	ldi	r30, 0xD4	; 212
+     e38:	f5 e0       	ldi	r31, 0x05	; 5
+     e3a:	81 81       	ldd	r24, Z+1	; 0x01
+     e3c:	81 50       	subi	r24, 0x01	; 1
+     e3e:	81 83       	std	Z+1, r24	; 0x01
+     e40:	0e c0       	rjmp	.+28     	; 0xe5e <shiftActiveBrick+0xaa>
 		}
 		else if (dir == down)
-     d34:	c4 36       	cpi	r28, 0x64	; 100
-     d36:	61 f4       	brne	.+24     	; 0xd50 <shiftActiveBrick+0xa6>
+     e42:	c4 36       	cpi	r28, 0x64	; 100
+     e44:	61 f4       	brne	.+24     	; 0xe5e <shiftActiveBrick+0xaa>
 		{	
 			activeBrick.ypos += 1;
-     d38:	ca e1       	ldi	r28, 0x1A	; 26
-     d3a:	d6 e0       	ldi	r29, 0x06	; 6
-     d3c:	8a 81       	ldd	r24, Y+2	; 0x02
-     d3e:	8f 5f       	subi	r24, 0xFF	; 255
-     d40:	8a 83       	std	Y+2, r24	; 0x02
+     e46:	c4 ed       	ldi	r28, 0xD4	; 212
+     e48:	d5 e0       	ldi	r29, 0x05	; 5
+     e4a:	8a 81       	ldd	r24, Y+2	; 0x02
+     e4c:	8f 5f       	subi	r24, 0xFF	; 255
+     e4e:	8a 83       	std	Y+2, r24	; 0x02
 			addActiveBrickToField();
-     d42:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
+     e50:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
 			activeBrick.enabled = 0;
-     d46:	18 82       	st	Y, r1
+     e54:	18 82       	st	Y, r1
 			printField();
-     d48:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
+     e56:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
 			newActiveBrick();
-     d4c:	0e 94 d7 04 	call	0x9ae	; 0x9ae <newActiveBrick>
-			
+     e5a:	0e 94 56 05 	call	0xaac	; 0xaac <newActiveBrick>
 		}
 	}
-	
 	printField();
-     d50:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
-
-	__builtin_avr_delay_cycles(__ticks_dc);
-     d54:	85 e8       	ldi	r24, 0x85	; 133
-     d56:	8a 95       	dec	r24
-     d58:	f1 f7       	brne	.-4      	; 0xd56 <shiftActiveBrick+0xac>
-     d5a:	00 00       	nop
+     e5e:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
+     e62:	85 e8       	ldi	r24, 0x85	; 133
+     e64:	8a 95       	dec	r24
+     e66:	f1 f7       	brne	.-4      	; 0xe64 <shiftActiveBrick+0xb0>
+     e68:	00 00       	nop
 	_delay_us(ws2812_resettime);
-	
 }
-     d5c:	df 91       	pop	r29
-     d5e:	cf 91       	pop	r28
-     d60:	08 95       	ret
+     e6a:	df 91       	pop	r29
+     e6c:	cf 91       	pop	r28
+     e6e:	08 95       	ret
 
-00000d62 <moveFieldDownOne>:
+00000e70 <moveFieldDownOne>:
 
 // CHECK ON TABLE	
 void moveFieldDownOne(byte startRow) 
 {
-	if (startRow == (row - 1))  //Top row has nothing on top to move...
-     d62:	83 31       	cpi	r24, 0x13	; 19
-     d64:	09 f0       	breq	.+2      	; 0xd68 <moveFieldDownOne+0x6>
-     d66:	45 c0       	rjmp	.+138    	; 0xdf2 <moveFieldDownOne+0x90>
-     d68:	08 95       	ret
+     e70:	1f 93       	push	r17
+     e72:	cf 93       	push	r28
+     e74:	df 93       	push	r29
+	//Top row has nothing on top to move
+	if (startRow == (row - 1))  
+     e76:	83 31       	cpi	r24, 0x13	; 19
+     e78:	e9 f5       	brne	.+122    	; 0xef4 <moveFieldDownOne+0x84>
+     e7a:	3e c0       	rjmp	.+124    	; 0xef8 <moveFieldDownOne+0x88>
 	//Copy top row to bottom
-	for (y = startRow; y < row - 1; y++) // y = startRow - 1;
+	for (y = startRow; y < row - 1; y++)
 	{
 		for (x = 0; x < column; x++) 
 		{
 			field.pix[y][x] = field.pix[y + 1][x];
-     d6a:	48 2f       	mov	r20, r24
-     d6c:	50 e0       	ldi	r21, 0x00	; 0
-     d6e:	9a 01       	movw	r18, r20
-     d70:	2f 5f       	subi	r18, 0xFF	; 255
-     d72:	3f 4f       	sbci	r19, 0xFF	; 255
-     d74:	69 2f       	mov	r22, r25
-     d76:	70 e0       	ldi	r23, 0x00	; 0
-     d78:	ad e0       	ldi	r26, 0x0D	; 13
-     d7a:	a2 9f       	mul	r26, r18
-     d7c:	f0 01       	movw	r30, r0
-     d7e:	a3 9f       	mul	r26, r19
-     d80:	f0 0d       	add	r31, r0
-     d82:	11 24       	eor	r1, r1
-     d84:	e7 5b       	subi	r30, 0xB7	; 183
-     d86:	f9 4f       	sbci	r31, 0xF9	; 249
-     d88:	e6 0f       	add	r30, r22
-     d8a:	f7 1f       	adc	r31, r23
-     d8c:	b0 81       	ld	r27, Z
-     d8e:	a4 9f       	mul	r26, r20
-     d90:	f0 01       	movw	r30, r0
-     d92:	a5 9f       	mul	r26, r21
-     d94:	f0 0d       	add	r31, r0
-     d96:	11 24       	eor	r1, r1
-     d98:	e7 5b       	subi	r30, 0xB7	; 183
-     d9a:	f9 4f       	sbci	r31, 0xF9	; 249
-     d9c:	e6 0f       	add	r30, r22
-     d9e:	f7 1f       	adc	r31, r23
-     da0:	b0 83       	st	Z, r27
+     e7c:	48 2f       	mov	r20, r24
+     e7e:	50 e0       	ldi	r21, 0x00	; 0
+     e80:	9a 01       	movw	r18, r20
+     e82:	2f 5f       	subi	r18, 0xFF	; 255
+     e84:	3f 4f       	sbci	r19, 0xFF	; 255
+     e86:	69 2f       	mov	r22, r25
+     e88:	70 e0       	ldi	r23, 0x00	; 0
+     e8a:	f9 01       	movw	r30, r18
+     e8c:	ee 0f       	add	r30, r30
+     e8e:	ff 1f       	adc	r31, r31
+     e90:	df 01       	movw	r26, r30
+     e92:	a2 0f       	add	r26, r18
+     e94:	b3 1f       	adc	r27, r19
+     e96:	aa 0f       	add	r26, r26
+     e98:	bb 1f       	adc	r27, r27
+     e9a:	aa 0f       	add	r26, r26
+     e9c:	bb 1f       	adc	r27, r27
+     e9e:	a0 50       	subi	r26, 0x00	; 0
+     ea0:	ba 4f       	sbci	r27, 0xFA	; 250
+     ea2:	a6 0f       	add	r26, r22
+     ea4:	b7 1f       	adc	r27, r23
+     ea6:	1c 91       	ld	r17, X
+     ea8:	da 01       	movw	r26, r20
+     eaa:	aa 0f       	add	r26, r26
+     eac:	bb 1f       	adc	r27, r27
+     eae:	ed 01       	movw	r28, r26
+     eb0:	c4 0f       	add	r28, r20
+     eb2:	d5 1f       	adc	r29, r21
+     eb4:	cc 0f       	add	r28, r28
+     eb6:	dd 1f       	adc	r29, r29
+     eb8:	cc 0f       	add	r28, r28
+     eba:	dd 1f       	adc	r29, r29
+     ebc:	c0 50       	subi	r28, 0x00	; 0
+     ebe:	da 4f       	sbci	r29, 0xFA	; 250
+     ec0:	c6 0f       	add	r28, r22
+     ec2:	d7 1f       	adc	r29, r23
+     ec4:	18 83       	st	Y, r17
 			field.color[y][x] = field.color[y + 1][x];
-     da2:	f9 01       	movw	r30, r18
-     da4:	ee 0f       	add	r30, r30
-     da6:	ff 1f       	adc	r31, r31
-     da8:	e2 0f       	add	r30, r18
-     daa:	f3 1f       	adc	r31, r19
-     dac:	ee 0f       	add	r30, r30
-     dae:	ff 1f       	adc	r31, r31
-     db0:	ee 0f       	add	r30, r30
-     db2:	ff 1f       	adc	r31, r31
-     db4:	e7 5b       	subi	r30, 0xB7	; 183
-     db6:	f9 4f       	sbci	r31, 0xF9	; 249
-     db8:	e6 0f       	add	r30, r22
-     dba:	f7 1f       	adc	r31, r23
-     dbc:	ec 5f       	subi	r30, 0xFC	; 252
-     dbe:	fe 4f       	sbci	r31, 0xFE	; 254
-     dc0:	20 81       	ld	r18, Z
-     dc2:	fa 01       	movw	r30, r20
-     dc4:	ee 0f       	add	r30, r30
-     dc6:	ff 1f       	adc	r31, r31
-     dc8:	4e 0f       	add	r20, r30
-     dca:	5f 1f       	adc	r21, r31
-     dcc:	44 0f       	add	r20, r20
-     dce:	55 1f       	adc	r21, r21
-     dd0:	44 0f       	add	r20, r20
-     dd2:	55 1f       	adc	r21, r21
-     dd4:	47 5b       	subi	r20, 0xB7	; 183
-     dd6:	59 4f       	sbci	r21, 0xF9	; 249
-     dd8:	46 0f       	add	r20, r22
-     dda:	57 1f       	adc	r21, r23
-     ddc:	fa 01       	movw	r30, r20
-     dde:	ec 5f       	subi	r30, 0xFC	; 252
-     de0:	fe 4f       	sbci	r31, 0xFE	; 254
-     de2:	20 83       	st	Z, r18
-	
+     ec6:	e2 0f       	add	r30, r18
+     ec8:	f3 1f       	adc	r31, r19
+     eca:	ee 0f       	add	r30, r30
+     ecc:	ff 1f       	adc	r31, r31
+     ece:	ee 0f       	add	r30, r30
+     ed0:	ff 1f       	adc	r31, r31
+     ed2:	e0 50       	subi	r30, 0x00	; 0
+     ed4:	fa 4f       	sbci	r31, 0xFA	; 250
+     ed6:	e6 0f       	add	r30, r22
+     ed8:	f7 1f       	adc	r31, r23
+     eda:	e0 51       	subi	r30, 0x10	; 16
+     edc:	ff 4f       	sbci	r31, 0xFF	; 255
+     ede:	20 81       	ld	r18, Z
+     ee0:	fe 01       	movw	r30, r28
+     ee2:	e0 51       	subi	r30, 0x10	; 16
+     ee4:	ff 4f       	sbci	r31, 0xFF	; 255
+     ee6:	20 83       	st	Z, r18
 	byte x, y;
+	
 	//Copy top row to bottom
-	for (y = startRow; y < row - 1; y++) // y = startRow - 1;
+	for (y = startRow; y < row - 1; y++)
 	{
 		for (x = 0; x < column; x++) 
-     de4:	9f 5f       	subi	r25, 0xFF	; 255
-     de6:	01 c0       	rjmp	.+2      	; 0xdea <moveFieldDownOne+0x88>
-     de8:	90 e0       	ldi	r25, 0x00	; 0
-     dea:	9c 30       	cpi	r25, 0x0C	; 12
-     dec:	08 f4       	brcc	.+2      	; 0xdf0 <moveFieldDownOne+0x8e>
-     dee:	bd cf       	rjmp	.-134    	; 0xd6a <moveFieldDownOne+0x8>
+     ee8:	9f 5f       	subi	r25, 0xFF	; 255
+     eea:	01 c0       	rjmp	.+2      	; 0xeee <moveFieldDownOne+0x7e>
+     eec:	90 e0       	ldi	r25, 0x00	; 0
+     eee:	9c 30       	cpi	r25, 0x0C	; 12
+     ef0:	28 f2       	brcs	.-118    	; 0xe7c <moveFieldDownOne+0xc>
 		return;
 	}
-	
 	byte x, y;
+	
 	//Copy top row to bottom
-	for (y = startRow; y < row - 1; y++) // y = startRow - 1;
-     df0:	8f 5f       	subi	r24, 0xFF	; 255
-     df2:	83 31       	cpi	r24, 0x13	; 19
-     df4:	c8 f3       	brcs	.-14     	; 0xde8 <moveFieldDownOne+0x86>
-     df6:	08 95       	ret
-
-00000df8 <checkFullLines>:
+	for (y = startRow; y < row - 1; y++)
+     ef2:	8f 5f       	subi	r24, 0xFF	; 255
+     ef4:	83 31       	cpi	r24, 0x13	; 19
+     ef6:	d0 f3       	brcs	.-12     	; 0xeec <moveFieldDownOne+0x7c>
+		{
+			field.pix[y][x] = field.pix[y + 1][x];
+			field.color[y][x] = field.color[y + 1][x];
 		}
 	}
 }
+     ef8:	df 91       	pop	r29
+     efa:	cf 91       	pop	r28
+     efc:	1f 91       	pop	r17
+     efe:	08 95       	ret
+
+00000f00 <checkFullLines>:
 
 void checkFullLines() 
 {
-     df8:	ef 92       	push	r14
-     dfa:	ff 92       	push	r15
-     dfc:	0f 93       	push	r16
-     dfe:	1f 93       	push	r17
-     e00:	cf 93       	push	r28
-     e02:	df 93       	push	r29
+     f00:	ef 92       	push	r14
+     f02:	ff 92       	push	r15
+     f04:	0f 93       	push	r16
+     f06:	1f 93       	push	r17
+     f08:	cf 93       	push	r28
+     f0a:	df 93       	push	r29
 	int x, y;
 	int minY = 0;
-     e04:	c0 e0       	ldi	r28, 0x00	; 0
-     e06:	d0 e0       	ldi	r29, 0x00	; 0
+     f0c:	c0 e0       	ldi	r28, 0x00	; 0
+     f0e:	d0 e0       	ldi	r29, 0x00	; 0
 	for (y = (row - 1); y >= minY; y--) 
-     e08:	03 e1       	ldi	r16, 0x13	; 19
-     e0a:	10 e0       	ldi	r17, 0x00	; 0
-     e0c:	64 c0       	rjmp	.+200    	; 0xed6 <checkFullLines+0xde>
+     f10:	03 e1       	ldi	r16, 0x13	; 19
+     f12:	10 e0       	ldi	r17, 0x00	; 0
+     f14:	5c c0       	rjmp	.+184    	; 0xfce <checkFullLines+0xce>
 	{
 		//Add number of leds that are on
 		byte rowSum = 0;
 		for (x = 0; x < 12; x++) 
 		{
 			rowSum = rowSum + (field.pix[y][x]);
-     e0e:	3d e0       	ldi	r19, 0x0D	; 13
-     e10:	30 9f       	mul	r19, r16
-     e12:	f0 01       	movw	r30, r0
-     e14:	31 9f       	mul	r19, r17
-     e16:	f0 0d       	add	r31, r0
-     e18:	11 24       	eor	r1, r1
-     e1a:	e7 5b       	subi	r30, 0xB7	; 183
-     e1c:	f9 4f       	sbci	r31, 0xF9	; 249
-     e1e:	e8 0f       	add	r30, r24
-     e20:	f9 1f       	adc	r31, r25
-     e22:	30 81       	ld	r19, Z
-     e24:	23 0f       	add	r18, r19
+     f16:	f8 01       	movw	r30, r16
+     f18:	ee 0f       	add	r30, r30
+     f1a:	ff 1f       	adc	r31, r31
+     f1c:	e0 0f       	add	r30, r16
+     f1e:	f1 1f       	adc	r31, r17
+     f20:	ee 0f       	add	r30, r30
+     f22:	ff 1f       	adc	r31, r31
+     f24:	ee 0f       	add	r30, r30
+     f26:	ff 1f       	adc	r31, r31
+     f28:	e0 50       	subi	r30, 0x00	; 0
+     f2a:	fa 4f       	sbci	r31, 0xFA	; 250
+     f2c:	e8 0f       	add	r30, r24
+     f2e:	f9 1f       	adc	r31, r25
+     f30:	30 81       	ld	r19, Z
+     f32:	23 0f       	add	r18, r19
 	int minY = 0;
 	for (y = (row - 1); y >= minY; y--) 
 	{
 		//Add number of leds that are on
 		byte rowSum = 0;
 		for (x = 0; x < 12; x++) 
-     e26:	01 96       	adiw	r24, 0x01	; 1
-     e28:	03 c0       	rjmp	.+6      	; 0xe30 <checkFullLines+0x38>
-     e2a:	20 e0       	ldi	r18, 0x00	; 0
-     e2c:	80 e0       	ldi	r24, 0x00	; 0
-     e2e:	90 e0       	ldi	r25, 0x00	; 0
-     e30:	8c 30       	cpi	r24, 0x0C	; 12
-     e32:	91 05       	cpc	r25, r1
-     e34:	64 f3       	brlt	.-40     	; 0xe0e <checkFullLines+0x16>
+     f34:	01 96       	adiw	r24, 0x01	; 1
+     f36:	03 c0       	rjmp	.+6      	; 0xf3e <checkFullLines+0x3e>
+     f38:	20 e0       	ldi	r18, 0x00	; 0
+     f3a:	80 e0       	ldi	r24, 0x00	; 0
+     f3c:	90 e0       	ldi	r25, 0x00	; 0
+     f3e:	8c 30       	cpi	r24, 0x0C	; 12
+     f40:	91 05       	cpc	r25, r1
+     f42:	4c f3       	brlt	.-46     	; 0xf16 <checkFullLines+0x16>
 		{
 			rowSum = rowSum + (field.pix[y][x]);
 		}
 		if (rowSum >= 12) 
-     e36:	2c 30       	cpi	r18, 0x0C	; 12
-     e38:	c0 f4       	brcc	.+48     	; 0xe6a <checkFullLines+0x72>
-     e3a:	4b c0       	rjmp	.+150    	; 0xed2 <checkFullLines+0xda>
+     f44:	2c 30       	cpi	r18, 0x0C	; 12
+     f46:	d8 f4       	brcc	.+54     	; 0xf7e <checkFullLines+0x7e>
+     f48:	40 c0       	rjmp	.+128    	; 0xfca <checkFullLines+0xca>
 		{
 			//Found full row, animate its removal
 			for (x = 0; x < 12; x++) 
 			{
 				field.pix[y][x] = 0;
-     e3c:	8d e0       	ldi	r24, 0x0D	; 13
-     e3e:	80 9f       	mul	r24, r16
-     e40:	f0 01       	movw	r30, r0
-     e42:	81 9f       	mul	r24, r17
-     e44:	f0 0d       	add	r31, r0
-     e46:	11 24       	eor	r1, r1
-     e48:	e7 5b       	subi	r30, 0xB7	; 183
-     e4a:	f9 4f       	sbci	r31, 0xF9	; 249
-     e4c:	ee 0d       	add	r30, r14
-     e4e:	ff 1d       	adc	r31, r15
-     e50:	10 82       	st	Z, r1
+     f4a:	f8 01       	movw	r30, r16
+     f4c:	ee 0f       	add	r30, r30
+     f4e:	ff 1f       	adc	r31, r31
+     f50:	e0 0f       	add	r30, r16
+     f52:	f1 1f       	adc	r31, r17
+     f54:	ee 0f       	add	r30, r30
+     f56:	ff 1f       	adc	r31, r31
+     f58:	ee 0f       	add	r30, r30
+     f5a:	ff 1f       	adc	r31, r31
+     f5c:	e0 50       	subi	r30, 0x00	; 0
+     f5e:	fa 4f       	sbci	r31, 0xFA	; 250
+     f60:	ee 0d       	add	r30, r14
+     f62:	ff 1d       	adc	r31, r15
+     f64:	10 82       	st	Z, r1
 				printField();
-     e52:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
-     e56:	87 ee       	ldi	r24, 0xE7	; 231
-     e58:	93 e0       	ldi	r25, 0x03	; 3
-     e5a:	01 97       	sbiw	r24, 0x01	; 1
-     e5c:	f1 f7       	brne	.-4      	; 0xe5a <checkFullLines+0x62>
-     e5e:	00 c0       	rjmp	.+0      	; 0xe60 <checkFullLines+0x68>
-     e60:	00 00       	nop
+     f66:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
+     f6a:	87 ee       	ldi	r24, 0xE7	; 231
+     f6c:	93 e0       	ldi	r25, 0x03	; 3
+     f6e:	01 97       	sbiw	r24, 0x01	; 1
+     f70:	f1 f7       	brne	.-4      	; 0xf6e <checkFullLines+0x6e>
+     f72:	00 c0       	rjmp	.+0      	; 0xf74 <checkFullLines+0x74>
+     f74:	00 00       	nop
 			rowSum = rowSum + (field.pix[y][x]);
 		}
 		if (rowSum >= 12) 
 		{
 			//Found full row, animate its removal
 			for (x = 0; x < 12; x++) 
-     e62:	9f ef       	ldi	r25, 0xFF	; 255
-     e64:	e9 1a       	sub	r14, r25
-     e66:	f9 0a       	sbc	r15, r25
-     e68:	02 c0       	rjmp	.+4      	; 0xe6e <checkFullLines+0x76>
-     e6a:	e1 2c       	mov	r14, r1
-     e6c:	f1 2c       	mov	r15, r1
-     e6e:	2c e0       	ldi	r18, 0x0C	; 12
-     e70:	e2 16       	cp	r14, r18
-     e72:	f1 04       	cpc	r15, r1
-     e74:	1c f3       	brlt	.-58     	; 0xe3c <checkFullLines+0x44>
+     f76:	9f ef       	ldi	r25, 0xFF	; 255
+     f78:	e9 1a       	sub	r14, r25
+     f7a:	f9 0a       	sbc	r15, r25
+     f7c:	02 c0       	rjmp	.+4      	; 0xf82 <checkFullLines+0x82>
+     f7e:	e1 2c       	mov	r14, r1
+     f80:	f1 2c       	mov	r15, r1
+     f82:	2c e0       	ldi	r18, 0x0C	; 12
+     f84:	e2 16       	cp	r14, r18
+     f86:	f1 04       	cpc	r15, r1
+     f88:	04 f3       	brlt	.-64     	; 0xf4a <checkFullLines+0x4a>
 				field.pix[y][x] = 0;
 				printField();
 				_delay_us(10 * ws2812_resettime);
 			}
 			//Move all upper rows down by one
 			moveFieldDownOne(y);
-     e76:	80 2f       	mov	r24, r16
-     e78:	0e 94 b1 06 	call	0xd62	; 0xd62 <moveFieldDownOne>
+     f8a:	80 2f       	mov	r24, r16
+     f8c:	0e 94 38 07 	call	0xe70	; 0xe70 <moveFieldDownOne>
 			y++; minY++;
-     e7c:	0f 5f       	subi	r16, 0xFF	; 255
-     e7e:	1f 4f       	sbci	r17, 0xFF	; 255
-     e80:	21 96       	adiw	r28, 0x01	; 1
+     f90:	0f 5f       	subi	r16, 0xFF	; 255
+     f92:	1f 4f       	sbci	r17, 0xFF	; 255
+     f94:	21 96       	adiw	r28, 0x01	; 1
 			printField();
-     e82:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
+     f96:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-     e86:	8f ef       	ldi	r24, 0xFF	; 255
-     e88:	90 e7       	ldi	r25, 0x70	; 112
-     e8a:	22 e0       	ldi	r18, 0x02	; 2
-     e8c:	81 50       	subi	r24, 0x01	; 1
-     e8e:	90 40       	sbci	r25, 0x00	; 0
-     e90:	20 40       	sbci	r18, 0x00	; 0
-     e92:	e1 f7       	brne	.-8      	; 0xe8c <checkFullLines+0x94>
-     e94:	00 c0       	rjmp	.+0      	; 0xe96 <checkFullLines+0x9e>
-     e96:	00 00       	nop
+     f9a:	8f ef       	ldi	r24, 0xFF	; 255
+     f9c:	90 e7       	ldi	r25, 0x70	; 112
+     f9e:	22 e0       	ldi	r18, 0x02	; 2
+     fa0:	81 50       	subi	r24, 0x01	; 1
+     fa2:	90 40       	sbci	r25, 0x00	; 0
+     fa4:	20 40       	sbci	r18, 0x00	; 0
+     fa6:	e1 f7       	brne	.-8      	; 0xfa0 <checkFullLines+0xa0>
+     fa8:	00 c0       	rjmp	.+0      	; 0xfaa <checkFullLines+0xaa>
+     faa:	00 00       	nop
 			_delay_ms(100);
 
-			nbRowsThisLevel++; nbRowsTotal++;
-     e98:	80 91 19 06 	lds	r24, 0x0619	; 0x800619 <nbRowsThisLevel>
-     e9c:	8f 5f       	subi	r24, 0xFF	; 255
-     e9e:	80 93 19 06 	sts	0x0619, r24	; 0x800619 <nbRowsThisLevel>
-     ea2:	80 91 47 06 	lds	r24, 0x0647	; 0x800647 <nbRowsTotal>
-     ea6:	90 91 48 06 	lds	r25, 0x0648	; 0x800648 <nbRowsTotal+0x1>
-     eaa:	01 96       	adiw	r24, 0x01	; 1
-     eac:	90 93 48 06 	sts	0x0648, r25	; 0x800648 <nbRowsTotal+0x1>
-     eb0:	80 93 47 06 	sts	0x0647, r24	; 0x800647 <nbRowsTotal>
-				//Increase brick fall speed
-				if (falltime > 40)
-     eb4:	80 91 74 02 	lds	r24, 0x0274	; 0x800274 <falltime>
-     eb8:	90 91 75 02 	lds	r25, 0x0275	; 0x800275 <falltime+0x1>
-     ebc:	89 97       	sbiw	r24, 0x29	; 41
-     ebe:	4c f0       	brlt	.+18     	; 0xed2 <checkFullLines+0xda>
-				{
-					falltime -= 20;
-     ec0:	80 91 74 02 	lds	r24, 0x0274	; 0x800274 <falltime>
-     ec4:	90 91 75 02 	lds	r25, 0x0275	; 0x800275 <falltime+0x1>
-     ec8:	44 97       	sbiw	r24, 0x14	; 20
-     eca:	90 93 75 02 	sts	0x0275, r25	; 0x800275 <falltime+0x1>
-     ece:	80 93 74 02 	sts	0x0274, r24	; 0x800274 <falltime>
+			//Increase brick fall speed
+			if (falltime > 40)
+     fac:	80 91 30 02 	lds	r24, 0x0230	; 0x800230 <falltime>
+     fb0:	90 91 31 02 	lds	r25, 0x0231	; 0x800231 <falltime+0x1>
+     fb4:	89 97       	sbiw	r24, 0x29	; 41
+     fb6:	4c f0       	brlt	.+18     	; 0xfca <checkFullLines+0xca>
+			{
+				falltime -= 40; // Decrease by 40 * 0.005 = 200ms
+     fb8:	80 91 30 02 	lds	r24, 0x0230	; 0x800230 <falltime>
+     fbc:	90 91 31 02 	lds	r25, 0x0231	; 0x800231 <falltime+0x1>
+     fc0:	88 97       	sbiw	r24, 0x28	; 40
+     fc2:	90 93 31 02 	sts	0x0231, r25	; 0x800231 <falltime+0x1>
+     fc6:	80 93 30 02 	sts	0x0230, r24	; 0x800230 <falltime>
 
 void checkFullLines() 
 {
 	int x, y;
 	int minY = 0;
 	for (y = (row - 1); y >= minY; y--) 
-     ed2:	01 50       	subi	r16, 0x01	; 1
-     ed4:	11 09       	sbc	r17, r1
-     ed6:	0c 17       	cp	r16, r28
-     ed8:	1d 07       	cpc	r17, r29
-     eda:	0c f0       	brlt	.+2      	; 0xede <checkFullLines+0xe6>
-     edc:	a6 cf       	rjmp	.-180    	; 0xe2a <checkFullLines+0x32>
-				{
-					falltime -= 20;
-				}
+     fca:	01 50       	subi	r16, 0x01	; 1
+     fcc:	11 09       	sbc	r17, r1
+     fce:	0c 17       	cp	r16, r28
+     fd0:	1d 07       	cpc	r17, r29
+     fd2:	0c f0       	brlt	.+2      	; 0xfd6 <checkFullLines+0xd6>
+     fd4:	b1 cf       	rjmp	.-158    	; 0xf38 <checkFullLines+0x38>
+			{
+				falltime -= 40; // Decrease by 40 * 0.005 = 200ms
+			}
 		}
 	}
 }
-     ede:	df 91       	pop	r29
-     ee0:	cf 91       	pop	r28
-     ee2:	1f 91       	pop	r17
-     ee4:	0f 91       	pop	r16
-     ee6:	ff 90       	pop	r15
-     ee8:	ef 90       	pop	r14
-     eea:	08 95       	ret
+     fd6:	df 91       	pop	r29
+     fd8:	cf 91       	pop	r28
+     fda:	1f 91       	pop	r17
+     fdc:	0f 91       	pop	r16
+     fde:	ff 90       	pop	r15
+     fe0:	ef 90       	pop	r14
+     fe2:	08 95       	ret
 
-00000eec <clearField>:
+00000fe4 <clearField>:
 
 void clearField()
 {
 	for (int x = 0; x < column; x++)
-     eec:	40 e0       	ldi	r20, 0x00	; 0
-     eee:	50 e0       	ldi	r21, 0x00	; 0
-     ef0:	14 c0       	rjmp	.+40     	; 0xf1a <clearField+0x2e>
+     fe4:	20 e0       	ldi	r18, 0x00	; 0
+     fe6:	30 e0       	ldi	r19, 0x00	; 0
+     fe8:	17 c0       	rjmp	.+46     	; 0x1018 <clearField+0x34>
 	{
 		for (int y = 0; y < row; y++)
 		{
 			field.pix[y][x] = 0;
-     ef2:	2d e0       	ldi	r18, 0x0D	; 13
-     ef4:	28 9f       	mul	r18, r24
-     ef6:	f0 01       	movw	r30, r0
-     ef8:	29 9f       	mul	r18, r25
-     efa:	f0 0d       	add	r31, r0
-     efc:	11 24       	eor	r1, r1
-     efe:	e7 5b       	subi	r30, 0xB7	; 183
-     f00:	f9 4f       	sbci	r31, 0xF9	; 249
-     f02:	e4 0f       	add	r30, r20
-     f04:	f5 1f       	adc	r31, r21
-     f06:	10 82       	st	Z, r1
+     fea:	fc 01       	movw	r30, r24
+     fec:	ee 0f       	add	r30, r30
+     fee:	ff 1f       	adc	r31, r31
+     ff0:	e8 0f       	add	r30, r24
+     ff2:	f9 1f       	adc	r31, r25
+     ff4:	ee 0f       	add	r30, r30
+     ff6:	ff 1f       	adc	r31, r31
+     ff8:	ee 0f       	add	r30, r30
+     ffa:	ff 1f       	adc	r31, r31
+     ffc:	e0 50       	subi	r30, 0x00	; 0
+     ffe:	fa 4f       	sbci	r31, 0xFA	; 250
+    1000:	e2 0f       	add	r30, r18
+    1002:	f3 1f       	adc	r31, r19
+    1004:	10 82       	st	Z, r1
 
 void clearField()
 {
 	for (int x = 0; x < column; x++)
 	{
 		for (int y = 0; y < row; y++)
-     f08:	01 96       	adiw	r24, 0x01	; 1
-     f0a:	02 c0       	rjmp	.+4      	; 0xf10 <clearField+0x24>
-     f0c:	80 e0       	ldi	r24, 0x00	; 0
-     f0e:	90 e0       	ldi	r25, 0x00	; 0
-     f10:	84 31       	cpi	r24, 0x14	; 20
-     f12:	91 05       	cpc	r25, r1
-     f14:	74 f3       	brlt	.-36     	; 0xef2 <clearField+0x6>
+    1006:	01 96       	adiw	r24, 0x01	; 1
+    1008:	02 c0       	rjmp	.+4      	; 0x100e <clearField+0x2a>
+    100a:	80 e0       	ldi	r24, 0x00	; 0
+    100c:	90 e0       	ldi	r25, 0x00	; 0
+    100e:	84 31       	cpi	r24, 0x14	; 20
+    1010:	91 05       	cpc	r25, r1
+    1012:	5c f3       	brlt	.-42     	; 0xfea <clearField+0x6>
 	}
 }
 
 void clearField()
 {
 	for (int x = 0; x < column; x++)
-     f16:	4f 5f       	subi	r20, 0xFF	; 255
-     f18:	5f 4f       	sbci	r21, 0xFF	; 255
-     f1a:	4c 30       	cpi	r20, 0x0C	; 12
-     f1c:	51 05       	cpc	r21, r1
-     f1e:	b4 f3       	brlt	.-20     	; 0xf0c <clearField+0x20>
+    1014:	2f 5f       	subi	r18, 0xFF	; 255
+    1016:	3f 4f       	sbci	r19, 0xFF	; 255
+    1018:	2c 30       	cpi	r18, 0x0C	; 12
+    101a:	31 05       	cpc	r19, r1
+    101c:	b4 f3       	brlt	.-20     	; 0x100a <clearField+0x26>
 		for (int y = 0; y < row; y++)
 		{
 			field.pix[y][x] = 0;
 		}
 	}
 }
-     f20:	08 95       	ret
+    101e:	08 95       	ret
 
-00000f22 <clearTable>:
+00001020 <clearTable>:
 
 void clearTable()
 {
 	for(int i = MAXPIX; i > 0; i--)
-     f22:	8c e2       	ldi	r24, 0x2C	; 44
-     f24:	91 e0       	ldi	r25, 0x01	; 1
-     f26:	0b c0       	rjmp	.+22     	; 0xf3e <clearTable+0x1c>
+    1020:	8c e2       	ldi	r24, 0x2C	; 44
+    1022:	91 e0       	ldi	r25, 0x01	; 1
+    1024:	0b c0       	rjmp	.+22     	; 0x103c <clearTable+0x1c>
 	{
 		led[i-1].r=0;led[i-1].g=0;led[i-1].b=0;
-     f28:	01 97       	sbiw	r24, 0x01	; 1
-     f2a:	fc 01       	movw	r30, r24
-     f2c:	ee 0f       	add	r30, r30
-     f2e:	ff 1f       	adc	r31, r31
-     f30:	e8 0f       	add	r30, r24
-     f32:	f9 1f       	adc	r31, r25
-     f34:	eb 56       	subi	r30, 0x6B	; 107
-     f36:	fd 4f       	sbci	r31, 0xFD	; 253
-     f38:	11 82       	std	Z+1, r1	; 0x01
-     f3a:	10 82       	st	Z, r1
-     f3c:	12 82       	std	Z+2, r1	; 0x02
+    1026:	01 97       	sbiw	r24, 0x01	; 1
+    1028:	fc 01       	movw	r30, r24
+    102a:	ee 0f       	add	r30, r30
+    102c:	ff 1f       	adc	r31, r31
+    102e:	e8 0f       	add	r30, r24
+    1030:	f9 1f       	adc	r31, r25
+    1032:	e0 5b       	subi	r30, 0xB0	; 176
+    1034:	fd 4f       	sbci	r31, 0xFD	; 253
+    1036:	11 82       	std	Z+1, r1	; 0x01
+    1038:	10 82       	st	Z, r1
+    103a:	12 82       	std	Z+2, r1	; 0x02
 	}
 }
 
 void clearTable()
 {
 	for(int i = MAXPIX; i > 0; i--)
-     f3e:	18 16       	cp	r1, r24
-     f40:	19 06       	cpc	r1, r25
-     f42:	94 f3       	brlt	.-28     	; 0xf28 <clearTable+0x6>
+    103c:	18 16       	cp	r1, r24
+    103e:	19 06       	cpc	r1, r25
+    1040:	94 f3       	brlt	.-28     	; 0x1026 <clearTable+0x6>
 	{
 		led[i-1].r=0;led[i-1].g=0;led[i-1].b=0;
 	}
 	ws2812_setleds(led, MAXPIX);
-     f44:	6c e2       	ldi	r22, 0x2C	; 44
-     f46:	71 e0       	ldi	r23, 0x01	; 1
-     f48:	85 e9       	ldi	r24, 0x95	; 149
-     f4a:	92 e0       	ldi	r25, 0x02	; 2
-     f4c:	0e 94 c3 01 	call	0x386	; 0x386 <ws2812_setleds>
+    1042:	6c e2       	ldi	r22, 0x2C	; 44
+    1044:	71 e0       	ldi	r23, 0x01	; 1
+    1046:	80 e5       	ldi	r24, 0x50	; 80
+    1048:	92 e0       	ldi	r25, 0x02	; 2
+    104a:	0e 94 c3 01 	call	0x386	; 0x386 <ws2812_setleds>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-     f50:	85 e8       	ldi	r24, 0x85	; 133
-     f52:	8a 95       	dec	r24
-     f54:	f1 f7       	brne	.-4      	; 0xf52 <clearTable+0x30>
-     f56:	00 00       	nop
-     f58:	08 95       	ret
+    104e:	85 e8       	ldi	r24, 0x85	; 133
+    1050:	8a 95       	dec	r24
+    1052:	f1 f7       	brne	.-4      	; 0x1050 <clearTable+0x30>
+    1054:	00 00       	nop
+    1056:	08 95       	ret
 
-00000f5a <Pause>:
+00001058 <Pause>:
 };
 
 
-//edit to show bars
+// Pauses game
 byte Pause(byte paus)
 {
-     f5a:	cf 93       	push	r28
-     f5c:	c8 2f       	mov	r28, r24
+    1058:	cf 93       	push	r28
+    105a:	c8 2f       	mov	r28, r24
 	if (paus > 1)
-     f5e:	82 30       	cpi	r24, 0x02	; 2
-     f60:	20 f0       	brcs	.+8      	; 0xf6a <Pause+0x10>
+    105c:	82 30       	cpi	r24, 0x02	; 2
+    105e:	20 f0       	brcs	.+8      	; 0x1068 <Pause+0x10>
 	{
 		paus = 0;
 		printField();
-     f62:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
+    1060:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
 		return paus;
-     f66:	80 e0       	ldi	r24, 0x00	; 0
-     f68:	03 c0       	rjmp	.+6      	; 0xf70 <Pause+0x16>
+    1064:	80 e0       	ldi	r24, 0x00	; 0
+    1066:	03 c0       	rjmp	.+6      	; 0x106e <Pause+0x16>
 	}
 	clearTable();
-     f6a:	0e 94 91 07 	call	0xf22	; 0xf22 <clearTable>
+    1068:	0e 94 10 08 	call	0x1020	; 0x1020 <clearTable>
 	return paus;
-     f6e:	8c 2f       	mov	r24, r28
+    106c:	8c 2f       	mov	r24, r28
 }
-     f70:	cf 91       	pop	r28
-     f72:	08 95       	ret
+    106e:	cf 91       	pop	r28
+    1070:	08 95       	ret
 
-00000f74 <menu>:
-}
+00001072 <menu>:
 
 //This menu will show tetris pieces at the bottom of the screen before the game starts
 void menu()
 {	
+	// I on its side
 	for (int i = 0; i <= 3; i++)  
-     f74:	80 e0       	ldi	r24, 0x00	; 0
-     f76:	90 e0       	ldi	r25, 0x00	; 0
-     f78:	18 c0       	rjmp	.+48     	; 0xfaa <menu+0x36>
+    1072:	80 e0       	ldi	r24, 0x00	; 0
+    1074:	90 e0       	ldi	r25, 0x00	; 0
+    1076:	18 c0       	rjmp	.+48     	; 0x10a8 <menu+0x36>
 	{
-		led[pgm_read_byte(&(matrix[0][i]))] = colors[0]; // I on its side
-     f7a:	fc 01       	movw	r30, r24
-     f7c:	ee 0f       	add	r30, r30
-     f7e:	ff 1f       	adc	r31, r31
-     f80:	e8 59       	subi	r30, 0x98	; 152
-     f82:	ff 4f       	sbci	r31, 0xFF	; 255
-     f84:	e4 91       	lpm	r30, Z
-     f86:	f0 e0       	ldi	r31, 0x00	; 0
-     f88:	9f 01       	movw	r18, r30
-     f8a:	22 0f       	add	r18, r18
-     f8c:	33 1f       	adc	r19, r19
-     f8e:	e2 0f       	add	r30, r18
-     f90:	f3 1f       	adc	r31, r19
-     f92:	eb 56       	subi	r30, 0x6B	; 107
-     f94:	fd 4f       	sbci	r31, 0xFD	; 253
-     f96:	20 91 02 01 	lds	r18, 0x0102	; 0x800102 <colors>
-     f9a:	30 91 03 01 	lds	r19, 0x0103	; 0x800103 <colors+0x1>
-     f9e:	40 91 04 01 	lds	r20, 0x0104	; 0x800104 <colors+0x2>
-     fa2:	20 83       	st	Z, r18
-     fa4:	31 83       	std	Z+1, r19	; 0x01
-     fa6:	42 83       	std	Z+2, r20	; 0x02
-}
+		led[pgm_read_byte(&(matrix[0][i]))] = colors[0]; 
+    1078:	fc 01       	movw	r30, r24
+    107a:	ee 0f       	add	r30, r30
+    107c:	ff 1f       	adc	r31, r31
+    107e:	e8 59       	subi	r30, 0x98	; 152
+    1080:	ff 4f       	sbci	r31, 0xFF	; 255
+    1082:	e4 91       	lpm	r30, Z
+    1084:	f0 e0       	ldi	r31, 0x00	; 0
+    1086:	9f 01       	movw	r18, r30
+    1088:	22 0f       	add	r18, r18
+    108a:	33 1f       	adc	r19, r19
+    108c:	e2 0f       	add	r30, r18
+    108e:	f3 1f       	adc	r31, r19
+    1090:	e0 5b       	subi	r30, 0xB0	; 176
+    1092:	fd 4f       	sbci	r31, 0xFD	; 253
+    1094:	20 91 02 01 	lds	r18, 0x0102	; 0x800102 <colors>
+    1098:	30 91 03 01 	lds	r19, 0x0103	; 0x800103 <colors+0x1>
+    109c:	40 91 04 01 	lds	r20, 0x0104	; 0x800104 <colors+0x2>
+    10a0:	20 83       	st	Z, r18
+    10a2:	31 83       	std	Z+1, r19	; 0x01
+    10a4:	42 83       	std	Z+2, r20	; 0x02
 
 //This menu will show tetris pieces at the bottom of the screen before the game starts
 void menu()
 {	
+	// I on its side
 	for (int i = 0; i <= 3; i++)  
-     fa8:	01 96       	adiw	r24, 0x01	; 1
-     faa:	84 30       	cpi	r24, 0x04	; 4
-     fac:	91 05       	cpc	r25, r1
-     fae:	2c f3       	brlt	.-54     	; 0xf7a <menu+0x6>
-     fb0:	80 e0       	ldi	r24, 0x00	; 0
-     fb2:	90 e0       	ldi	r25, 0x00	; 0
-     fb4:	27 c0       	rjmp	.+78     	; 0x1004 <menu+0x90>
+    10a6:	01 96       	adiw	r24, 0x01	; 1
+    10a8:	84 30       	cpi	r24, 0x04	; 4
+    10aa:	91 05       	cpc	r25, r1
+    10ac:	2c f3       	brlt	.-54     	; 0x1078 <menu+0x6>
+    10ae:	80 e0       	ldi	r24, 0x00	; 0
+    10b0:	90 e0       	ldi	r25, 0x00	; 0
+    10b2:	27 c0       	rjmp	.+78     	; 0x1102 <menu+0x90>
 	}
 	
 	// Orange T 
 	for (int i = 0; i <= 2; i++) 
 	{
 		led[pgm_read_byte(&(matrix[1][i]))] = colors[1];
-     fb6:	fc 01       	movw	r30, r24
-     fb8:	3c 96       	adiw	r30, 0x0c	; 12
-     fba:	ee 0f       	add	r30, r30
-     fbc:	ff 1f       	adc	r31, r31
-     fbe:	e8 59       	subi	r30, 0x98	; 152
-     fc0:	ff 4f       	sbci	r31, 0xFF	; 255
-     fc2:	e4 91       	lpm	r30, Z
-     fc4:	f0 e0       	ldi	r31, 0x00	; 0
-     fc6:	9f 01       	movw	r18, r30
-     fc8:	22 0f       	add	r18, r18
-     fca:	33 1f       	adc	r19, r19
-     fcc:	e2 0f       	add	r30, r18
-     fce:	f3 1f       	adc	r31, r19
-     fd0:	eb 56       	subi	r30, 0x6B	; 107
-     fd2:	fd 4f       	sbci	r31, 0xFD	; 253
-     fd4:	20 91 05 01 	lds	r18, 0x0105	; 0x800105 <colors+0x3>
-     fd8:	30 91 06 01 	lds	r19, 0x0106	; 0x800106 <colors+0x4>
-     fdc:	40 91 07 01 	lds	r20, 0x0107	; 0x800107 <colors+0x5>
-     fe0:	20 83       	st	Z, r18
-     fe2:	31 83       	std	Z+1, r19	; 0x01
-     fe4:	42 83       	std	Z+2, r20	; 0x02
+    10b4:	fc 01       	movw	r30, r24
+    10b6:	3c 96       	adiw	r30, 0x0c	; 12
+    10b8:	ee 0f       	add	r30, r30
+    10ba:	ff 1f       	adc	r31, r31
+    10bc:	e8 59       	subi	r30, 0x98	; 152
+    10be:	ff 4f       	sbci	r31, 0xFF	; 255
+    10c0:	e4 91       	lpm	r30, Z
+    10c2:	f0 e0       	ldi	r31, 0x00	; 0
+    10c4:	9f 01       	movw	r18, r30
+    10c6:	22 0f       	add	r18, r18
+    10c8:	33 1f       	adc	r19, r19
+    10ca:	e2 0f       	add	r30, r18
+    10cc:	f3 1f       	adc	r31, r19
+    10ce:	e0 5b       	subi	r30, 0xB0	; 176
+    10d0:	fd 4f       	sbci	r31, 0xFD	; 253
+    10d2:	20 91 05 01 	lds	r18, 0x0105	; 0x800105 <colors+0x3>
+    10d6:	30 91 06 01 	lds	r19, 0x0106	; 0x800106 <colors+0x4>
+    10da:	40 91 07 01 	lds	r20, 0x0107	; 0x800107 <colors+0x5>
+    10de:	20 83       	st	Z, r18
+    10e0:	31 83       	std	Z+1, r19	; 0x01
+    10e2:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[2][1]))] = colors[1]; 
-     fe6:	ea e9       	ldi	r30, 0x9A	; 154
-     fe8:	f0 e0       	ldi	r31, 0x00	; 0
-     fea:	e4 91       	lpm	r30, Z
-     fec:	f0 e0       	ldi	r31, 0x00	; 0
-     fee:	bf 01       	movw	r22, r30
-     ff0:	66 0f       	add	r22, r22
-     ff2:	77 1f       	adc	r23, r23
-     ff4:	e6 0f       	add	r30, r22
-     ff6:	f7 1f       	adc	r31, r23
-     ff8:	eb 56       	subi	r30, 0x6B	; 107
-     ffa:	fd 4f       	sbci	r31, 0xFD	; 253
-     ffc:	20 83       	st	Z, r18
-     ffe:	31 83       	std	Z+1, r19	; 0x01
-    1000:	42 83       	std	Z+2, r20	; 0x02
+    10e4:	ea e9       	ldi	r30, 0x9A	; 154
+    10e6:	f0 e0       	ldi	r31, 0x00	; 0
+    10e8:	e4 91       	lpm	r30, Z
+    10ea:	f0 e0       	ldi	r31, 0x00	; 0
+    10ec:	bf 01       	movw	r22, r30
+    10ee:	66 0f       	add	r22, r22
+    10f0:	77 1f       	adc	r23, r23
+    10f2:	e6 0f       	add	r30, r22
+    10f4:	f7 1f       	adc	r31, r23
+    10f6:	e0 5b       	subi	r30, 0xB0	; 176
+    10f8:	fd 4f       	sbci	r31, 0xFD	; 253
+    10fa:	20 83       	st	Z, r18
+    10fc:	31 83       	std	Z+1, r19	; 0x01
+    10fe:	42 83       	std	Z+2, r20	; 0x02
 	{
-		led[pgm_read_byte(&(matrix[0][i]))] = colors[0]; // I on its side
+		led[pgm_read_byte(&(matrix[0][i]))] = colors[0]; 
 	}
 	
 	// Orange T 
 	for (int i = 0; i <= 2; i++) 
-    1002:	01 96       	adiw	r24, 0x01	; 1
-    1004:	83 30       	cpi	r24, 0x03	; 3
-    1006:	91 05       	cpc	r25, r1
-    1008:	b4 f2       	brlt	.-84     	; 0xfb6 <menu+0x42>
+    1100:	01 96       	adiw	r24, 0x01	; 1
+    1102:	83 30       	cpi	r24, 0x03	; 3
+    1104:	91 05       	cpc	r25, r1
+    1106:	b4 f2       	brlt	.-84     	; 0x10b4 <menu+0x42>
 		led[pgm_read_byte(&(matrix[1][i]))] = colors[1];
 		led[pgm_read_byte(&(matrix[2][1]))] = colors[1]; 
 	}
 	
 	// Upside down L
 		led[pgm_read_byte(&(matrix[0][4]))] = colors[2];
-    100a:	e0 e7       	ldi	r30, 0x70	; 112
-    100c:	f0 e0       	ldi	r31, 0x00	; 0
-    100e:	e4 91       	lpm	r30, Z
-    1010:	f0 e0       	ldi	r31, 0x00	; 0
-    1012:	cf 01       	movw	r24, r30
-    1014:	88 0f       	add	r24, r24
-    1016:	99 1f       	adc	r25, r25
-    1018:	e8 0f       	add	r30, r24
-    101a:	f9 1f       	adc	r31, r25
-    101c:	eb 56       	subi	r30, 0x6B	; 107
-    101e:	fd 4f       	sbci	r31, 0xFD	; 253
-    1020:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <colors+0x6>
-    1024:	90 91 09 01 	lds	r25, 0x0109	; 0x800109 <colors+0x7>
-    1028:	a0 91 0a 01 	lds	r26, 0x010A	; 0x80010a <colors+0x8>
-    102c:	80 83       	st	Z, r24
-    102e:	91 83       	std	Z+1, r25	; 0x01
-    1030:	a2 83       	std	Z+2, r26	; 0x02
+    1108:	e0 e7       	ldi	r30, 0x70	; 112
+    110a:	f0 e0       	ldi	r31, 0x00	; 0
+    110c:	e4 91       	lpm	r30, Z
+    110e:	f0 e0       	ldi	r31, 0x00	; 0
+    1110:	cf 01       	movw	r24, r30
+    1112:	88 0f       	add	r24, r24
+    1114:	99 1f       	adc	r25, r25
+    1116:	e8 0f       	add	r30, r24
+    1118:	f9 1f       	adc	r31, r25
+    111a:	e0 5b       	subi	r30, 0xB0	; 176
+    111c:	fd 4f       	sbci	r31, 0xFD	; 253
+    111e:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <colors+0x6>
+    1122:	90 91 09 01 	lds	r25, 0x0109	; 0x800109 <colors+0x7>
+    1126:	a0 91 0a 01 	lds	r26, 0x010A	; 0x80010a <colors+0x8>
+    112a:	80 83       	st	Z, r24
+    112c:	91 83       	std	Z+1, r25	; 0x01
+    112e:	a2 83       	std	Z+2, r26	; 0x02
 		led[pgm_read_byte(&(matrix[1][4]))] = colors[2];
-    1032:	e8 e8       	ldi	r30, 0x88	; 136
-    1034:	f0 e0       	ldi	r31, 0x00	; 0
-    1036:	e4 91       	lpm	r30, Z
-    1038:	f0 e0       	ldi	r31, 0x00	; 0
-    103a:	9f 01       	movw	r18, r30
-    103c:	22 0f       	add	r18, r18
-    103e:	33 1f       	adc	r19, r19
-    1040:	e2 0f       	add	r30, r18
-    1042:	f3 1f       	adc	r31, r19
-    1044:	eb 56       	subi	r30, 0x6B	; 107
-    1046:	fd 4f       	sbci	r31, 0xFD	; 253
-    1048:	80 83       	st	Z, r24
-    104a:	91 83       	std	Z+1, r25	; 0x01
-    104c:	a2 83       	std	Z+2, r26	; 0x02
+    1130:	e8 e8       	ldi	r30, 0x88	; 136
+    1132:	f0 e0       	ldi	r31, 0x00	; 0
+    1134:	e4 91       	lpm	r30, Z
+    1136:	f0 e0       	ldi	r31, 0x00	; 0
+    1138:	9f 01       	movw	r18, r30
+    113a:	22 0f       	add	r18, r18
+    113c:	33 1f       	adc	r19, r19
+    113e:	e2 0f       	add	r30, r18
+    1140:	f3 1f       	adc	r31, r19
+    1142:	e0 5b       	subi	r30, 0xB0	; 176
+    1144:	fd 4f       	sbci	r31, 0xFD	; 253
+    1146:	80 83       	st	Z, r24
+    1148:	91 83       	std	Z+1, r25	; 0x01
+    114a:	a2 83       	std	Z+2, r26	; 0x02
 		led[pgm_read_byte(&(matrix[2][4]))] = colors[2];
-    104e:	e0 ea       	ldi	r30, 0xA0	; 160
-    1050:	f0 e0       	ldi	r31, 0x00	; 0
-    1052:	e4 91       	lpm	r30, Z
-    1054:	f0 e0       	ldi	r31, 0x00	; 0
-    1056:	9f 01       	movw	r18, r30
-    1058:	22 0f       	add	r18, r18
-    105a:	33 1f       	adc	r19, r19
-    105c:	e2 0f       	add	r30, r18
-    105e:	f3 1f       	adc	r31, r19
-    1060:	eb 56       	subi	r30, 0x6B	; 107
-    1062:	fd 4f       	sbci	r31, 0xFD	; 253
-    1064:	80 83       	st	Z, r24
-    1066:	91 83       	std	Z+1, r25	; 0x01
-    1068:	a2 83       	std	Z+2, r26	; 0x02
+    114c:	e0 ea       	ldi	r30, 0xA0	; 160
+    114e:	f0 e0       	ldi	r31, 0x00	; 0
+    1150:	e4 91       	lpm	r30, Z
+    1152:	f0 e0       	ldi	r31, 0x00	; 0
+    1154:	9f 01       	movw	r18, r30
+    1156:	22 0f       	add	r18, r18
+    1158:	33 1f       	adc	r19, r19
+    115a:	e2 0f       	add	r30, r18
+    115c:	f3 1f       	adc	r31, r19
+    115e:	e0 5b       	subi	r30, 0xB0	; 176
+    1160:	fd 4f       	sbci	r31, 0xFD	; 253
+    1162:	80 83       	st	Z, r24
+    1164:	91 83       	std	Z+1, r25	; 0x01
+    1166:	a2 83       	std	Z+2, r26	; 0x02
 		
 		led[pgm_read_byte(&(matrix[2][3]))] = colors[2];
-    106a:	ee e9       	ldi	r30, 0x9E	; 158
-    106c:	f0 e0       	ldi	r31, 0x00	; 0
-    106e:	e4 91       	lpm	r30, Z
-    1070:	f0 e0       	ldi	r31, 0x00	; 0
-    1072:	9f 01       	movw	r18, r30
-    1074:	22 0f       	add	r18, r18
-    1076:	33 1f       	adc	r19, r19
-    1078:	e2 0f       	add	r30, r18
-    107a:	f3 1f       	adc	r31, r19
-    107c:	eb 56       	subi	r30, 0x6B	; 107
-    107e:	fd 4f       	sbci	r31, 0xFD	; 253
-    1080:	80 83       	st	Z, r24
-    1082:	91 83       	std	Z+1, r25	; 0x01
-    1084:	a2 83       	std	Z+2, r26	; 0x02
+    1168:	ee e9       	ldi	r30, 0x9E	; 158
+    116a:	f0 e0       	ldi	r31, 0x00	; 0
+    116c:	e4 91       	lpm	r30, Z
+    116e:	f0 e0       	ldi	r31, 0x00	; 0
+    1170:	9f 01       	movw	r18, r30
+    1172:	22 0f       	add	r18, r18
+    1174:	33 1f       	adc	r19, r19
+    1176:	e2 0f       	add	r30, r18
+    1178:	f3 1f       	adc	r31, r19
+    117a:	e0 5b       	subi	r30, 0xB0	; 176
+    117c:	fd 4f       	sbci	r31, 0xFD	; 253
+    117e:	80 83       	st	Z, r24
+    1180:	91 83       	std	Z+1, r25	; 0x01
+    1182:	a2 83       	std	Z+2, r26	; 0x02
 		
 	// Upside down T
-	
 	for (int i = 1; i <= 3; i++)
-    1086:	81 e0       	ldi	r24, 0x01	; 1
-    1088:	90 e0       	ldi	r25, 0x00	; 0
-    108a:	27 c0       	rjmp	.+78     	; 0x10da <menu+0x166>
+    1184:	81 e0       	ldi	r24, 0x01	; 1
+    1186:	90 e0       	ldi	r25, 0x00	; 0
+    1188:	27 c0       	rjmp	.+78     	; 0x11d8 <menu+0x166>
 	{
 		led[pgm_read_byte(&(matrix[3][i]))] = colors[7];
-    108c:	fc 01       	movw	r30, r24
-    108e:	b4 96       	adiw	r30, 0x24	; 36
-    1090:	ee 0f       	add	r30, r30
-    1092:	ff 1f       	adc	r31, r31
-    1094:	e8 59       	subi	r30, 0x98	; 152
-    1096:	ff 4f       	sbci	r31, 0xFF	; 255
-    1098:	e4 91       	lpm	r30, Z
-    109a:	f0 e0       	ldi	r31, 0x00	; 0
-    109c:	9f 01       	movw	r18, r30
-    109e:	22 0f       	add	r18, r18
-    10a0:	33 1f       	adc	r19, r19
-    10a2:	e2 0f       	add	r30, r18
-    10a4:	f3 1f       	adc	r31, r19
-    10a6:	eb 56       	subi	r30, 0x6B	; 107
-    10a8:	fd 4f       	sbci	r31, 0xFD	; 253
-    10aa:	20 91 17 01 	lds	r18, 0x0117	; 0x800117 <colors+0x15>
-    10ae:	30 91 18 01 	lds	r19, 0x0118	; 0x800118 <colors+0x16>
-    10b2:	40 91 19 01 	lds	r20, 0x0119	; 0x800119 <colors+0x17>
-    10b6:	20 83       	st	Z, r18
-    10b8:	31 83       	std	Z+1, r19	; 0x01
-    10ba:	42 83       	std	Z+2, r20	; 0x02
+    118a:	fc 01       	movw	r30, r24
+    118c:	b4 96       	adiw	r30, 0x24	; 36
+    118e:	ee 0f       	add	r30, r30
+    1190:	ff 1f       	adc	r31, r31
+    1192:	e8 59       	subi	r30, 0x98	; 152
+    1194:	ff 4f       	sbci	r31, 0xFF	; 255
+    1196:	e4 91       	lpm	r30, Z
+    1198:	f0 e0       	ldi	r31, 0x00	; 0
+    119a:	9f 01       	movw	r18, r30
+    119c:	22 0f       	add	r18, r18
+    119e:	33 1f       	adc	r19, r19
+    11a0:	e2 0f       	add	r30, r18
+    11a2:	f3 1f       	adc	r31, r19
+    11a4:	e0 5b       	subi	r30, 0xB0	; 176
+    11a6:	fd 4f       	sbci	r31, 0xFD	; 253
+    11a8:	20 91 17 01 	lds	r18, 0x0117	; 0x800117 <colors+0x15>
+    11ac:	30 91 18 01 	lds	r19, 0x0118	; 0x800118 <colors+0x16>
+    11b0:	40 91 19 01 	lds	r20, 0x0119	; 0x800119 <colors+0x17>
+    11b4:	20 83       	st	Z, r18
+    11b6:	31 83       	std	Z+1, r19	; 0x01
+    11b8:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[2][2]))] = colors[7];
-    10bc:	ec e9       	ldi	r30, 0x9C	; 156
-    10be:	f0 e0       	ldi	r31, 0x00	; 0
-    10c0:	e4 91       	lpm	r30, Z
-    10c2:	f0 e0       	ldi	r31, 0x00	; 0
-    10c4:	bf 01       	movw	r22, r30
-    10c6:	66 0f       	add	r22, r22
-    10c8:	77 1f       	adc	r23, r23
-    10ca:	e6 0f       	add	r30, r22
-    10cc:	f7 1f       	adc	r31, r23
-    10ce:	eb 56       	subi	r30, 0x6B	; 107
-    10d0:	fd 4f       	sbci	r31, 0xFD	; 253
-    10d2:	20 83       	st	Z, r18
-    10d4:	31 83       	std	Z+1, r19	; 0x01
-    10d6:	42 83       	std	Z+2, r20	; 0x02
+    11ba:	ec e9       	ldi	r30, 0x9C	; 156
+    11bc:	f0 e0       	ldi	r31, 0x00	; 0
+    11be:	e4 91       	lpm	r30, Z
+    11c0:	f0 e0       	ldi	r31, 0x00	; 0
+    11c2:	bf 01       	movw	r22, r30
+    11c4:	66 0f       	add	r22, r22
+    11c6:	77 1f       	adc	r23, r23
+    11c8:	e6 0f       	add	r30, r22
+    11ca:	f7 1f       	adc	r31, r23
+    11cc:	e0 5b       	subi	r30, 0xB0	; 176
+    11ce:	fd 4f       	sbci	r31, 0xFD	; 253
+    11d0:	20 83       	st	Z, r18
+    11d2:	31 83       	std	Z+1, r19	; 0x01
+    11d4:	42 83       	std	Z+2, r20	; 0x02
+		led[pgm_read_byte(&(matrix[2][4]))] = colors[2];
 		
 		led[pgm_read_byte(&(matrix[2][3]))] = colors[2];
 		
 	// Upside down T
-	
 	for (int i = 1; i <= 3; i++)
-    10d8:	01 96       	adiw	r24, 0x01	; 1
-    10da:	84 30       	cpi	r24, 0x04	; 4
-    10dc:	91 05       	cpc	r25, r1
-    10de:	b4 f2       	brlt	.-84     	; 0x108c <menu+0x118>
-    10e0:	85 e0       	ldi	r24, 0x05	; 5
-    10e2:	90 e0       	ldi	r25, 0x00	; 0
-    10e4:	26 c0       	rjmp	.+76     	; 0x1132 <menu+0x1be>
+    11d6:	01 96       	adiw	r24, 0x01	; 1
+    11d8:	84 30       	cpi	r24, 0x04	; 4
+    11da:	91 05       	cpc	r25, r1
+    11dc:	b4 f2       	brlt	.-84     	; 0x118a <menu+0x118>
+    11de:	85 e0       	ldi	r24, 0x05	; 5
+    11e0:	90 e0       	ldi	r25, 0x00	; 0
+    11e2:	26 c0       	rjmp	.+76     	; 0x1230 <menu+0x1be>
 	}
 		
 	// L on its side
 	for (int i = 5; i <= 7; i++)  
 	{
 		led[pgm_read_byte(&(matrix[0][i]))] = colors[4];
-    10e6:	fc 01       	movw	r30, r24
-    10e8:	ee 0f       	add	r30, r30
-    10ea:	ff 1f       	adc	r31, r31
-    10ec:	e8 59       	subi	r30, 0x98	; 152
-    10ee:	ff 4f       	sbci	r31, 0xFF	; 255
-    10f0:	e4 91       	lpm	r30, Z
-    10f2:	f0 e0       	ldi	r31, 0x00	; 0
-    10f4:	9f 01       	movw	r18, r30
-    10f6:	22 0f       	add	r18, r18
-    10f8:	33 1f       	adc	r19, r19
-    10fa:	e2 0f       	add	r30, r18
-    10fc:	f3 1f       	adc	r31, r19
-    10fe:	eb 56       	subi	r30, 0x6B	; 107
-    1100:	fd 4f       	sbci	r31, 0xFD	; 253
-    1102:	20 91 0e 01 	lds	r18, 0x010E	; 0x80010e <colors+0xc>
-    1106:	30 91 0f 01 	lds	r19, 0x010F	; 0x80010f <colors+0xd>
-    110a:	40 91 10 01 	lds	r20, 0x0110	; 0x800110 <colors+0xe>
-    110e:	20 83       	st	Z, r18
-    1110:	31 83       	std	Z+1, r19	; 0x01
-    1112:	42 83       	std	Z+2, r20	; 0x02
+    11e4:	fc 01       	movw	r30, r24
+    11e6:	ee 0f       	add	r30, r30
+    11e8:	ff 1f       	adc	r31, r31
+    11ea:	e8 59       	subi	r30, 0x98	; 152
+    11ec:	ff 4f       	sbci	r31, 0xFF	; 255
+    11ee:	e4 91       	lpm	r30, Z
+    11f0:	f0 e0       	ldi	r31, 0x00	; 0
+    11f2:	9f 01       	movw	r18, r30
+    11f4:	22 0f       	add	r18, r18
+    11f6:	33 1f       	adc	r19, r19
+    11f8:	e2 0f       	add	r30, r18
+    11fa:	f3 1f       	adc	r31, r19
+    11fc:	e0 5b       	subi	r30, 0xB0	; 176
+    11fe:	fd 4f       	sbci	r31, 0xFD	; 253
+    1200:	20 91 0e 01 	lds	r18, 0x010E	; 0x80010e <colors+0xc>
+    1204:	30 91 0f 01 	lds	r19, 0x010F	; 0x80010f <colors+0xd>
+    1208:	40 91 10 01 	lds	r20, 0x0110	; 0x800110 <colors+0xe>
+    120c:	20 83       	st	Z, r18
+    120e:	31 83       	std	Z+1, r19	; 0x01
+    1210:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[1][5]))] = colors[4];	
-    1114:	ea e8       	ldi	r30, 0x8A	; 138
-    1116:	f0 e0       	ldi	r31, 0x00	; 0
-    1118:	e4 91       	lpm	r30, Z
-    111a:	f0 e0       	ldi	r31, 0x00	; 0
-    111c:	bf 01       	movw	r22, r30
-    111e:	66 0f       	add	r22, r22
-    1120:	77 1f       	adc	r23, r23
-    1122:	e6 0f       	add	r30, r22
-    1124:	f7 1f       	adc	r31, r23
-    1126:	eb 56       	subi	r30, 0x6B	; 107
-    1128:	fd 4f       	sbci	r31, 0xFD	; 253
-    112a:	20 83       	st	Z, r18
-    112c:	31 83       	std	Z+1, r19	; 0x01
-    112e:	42 83       	std	Z+2, r20	; 0x02
+    1212:	ea e8       	ldi	r30, 0x8A	; 138
+    1214:	f0 e0       	ldi	r31, 0x00	; 0
+    1216:	e4 91       	lpm	r30, Z
+    1218:	f0 e0       	ldi	r31, 0x00	; 0
+    121a:	bf 01       	movw	r22, r30
+    121c:	66 0f       	add	r22, r22
+    121e:	77 1f       	adc	r23, r23
+    1220:	e6 0f       	add	r30, r22
+    1222:	f7 1f       	adc	r31, r23
+    1224:	e0 5b       	subi	r30, 0xB0	; 176
+    1226:	fd 4f       	sbci	r31, 0xFD	; 253
+    1228:	20 83       	st	Z, r18
+    122a:	31 83       	std	Z+1, r19	; 0x01
+    122c:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[3][i]))] = colors[7];
 		led[pgm_read_byte(&(matrix[2][2]))] = colors[7];
 	}
 		
 	// L on its side
 	for (int i = 5; i <= 7; i++)  
-    1130:	01 96       	adiw	r24, 0x01	; 1
-    1132:	88 30       	cpi	r24, 0x08	; 8
-    1134:	91 05       	cpc	r25, r1
-    1136:	bc f2       	brlt	.-82     	; 0x10e6 <menu+0x172>
+    122e:	01 96       	adiw	r24, 0x01	; 1
+    1230:	88 30       	cpi	r24, 0x08	; 8
+    1232:	91 05       	cpc	r25, r1
+    1234:	bc f2       	brlt	.-82     	; 0x11e4 <menu+0x172>
 		led[pgm_read_byte(&(matrix[0][i]))] = colors[4];
 		led[pgm_read_byte(&(matrix[1][5]))] = colors[4];	
 	}
 	
 	// Rotated s
 		led[pgm_read_byte(&(matrix[3][5]))] = colors[5];
-    1138:	ea eb       	ldi	r30, 0xBA	; 186
-    113a:	f0 e0       	ldi	r31, 0x00	; 0
-    113c:	e4 91       	lpm	r30, Z
-    113e:	f0 e0       	ldi	r31, 0x00	; 0
-    1140:	cf 01       	movw	r24, r30
-    1142:	88 0f       	add	r24, r24
-    1144:	99 1f       	adc	r25, r25
-    1146:	e8 0f       	add	r30, r24
-    1148:	f9 1f       	adc	r31, r25
-    114a:	eb 56       	subi	r30, 0x6B	; 107
-    114c:	fd 4f       	sbci	r31, 0xFD	; 253
-    114e:	80 91 11 01 	lds	r24, 0x0111	; 0x800111 <colors+0xf>
-    1152:	90 91 12 01 	lds	r25, 0x0112	; 0x800112 <colors+0x10>
-    1156:	a0 91 13 01 	lds	r26, 0x0113	; 0x800113 <colors+0x11>
-    115a:	80 83       	st	Z, r24
-    115c:	91 83       	std	Z+1, r25	; 0x01
-    115e:	a2 83       	std	Z+2, r26	; 0x02
+    1236:	ea eb       	ldi	r30, 0xBA	; 186
+    1238:	f0 e0       	ldi	r31, 0x00	; 0
+    123a:	e4 91       	lpm	r30, Z
+    123c:	f0 e0       	ldi	r31, 0x00	; 0
+    123e:	cf 01       	movw	r24, r30
+    1240:	88 0f       	add	r24, r24
+    1242:	99 1f       	adc	r25, r25
+    1244:	e8 0f       	add	r30, r24
+    1246:	f9 1f       	adc	r31, r25
+    1248:	e0 5b       	subi	r30, 0xB0	; 176
+    124a:	fd 4f       	sbci	r31, 0xFD	; 253
+    124c:	80 91 11 01 	lds	r24, 0x0111	; 0x800111 <colors+0xf>
+    1250:	90 91 12 01 	lds	r25, 0x0112	; 0x800112 <colors+0x10>
+    1254:	a0 91 13 01 	lds	r26, 0x0113	; 0x800113 <colors+0x11>
+    1258:	80 83       	st	Z, r24
+    125a:	91 83       	std	Z+1, r25	; 0x01
+    125c:	a2 83       	std	Z+2, r26	; 0x02
 		led[pgm_read_byte(&(matrix[2][5]))] = colors[5];
-    1160:	e2 ea       	ldi	r30, 0xA2	; 162
-    1162:	f0 e0       	ldi	r31, 0x00	; 0
-    1164:	e4 91       	lpm	r30, Z
-    1166:	f0 e0       	ldi	r31, 0x00	; 0
-    1168:	9f 01       	movw	r18, r30
-    116a:	22 0f       	add	r18, r18
-    116c:	33 1f       	adc	r19, r19
-    116e:	e2 0f       	add	r30, r18
-    1170:	f3 1f       	adc	r31, r19
-    1172:	eb 56       	subi	r30, 0x6B	; 107
-    1174:	fd 4f       	sbci	r31, 0xFD	; 253
-    1176:	80 83       	st	Z, r24
-    1178:	91 83       	std	Z+1, r25	; 0x01
-    117a:	a2 83       	std	Z+2, r26	; 0x02
+    125e:	e2 ea       	ldi	r30, 0xA2	; 162
+    1260:	f0 e0       	ldi	r31, 0x00	; 0
+    1262:	e4 91       	lpm	r30, Z
+    1264:	f0 e0       	ldi	r31, 0x00	; 0
+    1266:	9f 01       	movw	r18, r30
+    1268:	22 0f       	add	r18, r18
+    126a:	33 1f       	adc	r19, r19
+    126c:	e2 0f       	add	r30, r18
+    126e:	f3 1f       	adc	r31, r19
+    1270:	e0 5b       	subi	r30, 0xB0	; 176
+    1272:	fd 4f       	sbci	r31, 0xFD	; 253
+    1274:	80 83       	st	Z, r24
+    1276:	91 83       	std	Z+1, r25	; 0x01
+    1278:	a2 83       	std	Z+2, r26	; 0x02
 		led[pgm_read_byte(&(matrix[2][6]))] = colors[5];
-    117c:	e4 ea       	ldi	r30, 0xA4	; 164
-    117e:	f0 e0       	ldi	r31, 0x00	; 0
-    1180:	e4 91       	lpm	r30, Z
-    1182:	f0 e0       	ldi	r31, 0x00	; 0
-    1184:	9f 01       	movw	r18, r30
-    1186:	22 0f       	add	r18, r18
-    1188:	33 1f       	adc	r19, r19
-    118a:	e2 0f       	add	r30, r18
-    118c:	f3 1f       	adc	r31, r19
-    118e:	eb 56       	subi	r30, 0x6B	; 107
-    1190:	fd 4f       	sbci	r31, 0xFD	; 253
-    1192:	80 83       	st	Z, r24
-    1194:	91 83       	std	Z+1, r25	; 0x01
-    1196:	a2 83       	std	Z+2, r26	; 0x02
+    127a:	e4 ea       	ldi	r30, 0xA4	; 164
+    127c:	f0 e0       	ldi	r31, 0x00	; 0
+    127e:	e4 91       	lpm	r30, Z
+    1280:	f0 e0       	ldi	r31, 0x00	; 0
+    1282:	9f 01       	movw	r18, r30
+    1284:	22 0f       	add	r18, r18
+    1286:	33 1f       	adc	r19, r19
+    1288:	e2 0f       	add	r30, r18
+    128a:	f3 1f       	adc	r31, r19
+    128c:	e0 5b       	subi	r30, 0xB0	; 176
+    128e:	fd 4f       	sbci	r31, 0xFD	; 253
+    1290:	80 83       	st	Z, r24
+    1292:	91 83       	std	Z+1, r25	; 0x01
+    1294:	a2 83       	std	Z+2, r26	; 0x02
 		led[pgm_read_byte(&(matrix[1][6]))] = colors[5];
-    1198:	ec e8       	ldi	r30, 0x8C	; 140
-    119a:	f0 e0       	ldi	r31, 0x00	; 0
-    119c:	e4 91       	lpm	r30, Z
-    119e:	f0 e0       	ldi	r31, 0x00	; 0
-    11a0:	9f 01       	movw	r18, r30
-    11a2:	22 0f       	add	r18, r18
-    11a4:	33 1f       	adc	r19, r19
-    11a6:	e2 0f       	add	r30, r18
-    11a8:	f3 1f       	adc	r31, r19
-    11aa:	eb 56       	subi	r30, 0x6B	; 107
-    11ac:	fd 4f       	sbci	r31, 0xFD	; 253
-    11ae:	80 83       	st	Z, r24
-    11b0:	91 83       	std	Z+1, r25	; 0x01
-    11b2:	a2 83       	std	Z+2, r26	; 0x02
+    1296:	ec e8       	ldi	r30, 0x8C	; 140
+    1298:	f0 e0       	ldi	r31, 0x00	; 0
+    129a:	e4 91       	lpm	r30, Z
+    129c:	f0 e0       	ldi	r31, 0x00	; 0
+    129e:	9f 01       	movw	r18, r30
+    12a0:	22 0f       	add	r18, r18
+    12a2:	33 1f       	adc	r19, r19
+    12a4:	e2 0f       	add	r30, r18
+    12a6:	f3 1f       	adc	r31, r19
+    12a8:	e0 5b       	subi	r30, 0xB0	; 176
+    12aa:	fd 4f       	sbci	r31, 0xFD	; 253
+    12ac:	80 83       	st	Z, r24
+    12ae:	91 83       	std	Z+1, r25	; 0x01
+    12b0:	a2 83       	std	Z+2, r26	; 0x02
 		
 	// Flat I
 	for (int i = 6; i <= 9; i++)
-    11b4:	86 e0       	ldi	r24, 0x06	; 6
-    11b6:	90 e0       	ldi	r25, 0x00	; 0
-    11b8:	19 c0       	rjmp	.+50     	; 0x11ec <menu+0x278>
+    12b2:	86 e0       	ldi	r24, 0x06	; 6
+    12b4:	90 e0       	ldi	r25, 0x00	; 0
+    12b6:	19 c0       	rjmp	.+50     	; 0x12ea <menu+0x278>
 	{
 		led[pgm_read_byte(&(matrix[3][i]))] = colors[3];
-    11ba:	fc 01       	movw	r30, r24
-    11bc:	b4 96       	adiw	r30, 0x24	; 36
-    11be:	ee 0f       	add	r30, r30
-    11c0:	ff 1f       	adc	r31, r31
-    11c2:	e8 59       	subi	r30, 0x98	; 152
-    11c4:	ff 4f       	sbci	r31, 0xFF	; 255
-    11c6:	e4 91       	lpm	r30, Z
-    11c8:	f0 e0       	ldi	r31, 0x00	; 0
-    11ca:	9f 01       	movw	r18, r30
-    11cc:	22 0f       	add	r18, r18
-    11ce:	33 1f       	adc	r19, r19
-    11d0:	e2 0f       	add	r30, r18
-    11d2:	f3 1f       	adc	r31, r19
-    11d4:	eb 56       	subi	r30, 0x6B	; 107
-    11d6:	fd 4f       	sbci	r31, 0xFD	; 253
-    11d8:	20 91 0b 01 	lds	r18, 0x010B	; 0x80010b <colors+0x9>
-    11dc:	30 91 0c 01 	lds	r19, 0x010C	; 0x80010c <colors+0xa>
-    11e0:	40 91 0d 01 	lds	r20, 0x010D	; 0x80010d <colors+0xb>
-    11e4:	20 83       	st	Z, r18
-    11e6:	31 83       	std	Z+1, r19	; 0x01
-    11e8:	42 83       	std	Z+2, r20	; 0x02
+    12b8:	fc 01       	movw	r30, r24
+    12ba:	b4 96       	adiw	r30, 0x24	; 36
+    12bc:	ee 0f       	add	r30, r30
+    12be:	ff 1f       	adc	r31, r31
+    12c0:	e8 59       	subi	r30, 0x98	; 152
+    12c2:	ff 4f       	sbci	r31, 0xFF	; 255
+    12c4:	e4 91       	lpm	r30, Z
+    12c6:	f0 e0       	ldi	r31, 0x00	; 0
+    12c8:	9f 01       	movw	r18, r30
+    12ca:	22 0f       	add	r18, r18
+    12cc:	33 1f       	adc	r19, r19
+    12ce:	e2 0f       	add	r30, r18
+    12d0:	f3 1f       	adc	r31, r19
+    12d2:	e0 5b       	subi	r30, 0xB0	; 176
+    12d4:	fd 4f       	sbci	r31, 0xFD	; 253
+    12d6:	20 91 0b 01 	lds	r18, 0x010B	; 0x80010b <colors+0x9>
+    12da:	30 91 0c 01 	lds	r19, 0x010C	; 0x80010c <colors+0xa>
+    12de:	40 91 0d 01 	lds	r20, 0x010D	; 0x80010d <colors+0xb>
+    12e2:	20 83       	st	Z, r18
+    12e4:	31 83       	std	Z+1, r19	; 0x01
+    12e6:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[2][5]))] = colors[5];
 		led[pgm_read_byte(&(matrix[2][6]))] = colors[5];
 		led[pgm_read_byte(&(matrix[1][6]))] = colors[5];
 		
 	// Flat I
 	for (int i = 6; i <= 9; i++)
-    11ea:	01 96       	adiw	r24, 0x01	; 1
-    11ec:	8a 30       	cpi	r24, 0x0A	; 10
-    11ee:	91 05       	cpc	r25, r1
-    11f0:	24 f3       	brlt	.-56     	; 0x11ba <menu+0x246>
-    11f2:	89 e0       	ldi	r24, 0x09	; 9
-    11f4:	90 e0       	ldi	r25, 0x00	; 0
-    11f6:	53 c0       	rjmp	.+166    	; 0x129e <menu+0x32a>
-	
+    12e8:	01 96       	adiw	r24, 0x01	; 1
+    12ea:	8a 30       	cpi	r24, 0x0A	; 10
+    12ec:	91 05       	cpc	r25, r1
+    12ee:	24 f3       	brlt	.-56     	; 0x12b8 <menu+0x246>
+    12f0:	89 e0       	ldi	r24, 0x09	; 9
+    12f2:	90 e0       	ldi	r25, 0x00	; 0
+    12f4:	53 c0       	rjmp	.+166    	; 0x139c <menu+0x32a>
+	}
 	
 	// L on its side 
 	for (int i = 9; i <= 11; i++)  
 	{
 		led[pgm_read_byte(&(matrix[0][i]))] = colors[8];
-    11f8:	fc 01       	movw	r30, r24
-    11fa:	ee 0f       	add	r30, r30
-    11fc:	ff 1f       	adc	r31, r31
-    11fe:	e8 59       	subi	r30, 0x98	; 152
-    1200:	ff 4f       	sbci	r31, 0xFF	; 255
-    1202:	e4 91       	lpm	r30, Z
-    1204:	f0 e0       	ldi	r31, 0x00	; 0
-    1206:	9f 01       	movw	r18, r30
-    1208:	22 0f       	add	r18, r18
-    120a:	33 1f       	adc	r19, r19
-    120c:	e2 0f       	add	r30, r18
-    120e:	f3 1f       	adc	r31, r19
-    1210:	eb 56       	subi	r30, 0x6B	; 107
-    1212:	fd 4f       	sbci	r31, 0xFD	; 253
-    1214:	20 91 1a 01 	lds	r18, 0x011A	; 0x80011a <colors+0x18>
-    1218:	30 91 1b 01 	lds	r19, 0x011B	; 0x80011b <colors+0x19>
-    121c:	40 91 1c 01 	lds	r20, 0x011C	; 0x80011c <colors+0x1a>
-    1220:	20 83       	st	Z, r18
-    1222:	31 83       	std	Z+1, r19	; 0x01
-    1224:	42 83       	std	Z+2, r20	; 0x02
+    12f6:	fc 01       	movw	r30, r24
+    12f8:	ee 0f       	add	r30, r30
+    12fa:	ff 1f       	adc	r31, r31
+    12fc:	e8 59       	subi	r30, 0x98	; 152
+    12fe:	ff 4f       	sbci	r31, 0xFF	; 255
+    1300:	e4 91       	lpm	r30, Z
+    1302:	f0 e0       	ldi	r31, 0x00	; 0
+    1304:	9f 01       	movw	r18, r30
+    1306:	22 0f       	add	r18, r18
+    1308:	33 1f       	adc	r19, r19
+    130a:	e2 0f       	add	r30, r18
+    130c:	f3 1f       	adc	r31, r19
+    130e:	e0 5b       	subi	r30, 0xB0	; 176
+    1310:	fd 4f       	sbci	r31, 0xFD	; 253
+    1312:	20 91 1a 01 	lds	r18, 0x011A	; 0x80011a <colors+0x18>
+    1316:	30 91 1b 01 	lds	r19, 0x011B	; 0x80011b <colors+0x19>
+    131a:	40 91 1c 01 	lds	r20, 0x011C	; 0x80011c <colors+0x1a>
+    131e:	20 83       	st	Z, r18
+    1320:	31 83       	std	Z+1, r19	; 0x01
+    1322:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[1][11]))] = colors[8];
-    1226:	e6 e9       	ldi	r30, 0x96	; 150
-    1228:	f0 e0       	ldi	r31, 0x00	; 0
-    122a:	e4 91       	lpm	r30, Z
-    122c:	f0 e0       	ldi	r31, 0x00	; 0
-    122e:	bf 01       	movw	r22, r30
-    1230:	66 0f       	add	r22, r22
-    1232:	77 1f       	adc	r23, r23
-    1234:	e6 0f       	add	r30, r22
-    1236:	f7 1f       	adc	r31, r23
-    1238:	eb 56       	subi	r30, 0x6B	; 107
-    123a:	fd 4f       	sbci	r31, 0xFD	; 253
-    123c:	20 83       	st	Z, r18
-    123e:	31 83       	std	Z+1, r19	; 0x01
-    1240:	42 83       	std	Z+2, r20	; 0x02
+    1324:	e6 e9       	ldi	r30, 0x96	; 150
+    1326:	f0 e0       	ldi	r31, 0x00	; 0
+    1328:	e4 91       	lpm	r30, Z
+    132a:	f0 e0       	ldi	r31, 0x00	; 0
+    132c:	bf 01       	movw	r22, r30
+    132e:	66 0f       	add	r22, r22
+    1330:	77 1f       	adc	r23, r23
+    1332:	e6 0f       	add	r30, r22
+    1334:	f7 1f       	adc	r31, r23
+    1336:	e0 5b       	subi	r30, 0xB0	; 176
+    1338:	fd 4f       	sbci	r31, 0xFD	; 253
+    133a:	20 83       	st	Z, r18
+    133c:	31 83       	std	Z+1, r19	; 0x01
+    133e:	42 83       	std	Z+2, r20	; 0x02
 		
 		// blue Q 
 		if (i < 11)
-    1242:	8b 30       	cpi	r24, 0x0B	; 11
-    1244:	91 05       	cpc	r25, r1
-    1246:	54 f5       	brge	.+84     	; 0x129c <menu+0x328>
+    1340:	8b 30       	cpi	r24, 0x0B	; 11
+    1342:	91 05       	cpc	r25, r1
+    1344:	54 f5       	brge	.+84     	; 0x139a <menu+0x328>
 		{
 		led[pgm_read_byte(&(matrix[1][i]))] = colors[9];
-    1248:	fc 01       	movw	r30, r24
-    124a:	3c 96       	adiw	r30, 0x0c	; 12
-    124c:	ee 0f       	add	r30, r30
-    124e:	ff 1f       	adc	r31, r31
-    1250:	e8 59       	subi	r30, 0x98	; 152
-    1252:	ff 4f       	sbci	r31, 0xFF	; 255
-    1254:	e4 91       	lpm	r30, Z
-    1256:	f0 e0       	ldi	r31, 0x00	; 0
-    1258:	9f 01       	movw	r18, r30
-    125a:	22 0f       	add	r18, r18
-    125c:	33 1f       	adc	r19, r19
-    125e:	e2 0f       	add	r30, r18
-    1260:	f3 1f       	adc	r31, r19
-    1262:	eb 56       	subi	r30, 0x6B	; 107
-    1264:	fd 4f       	sbci	r31, 0xFD	; 253
-    1266:	20 91 1d 01 	lds	r18, 0x011D	; 0x80011d <colors+0x1b>
-    126a:	30 91 1e 01 	lds	r19, 0x011E	; 0x80011e <colors+0x1c>
-    126e:	40 91 1f 01 	lds	r20, 0x011F	; 0x80011f <colors+0x1d>
-    1272:	20 83       	st	Z, r18
-    1274:	31 83       	std	Z+1, r19	; 0x01
-    1276:	42 83       	std	Z+2, r20	; 0x02
+    1346:	fc 01       	movw	r30, r24
+    1348:	3c 96       	adiw	r30, 0x0c	; 12
+    134a:	ee 0f       	add	r30, r30
+    134c:	ff 1f       	adc	r31, r31
+    134e:	e8 59       	subi	r30, 0x98	; 152
+    1350:	ff 4f       	sbci	r31, 0xFF	; 255
+    1352:	e4 91       	lpm	r30, Z
+    1354:	f0 e0       	ldi	r31, 0x00	; 0
+    1356:	9f 01       	movw	r18, r30
+    1358:	22 0f       	add	r18, r18
+    135a:	33 1f       	adc	r19, r19
+    135c:	e2 0f       	add	r30, r18
+    135e:	f3 1f       	adc	r31, r19
+    1360:	e0 5b       	subi	r30, 0xB0	; 176
+    1362:	fd 4f       	sbci	r31, 0xFD	; 253
+    1364:	20 91 1d 01 	lds	r18, 0x011D	; 0x80011d <colors+0x1b>
+    1368:	30 91 1e 01 	lds	r19, 0x011E	; 0x80011e <colors+0x1c>
+    136c:	40 91 1f 01 	lds	r20, 0x011F	; 0x80011f <colors+0x1d>
+    1370:	20 83       	st	Z, r18
+    1372:	31 83       	std	Z+1, r19	; 0x01
+    1374:	42 83       	std	Z+2, r20	; 0x02
 		led[pgm_read_byte(&(matrix[2][i]))] = colors[9];	
-    1278:	fc 01       	movw	r30, r24
-    127a:	78 96       	adiw	r30, 0x18	; 24
-    127c:	ee 0f       	add	r30, r30
-    127e:	ff 1f       	adc	r31, r31
-    1280:	e8 59       	subi	r30, 0x98	; 152
-    1282:	ff 4f       	sbci	r31, 0xFF	; 255
-    1284:	e4 91       	lpm	r30, Z
-    1286:	f0 e0       	ldi	r31, 0x00	; 0
-    1288:	bf 01       	movw	r22, r30
-    128a:	66 0f       	add	r22, r22
-    128c:	77 1f       	adc	r23, r23
-    128e:	e6 0f       	add	r30, r22
-    1290:	f7 1f       	adc	r31, r23
-    1292:	eb 56       	subi	r30, 0x6B	; 107
-    1294:	fd 4f       	sbci	r31, 0xFD	; 253
-    1296:	20 83       	st	Z, r18
-    1298:	31 83       	std	Z+1, r19	; 0x01
-    129a:	42 83       	std	Z+2, r20	; 0x02
+    1376:	fc 01       	movw	r30, r24
+    1378:	78 96       	adiw	r30, 0x18	; 24
+    137a:	ee 0f       	add	r30, r30
+    137c:	ff 1f       	adc	r31, r31
+    137e:	e8 59       	subi	r30, 0x98	; 152
+    1380:	ff 4f       	sbci	r31, 0xFF	; 255
+    1382:	e4 91       	lpm	r30, Z
+    1384:	f0 e0       	ldi	r31, 0x00	; 0
+    1386:	bf 01       	movw	r22, r30
+    1388:	66 0f       	add	r22, r22
+    138a:	77 1f       	adc	r23, r23
+    138c:	e6 0f       	add	r30, r22
+    138e:	f7 1f       	adc	r31, r23
+    1390:	e0 5b       	subi	r30, 0xB0	; 176
+    1392:	fd 4f       	sbci	r31, 0xFD	; 253
+    1394:	20 83       	st	Z, r18
+    1396:	31 83       	std	Z+1, r19	; 0x01
+    1398:	42 83       	std	Z+2, r20	; 0x02
+	{
 		led[pgm_read_byte(&(matrix[3][i]))] = colors[3];
 	}
 	
-	
 	// L on its side 
 	for (int i = 9; i <= 11; i++)  
-    129c:	01 96       	adiw	r24, 0x01	; 1
-    129e:	8c 30       	cpi	r24, 0x0C	; 12
-    12a0:	91 05       	cpc	r25, r1
-    12a2:	0c f4       	brge	.+2      	; 0x12a6 <menu+0x332>
-    12a4:	a9 cf       	rjmp	.-174    	; 0x11f8 <menu+0x284>
+    139a:	01 96       	adiw	r24, 0x01	; 1
+    139c:	8c 30       	cpi	r24, 0x0C	; 12
+    139e:	91 05       	cpc	r25, r1
+    13a0:	0c f4       	brge	.+2      	; 0x13a4 <menu+0x332>
+    13a2:	a9 cf       	rjmp	.-174    	; 0x12f6 <menu+0x284>
+		{
+		led[pgm_read_byte(&(matrix[1][i]))] = colors[9];
 		led[pgm_read_byte(&(matrix[2][i]))] = colors[9];	
 		}
 	}
-	
-	//led[0] = colors[3];
 	ws2812_setleds(led,MAXPIX);
-    12a6:	6c e2       	ldi	r22, 0x2C	; 44
-    12a8:	71 e0       	ldi	r23, 0x01	; 1
-    12aa:	85 e9       	ldi	r24, 0x95	; 149
-    12ac:	92 e0       	ldi	r25, 0x02	; 2
-    12ae:	0e 94 c3 01 	call	0x386	; 0x386 <ws2812_setleds>
-    12b2:	08 95       	ret
+    13a4:	6c e2       	ldi	r22, 0x2C	; 44
+    13a6:	71 e0       	ldi	r23, 0x01	; 1
+    13a8:	80 e5       	ldi	r24, 0x50	; 80
+    13aa:	92 e0       	ldi	r25, 0x02	; 2
+    13ac:	0e 94 c3 01 	call	0x386	; 0x386 <ws2812_setleds>
+    13b0:	08 95       	ret
 
-000012b4 <forcedown>:
+000013b2 <forcedown>:
 }
-*/
 
 //Piece goes all the way down until it reached the bottom or another piece
 void forcedown()
 {
-    12b4:	0f 93       	push	r16
-    12b6:	1f 93       	push	r17
-    12b8:	cf 93       	push	r28
+    13b2:	0f 93       	push	r16
+    13b4:	1f 93       	push	r17
+    13b6:	cf 93       	push	r28
 	while (!(activeBrick.ypos == 0) || !checkFieldCollision(&activeBrick))
-    12ba:	21 c0       	rjmp	.+66     	; 0x12fe <forcedown+0x4a>
+    13b8:	25 c0       	rjmp	.+74     	; 0x1404 <forcedown+0x52>
 	{
 		activeBrick.ypos--;
-    12bc:	8f ef       	ldi	r24, 0xFF	; 255
-    12be:	8c 0f       	add	r24, r28
-    12c0:	80 93 1c 06 	sts	0x061C, r24	; 0x80061c <activeBrick+0x2>
+    13ba:	8f ef       	ldi	r24, 0xFF	; 255
+    13bc:	8c 0f       	add	r24, r28
+    13be:	80 93 d6 05 	sts	0x05D6, r24	; 0x8005d6 <activeBrick+0x2>
 		
 		if (checkFieldCollision(&activeBrick))
-    12c4:	8a e1       	ldi	r24, 0x1A	; 26
-    12c6:	96 e0       	ldi	r25, 0x06	; 6
-    12c8:	0e 94 bb 03 	call	0x776	; 0x776 <checkFieldCollision>
-    12cc:	89 2b       	or	r24, r25
-    12ce:	41 f0       	breq	.+16     	; 0x12e0 <forcedown+0x2c>
+    13c2:	84 ed       	ldi	r24, 0xD4	; 212
+    13c4:	95 e0       	ldi	r25, 0x05	; 5
+    13c6:	0e 94 b0 03 	call	0x760	; 0x760 <checkFieldCollision>
+    13ca:	89 2b       	or	r24, r25
+    13cc:	51 f0       	breq	.+20     	; 0x13e2 <forcedown+0x30>
 		{
-			activeBrick.ypos++;		//Go back up one
-    12d0:	0a e1       	ldi	r16, 0x1A	; 26
-    12d2:	16 e0       	ldi	r17, 0x06	; 6
-    12d4:	f8 01       	movw	r30, r16
-    12d6:	c2 83       	std	Z+2, r28	; 0x02
+			activeBrick.ypos++;			//Go back up one
+    13ce:	04 ed       	ldi	r16, 0xD4	; 212
+    13d0:	15 e0       	ldi	r17, 0x05	; 5
+    13d2:	f8 01       	movw	r30, r16
+    13d4:	c2 83       	std	Z+2, r28	; 0x02
 			addActiveBrickToField();
-    12d8:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
-			activeBrick.enabled = 0;//Disable brick, it is no longer moving
-    12dc:	f8 01       	movw	r30, r16
-    12de:	10 82       	st	Z, r1
-			//clearNext();
+    13d6:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
+			activeBrick.enabled = 0;	//Disable brick, it is no longer moving
+    13da:	f8 01       	movw	r30, r16
+    13dc:	10 82       	st	Z, r1
+			clearNext();
+    13de:	0e 94 e7 03 	call	0x7ce	; 0x7ce <clearNext>
 		}
-		
 		
 		if (activeBrick.ypos == 0)
-    12e0:	80 91 1c 06 	lds	r24, 0x061C	; 0x80061c <activeBrick+0x2>
-    12e4:	81 11       	cpse	r24, r1
-    12e6:	09 c0       	rjmp	.+18     	; 0x12fa <forcedown+0x46>
+    13e2:	80 91 d6 05 	lds	r24, 0x05D6	; 0x8005d6 <activeBrick+0x2>
+    13e6:	81 11       	cpse	r24, r1
+    13e8:	0b c0       	rjmp	.+22     	; 0x1400 <forcedown+0x4e>
 		{
 			addActiveBrickToField();
-    12e8:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
+    13ea:	0e 94 3b 03 	call	0x676	; 0x676 <addActiveBrickToField>
 			activeBrick.enabled = 0;
-    12ec:	10 92 1a 06 	sts	0x061A, r1	; 0x80061a <activeBrick>
+    13ee:	10 92 d4 05 	sts	0x05D4, r1	; 0x8005d4 <activeBrick>
 			printField();
-    12f0:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
+    13f2:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
 			newActiveBrick();
-    12f4:	0e 94 d7 04 	call	0x9ae	; 0x9ae <newActiveBrick>
-			//clearNext();
+    13f6:	0e 94 56 05 	call	0xaac	; 0xaac <newActiveBrick>
+			clearNext();
+    13fa:	0e 94 e7 03 	call	0x7ce	; 0x7ce <clearNext>
 			break;
-    12f8:	0c c0       	rjmp	.+24     	; 0x1312 <forcedown+0x5e>
+    13fe:	0c c0       	rjmp	.+24     	; 0x1418 <forcedown+0x66>
 		}
 		printField();
-    12fa:	0e 94 ed 03 	call	0x7da	; 0x7da <printField>
-*/
+    1400:	0e 94 69 04 	call	0x8d2	; 0x8d2 <printField>
+}
 
 //Piece goes all the way down until it reached the bottom or another piece
 void forcedown()
 {
 	while (!(activeBrick.ypos == 0) || !checkFieldCollision(&activeBrick))
-    12fe:	c0 91 1c 06 	lds	r28, 0x061C	; 0x80061c <activeBrick+0x2>
-    1302:	c1 11       	cpse	r28, r1
-    1304:	db cf       	rjmp	.-74     	; 0x12bc <forcedown+0x8>
-    1306:	8a e1       	ldi	r24, 0x1A	; 26
-    1308:	96 e0       	ldi	r25, 0x06	; 6
-    130a:	0e 94 bb 03 	call	0x776	; 0x776 <checkFieldCollision>
-    130e:	89 2b       	or	r24, r25
-    1310:	a9 f2       	breq	.-86     	; 0x12bc <forcedown+0x8>
+    1404:	c0 91 d6 05 	lds	r28, 0x05D6	; 0x8005d6 <activeBrick+0x2>
+    1408:	c1 11       	cpse	r28, r1
+    140a:	d7 cf       	rjmp	.-82     	; 0x13ba <forcedown+0x8>
+    140c:	84 ed       	ldi	r24, 0xD4	; 212
+    140e:	95 e0       	ldi	r25, 0x05	; 5
+    1410:	0e 94 b0 03 	call	0x760	; 0x760 <checkFieldCollision>
+    1414:	89 2b       	or	r24, r25
+    1416:	89 f2       	breq	.-94     	; 0x13ba <forcedown+0x8>
+			clearNext();
 			break;
 		}
 		printField();
-		
 	}
 }
-    1312:	cf 91       	pop	r28
-    1314:	1f 91       	pop	r17
-    1316:	0f 91       	pop	r16
-    1318:	08 95       	ret
+    1418:	cf 91       	pop	r28
+    141a:	1f 91       	pop	r17
+    141c:	0f 91       	pop	r16
+    141e:	08 95       	ret
 
-0000131a <_exit>:
-    131a:	f8 94       	cli
+00001420 <_exit>:
+    1420:	f8 94       	cli
 
-0000131c <__stop_program>:
-    131c:	ff cf       	rjmp	.-2      	; 0x131c <__stop_program>
+00001422 <__stop_program>:
+    1422:	ff cf       	rjmp	.-2      	; 0x1422 <__stop_program>

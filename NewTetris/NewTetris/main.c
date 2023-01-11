@@ -23,6 +23,7 @@ volatile int startgame = 0;
 byte pause = 0;
 
 // Configure Matrix to always go from left to right, contrary to hardware direction
+// Save in flash memory
 const const int matrix[row_total][column] PROGMEM = 
 {
 {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
@@ -82,27 +83,11 @@ typedef struct USARTRX
 volatile USARTRX_st rxUSART = {0, 0, 0, 0};
 char transmit_buffer[10];
 
-
-void testleds()
-{
-	for (int i = 0; i < MAXPIX; i++)
-	{
-		led[i].r = 11;
-		led[i].b = 11;
-		ws2812_setleds(led,MAXPIX);
-		_delay_us(ws2812_resettime);
-	}
-}
-
-
 void init()
 {
 	DDRB|=_BV(ws2812_pin);  // (1 << ws2812_pin)
 	clearTable();
-
-	//newActiveBrick();
 	menu();
-	//sliding_menu();
 	_delay_ms(ws2812_resettime);
 	
 	
@@ -131,7 +116,6 @@ void init()
 	UCSR0A = (1<<U2X0);								//Asynchronous Double speed
 	UCSR0B |= (1<<RXCIE0)|(1<<RXEN0)|(1<<TXEN0);	// Interrupt enable, Enable receive and transmit
 	UCSR0C |= (1<<UCSZ01)|(1<<UCSZ00);				//8-bit configuration
-	//DDRB |=
 	
 	sei();	
 }
@@ -147,17 +131,6 @@ ISR(USART_RX_vect)
 	rxUSART.receive = 1;
 	
 	button = rxUSART.receiver_buffer;
-}
-
-void send_message(char *buffer)
-{
-	unsigned char i=0;
-	while(buffer[i] != '\0')
-	{
-		while((UCSR0A & (1<<UDRE0)) == 0);
-		UDR0 = buffer[i];
-		i++;
-	}
 }
 
 ISR(TIMER0_COMPA_vect) {	// Timer 0
@@ -180,12 +153,12 @@ ISR(TIMER0_COMPA_vect) {	// Timer 0
 		}
 	}
 	
-	if (countspeed >= falltime && startgame == 1 && pause == 0) // 200 * 0.005 * 200 = 1s
+	// 200 * 0.005 * 200 = 1s
+	if (countspeed >= falltime && startgame == 1 && pause == 0) 
 	{
 		shiftActiveBrick('d');
 		countspeed = 0;						// Reset Timer
 	}
-
 }
 
 int main(void)
@@ -194,20 +167,18 @@ int main(void)
 	{
 		init();
 		_delay_ms(1000);
-		// BLUETOOTH
-		//Awaits for a button to be pressed
+		
+		// Waits for a button to be pressed for game to start
 		while (button != 'a' && button != 's' && button != 'd' && button != 'j'  && button != 'k'  && button != 'l' );
-		//while (button != ('a' || 's' || 'd' || 'j' || 'k' || 'l'));
 		startgame = 1;
 		clearTable();
+		
+		// Resets button so it does not perform action
 		button = ' ';
 		newActiveBrick();
-		//showNextPiece();
 		while(1)
 		{
-			// BLUETOOTH
-			//shiftActiveBrick('d');
-			//fallActiveBrick();
+			// Checks for pressed button
 			switch (button)
 			{
 				// Left
@@ -230,6 +201,7 @@ int main(void)
 				rotateActiveBrick();
 				break;
 			
+				// Force down
 				case 'k':
 				forcedown();
 				break;
@@ -239,9 +211,6 @@ int main(void)
 				pause += 1;
 				pause = Pause(pause);
 				break;
-				
-				//default:
-				// default statements
 			}
 			checkFullLines();
 			button = ' ';
@@ -257,53 +226,4 @@ int main(void)
 			}
 		}
 	}
-	
-	
-	//Bluetooth
-	/*
-	while (1)
-	{
-		if (rxUSART.receive == 1)
-		{
-			if (rxUSART.error == 1)
-			{
-				rxUSART.error = 0;
-			}
-			else
-			{
-				sprintf(transmit_buffer, "Tecla: %c\r\n", rxUSART.receiver_buffer);
-				send_message(transmit_buffer);
-			}
-			rxUSART.receive = 0;
-		}
-	}
-	*/
-	/*
-	while(1)
-    {
-	    led[0].r = 10;
-	    ws2812_setleds(led, MAXPIX);
-		_delay_us(ws2812_resettime);
-		
-		//newActiveBrick();
-		//_delay_ms(1000);
-		
-		//shiftActiveBrick('d');
-		_delay_ms(1000);
-		
-		newActiveBrick();
-		temp();
-		temp();
-		
-		_delay_ms(1000);
-		addActiveBrickToField();
-		_delay_ms(1000);
-		
-	    led[0].r = 0;
-	    ws2812_setleds(led, MAXPIX);
-	    _delay_us(ws2812_resettime);
-    }
-	*/
-	//testleds();
-	
 }

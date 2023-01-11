@@ -8,8 +8,6 @@
 #include <avr/pgmspace.h>
 
 #define MAXPIX 300
-#define COLORLENGTH (MAXPIX/2)
-#define FADE (256/COLORLENGTH)
 #define row 20
 #define row_total 25
 #define column 12
@@ -18,14 +16,12 @@
 #define size_word 5
 #define size_piece 4
 
+//const char signMessage[] PROGMEM = {"I AM PREDATOR, UNSEEN COMBATANT. CREATED BY THE UNITED STATES DEPART"};
+	
 typedef uint8_t byte;
 
 struct cRGB led[MAXPIX];
 
-int check_off(cRGB);
-void clearTable();
-void menu();
-void sliding_menu();
 extern const const int matrix[row_total][column] PROGMEM;
 extern struct cRGB colors[10];
 extern cRGB led_off;
@@ -36,21 +32,18 @@ extern struct Brick activeBrick;
 extern volatile unsigned char button;
 extern volatile int falltime; // 200 * 0.005 = 1s
 
-
+int check_off(cRGB);
 int checkSidesCollision(struct Brick*);
 int checkFieldCollision(struct Brick*);
-void temp();
-void temp2();
+void clearTable();
+void menu();
 void fallActiveBrick();
 void forcedown();
-//const char signMessage[] PROGMEM = {"I AM PREDATOR, UNSEEN COMBATANT. CREATED BY THE UNITED STATES DEPART"};
-
 void newActiveBrick(); 
 void printField();
 void shiftActiveBrick(char);
 void rotateActiveBrick();
 void moveFieldDownOne(byte);
-//int checkSidesCollision(struct Brick);
 void addActiveBrickToField();
 void checkFullLines();
 void showNextPiece();
