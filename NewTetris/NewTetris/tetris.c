@@ -1,3 +1,8 @@
+/*
+*
+* tetris.c
+*
+*/
 #include "tetris.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -327,7 +332,6 @@ void printField()
 	_delay_us(ws2812_resettime);
 }
 
-// CHECK ON TABLE
 void rotateActiveBrick() 
 {
 	//Copy active brick pix array to temporary pix array

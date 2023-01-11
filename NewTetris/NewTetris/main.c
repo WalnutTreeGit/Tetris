@@ -1,5 +1,5 @@
 /*
- * Tetris.c
+ * main.c
  *
  * Created: 23/11/2022 11:33:19
  * Author : joaopaulo
